@@ -146,19 +146,14 @@ var test = function (test) {
 				"Loopbacks don't affect result");
 		});
 		
-		test("Indexes", function () {
-			var dstmp = flock();
+		test("String index", function () {
+			var index = flock();
 
 			// sets string for full text search
 			function set(name) {
-				dstmp.set(name.split(''), {name: name});
+				index.set(name.split(''), {name: name});
 			}
 
-			// gets hits matching start of word
-			function get(name) {
-				return dstmp.multiget(name.split('').concat(['.', 'name']));
-			}
-			
 			// setting up cache
 			set("hello");
 			set("world");
@@ -169,28 +164,36 @@ var test = function (test) {
 			set("wedding");
 
 			// querying data			
-			deepEqual([
-				get("wo"),
-				get("her"),
-				get("w"),
-				get("h")
-			], [[
+			deepEqual(index.multiget("w.o...name"), [
 				"world",
 				"worn",
 				"wounded"
-			], [
+			], "wo...");
+			deepEqual(index.multiget("h.e.r...name"), [
 				"hero",
 				"hers"
-			], [
+			], "her...");
+			deepEqual(index.multiget("w...name"), [
 				"world",
 				"worn",
 				"wounded",
 				"wedding"
-			], [
+			], "w...");
+			deepEqual(index.multiget("h...name"), [
 				"hello",
 				"hero",
 				"hers"
-			]] , "Start of string search");
+			], "h...");
+			deepEqual(index.multiget("w.o.*.n...name"), [
+				"worn",
+				"wounded"
+			], "wo*n...");
+			deepEqual(index.multiget("*.e...name"), [
+				"hello",
+				"hero",
+				"hers",
+				"wedding"
+			], "*e...");
 		});		
 	};
 	
