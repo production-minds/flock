@@ -7,8 +7,7 @@
 //
 // https://github.com/wwidd/flock
 ////////////////////////////////////////////////////////////////////////////////
-/*global exports */
-var
+var	exports,
 
 flock = function () {
 	var walk,
@@ -240,5 +239,5 @@ flock = function () {
 	return flock;
 }();
 
-exports.flock = flock;
+(exports || {}).flock = flock;
 
