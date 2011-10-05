@@ -122,6 +122,8 @@ flock = function () {
 	// Utility functions
 
 	// collects end nodes
+	// must be class level, creating a function on each call
+	// to .multiget() may impact performance significantly
 	// - obj: node data
 	// - i: current position in path
 	// - depth: current depth in tree
