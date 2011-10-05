@@ -3,16 +3,10 @@
 <head>
   <link rel="stylesheet" href="qunit/qunit.css" type="text/css" media="screen" />
   <script src="qunit/qunit.js"></script>
-  <script>
-		/*global test, radiant */
-		var exports = {},
-		require = function (module) {
-			return radiant;
-		};
-  </script>
   <script src="../src/flock.js"></script>
   <script src="test.js"></script>
   <script>
+		/*global test */
 		test.flock();
   </script>
 </head>
