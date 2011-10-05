@@ -24,10 +24,7 @@
 				}
 			}
 		}
-	}),
-	
-	value = 123,
-	digits = 8;
+	});
 
 	jOB.benchmark("Querying in cache", ".get()", ".multiget()");
 
@@ -89,11 +86,23 @@
 		buildJOrder();
 		
 		jOB.test("Building index", buildCache, buildJOrder);
-		jOB.test("Querying", function () {
+		jOB.test("Querying 'Con'", function () {
 			return get("Con");
 		}, function () {
 			return table.where([{name: "Con"}], {renumber: true, mode: jOrder.startof});
 		});
+		
+		jOB.test("Stacked search ('Con', then 'st')",
+		function () {
+			var stage = ds.get('C.o.n'),
+					hits = ds.multiget('C.o.n...name', null, true);
+			return flock(stage).multiget('s.t...name', null, true);
+		}, function () {
+			var hits = table.where([{name: 'Con'}], {renumber: true, mode: jOrder.startof});
+			return jOrder(hits)
+				.index('name', ['name'], {type: jOrder.string, ordered: true, grouped: true})
+				.where([{name: 'Const'}], {renumber: true, mode: jOrder.startof});
+		});		
 	}());	
 }(jOB));
 
