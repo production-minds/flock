@@ -146,6 +146,31 @@ var test = function (test) {
 				"Loopbacks don't affect result");
 		});
 		
+		test("Edge cases", function () {
+			var cache = flock({
+				1: {},
+				test: {
+					1: "hello",
+					a: "world"
+				},
+				what: [
+					"one",
+					"two",
+					"three",
+					{
+						awe: "some",
+						1: "test"
+					}
+				]
+			});
+
+			equals(cache.get(''), cache.root(), ".get('') and .root() point to the same object");
+			equals(cache.multiget('')[0], cache.root(), ".multiget('') and .root() point to the same object");
+			raises(function () {			
+				cache.set('', {});
+			}, "Can't set root");
+		});
+		
 		test("String index", function () {
 			var index = flock();
 
