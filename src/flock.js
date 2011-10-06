@@ -32,20 +32,19 @@ flock = function () {
 			
 			// retrieves node at the given path
 			// - path: string or array representing path
+			// returns node on path
+			// raises TypeError on invalid path 
 			get: function (path) {
 				var tpath = flock.resolve(path),
 						tmp = root;
 				
 				// walking nodes along path
-				while (tpath.length > 1) {
+				while (tpath.length > 0) {
 					tmp = tmp[tpath.shift()];
-					if (typeof tmp === 'undefined') {
-						throw "flock.get: invalid datastore path '" + path.toString() + "'";
-					}
 				}
 				
 				// returning value on end node
-				return tmp[tpath[0]];
+				return tmp;
 			},
 			
 			// sets node at the given path
@@ -57,6 +56,10 @@ flock = function () {
 						key, node, child,
 						i;
 				
+				if (!tpath.length) {
+					throw "flock.set: empty path '" + path + "'";
+				}
+						
 				// walking nodes along path
 				for (i = 0, node = root; i < last; i++) {
 					key = tpath[i];
@@ -101,14 +104,19 @@ flock = function () {
 				limit = limit || 0;
 				loopback = loopback || false;
 				
-				var result = [];
+				var tpath = flock.resolve(path),
+						result = [];
 				
-				// collecting end nodes
-				walk(root, 0, 0,
-					flock.resolve(path),
-					limit,
-					loopback ? null : [],
-					result);
+				if (tpath.length) {
+					// collecting end nodes
+					walk(root, 0, 0,
+						tpath,
+						limit,
+						loopback ? null : [],
+						result);
+				} else {
+					result.push(root);
+				}
 				
 				return result;
 			}
