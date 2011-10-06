@@ -4,7 +4,7 @@
 /*global flock, module, ok, equals, notEqual, deepEqual, raises, console */
 var test = function (test) {
 	test.flock = function () {
-		var ds = flock({
+		var cache = flock({
 			first: {
 				a: {},
 				b: {},
@@ -44,24 +44,24 @@ var test = function (test) {
 			deepEqual(flock.resolve(path), apath, "String path " + path);
 			deepEqual(flock.resolve(apath), apath, "Array path " + path);
 			notEqual(flock.resolve(apath), apath, "Resolved path is copy.");
-			deepEqual(flock.resolve('first.*.bcde...55'), ['first', '*', 'bcde', '', '55'], "Path with wildcards (string)");
-			deepEqual(flock.resolve('first.*.bcde......55'), ['first', '*', 'bcde', '', '55'], "Path with erroneous wildcards (string)");
-			deepEqual(flock.resolve(['first', '*', 'bcde', '', '55']), ['first', '*', 'bcde', '', '55'], "Path with wildcards (array)");
+			deepEqual(flock.resolve('first.*.bcde...55'), ['first', '*', 'bcde', '', '55'], "Path with wildcarcache (string)");
+			deepEqual(flock.resolve('first.*.bcde......55'), ['first', '*', 'bcde', '', '55'], "Path with erroneous wildcarcache (string)");
+			deepEqual(flock.resolve(['first', '*', 'bcde', '', '55']), ['first', '*', 'bcde', '', '55'], "Path with wildcarcache (array)");
 			raises(function () {
-				ds.multiget('fourth...');
+				cache.multiget('fourth...');
 			}, "Path can't end in dot (string)");
 			raises(function () {
-				ds.multiget(['fourth', '.']);
+				cache.multiget(['fourth', '.']);
 			}, "Path can't end in dot (array)");
 		});
 		
 		module("Access");
 		
 		test("Accessing values", function () {
-			ok(ds.get('first.a'), "Path 'ds.first.a' is defined");
-			ok(!ds.get('first.f'), "Path 'ds.first.f' is undefined");
+			ok(cache.get('first.a'), "Path 'cache.first.a' is defined");
+			ok(!cache.get('first.f'), "Path 'cache.first.f' is undefined");
 			raises(function () {
-				ds.get('fifth.a');
+				cache.get('fifth.a');
 			}, function (msg) {
 				console.log(msg);
 				return true;
@@ -69,53 +69,53 @@ var test = function (test) {
 		});
 		
 		test("Modifying values", function () {
-			ds.set('first.b', 1);
-			equals(ds.root().first.b, 1, "Setting value on existing path (ds.first.a)");
-			ds.set('thousandth.x.5', 1000);
-			equals(ds.root().thousandth.x[5], 1000, "Setting value on non-existing path (ds.thousandth.x.5)");
+			cache.set('first.b', 1);
+			equals(cache.root().first.b, 1, "Setting value on existing path (cache.first.a)");
+			cache.set('thousandth.x.5', 1000);
+			equals(cache.root().thousandth.x[5], 1000, "Setting value on non-existing path (cache.thousandth.x.5)");
 		});
 		
 		test("Deleting values", function () {
 			var success;
 				
-			ds.set('thousandth.x.5', 1000);
-			success = ds.unset('thousandth.x.5');
-			ok(typeof ds.root().thousandth.x[5] === 'undefined', "Deleting value from cache (ds.thousandth.x.5)");
+			cache.set('thousandth.x.5', 1000);
+			success = cache.unset('thousandth.x.5');
+			ok(typeof cache.root().thousandth.x[5] === 'undefined', "Deleting value from cache (cache.thousandth.x.5)");
 			
 			equals(success, true, "Deletion returns success flag");
 			
-			equals(ds.unset('thousandth.x.5'), false, "Attempting to deletie non-existent value");
+			equals(cache.unset('thousandth.x.5'), false, "Attempting to deletie non-existent value");
 		});
 		
 		module("Queries");
 		
-		test("Wildcards", function () {
-			// testing single-level wildcards
+		test("Wildcarcache", function () {
+			// testing single-level wildcarcache
 			deepEqual(
-				ds.multiget('fourth.*'),
+				cache.multiget('fourth.*'),
 				[{a: "One", b: "Two"}, {a: "Three", b: "Four"}, {a: "Five", b: "Six"}],
 				"Collecting nodes from path 'fourth.*'");
 			deepEqual(
-				ds.multiget('fourth.*', 1),
+				cache.multiget('fourth.*', 1),
 				[{a: "One", b: "Two"}],
 				"Retrieving first node from path 'fourth.*'");
 			deepEqual(
-				ds.multiget('fourth.*.a'),
+				cache.multiget('fourth.*.a'),
 				["One", "Three", "Five"],
 				"Collecting nodes from path 'fourth.*.a'");
 			deepEqual(
-				ds.multiget('fourth.2.*'),
+				cache.multiget('fourth.2.*'),
 				["Three", "Four"],
 				"Collecting nodes from path 'fourth.2.*'");
 			deepEqual(
-				ds.multiget('*.1'),
+				cache.multiget('*.1'),
 				[{}, {a: "One", b: "Two"}],
 				"Collecting nodes from path '*.1'");
 		});
 		
 		test("Skipping", function () {
-			// testing multi-level wildcards
-			var dstmp = flock({
+			// testing multi-level wildcarcache
+			var cache = flock({
 				1: {},
 				test: {
 					1: "hello",
@@ -133,15 +133,15 @@ var test = function (test) {
 			});
 
 			deepEqual(
-				dstmp.multiget('...1'),
+				cache.multiget('...1'),
 				[{}, "hello", "two", "test"],
 				"Collecting nodes from path '...1'");
 
 			// creating loopback
-			dstmp.set('test.b', dstmp.get('test'));
-			ok(typeof dstmp.get('test.b') !== 'undefined', "Loopback set");
+			cache.set('test.b', cache.get('test'));
+			ok(typeof cache.get('test.b') !== 'undefined', "Loopback set");
 			deepEqual(
-				dstmp.multiget('...1'),
+				cache.multiget('...1'),
 				[{}, "hello", "two", "test"],
 				"Loopbacks don't affect result");
 		});
