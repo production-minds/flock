@@ -16,3 +16,8 @@ Getting started
 	console.log(cache.multiget('contacts.*.john.age').toString());  // [34, 40]
 	console.log(cache.multiget('contacts...height').toString());    // [5.3, 6, 5.1]
 
+Testing
+-------
+
+You'll need these dependencies for the tests and benchmarks to work: [flock-js-libs.zip](https://github.com/downloads/wwidd/flock/flock-js-libs.zip) 
+
