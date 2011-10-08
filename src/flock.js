@@ -50,6 +50,7 @@ flock = function () {
 			// sets node at the given path
 			// - path: array representing path
 			// - value: value to be set at path
+			// returns the node on the input path
 			set: function (path, value) {
 				var tpath = flock.resolve(path),
 						last = tpath.length - 1,
@@ -74,7 +75,7 @@ flock = function () {
 				// setting value on end node
 				node[tpath[i]] = value;
 				
-				return true;
+				return node;
 			},
 			
 			// removes a datastore element from the given path
