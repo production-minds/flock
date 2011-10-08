@@ -71,8 +71,9 @@ var test = function (test) {
 		test("Modifying values", function () {
 			cache.set('first.b', 1);
 			equals(cache.root().first.b, 1, "Setting value on existing path (cache.first.a)");
-			cache.set('thousandth.x.5', 1000);
+			var ref = cache.set('thousandth.x.5', 1000);
 			equals(cache.root().thousandth.x[5], 1000, "Setting value on non-existing path (cache.thousandth.x.5)");
+			equals(ref, cache.root().thousandth.x, "Method .set() returns reference to input node");
 		});
 		
 		test("Deleting values", function () {
