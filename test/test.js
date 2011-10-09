@@ -61,29 +61,9 @@ var test = function (test) {
 			}, "Invalid path raises exception");
 		});
 		
-		test("Modifying values", function () {
-			cache.set('first.b', 1);
-			equals(cache.root().first.b, 1, "Setting value on existing path (cache.first.a)");
-			var ref = cache.set('thousandth.x.5', 1000);
-			equals(cache.root().thousandth.x[5], 1000, "Setting value on non-existing path (cache.thousandth.x.5)");
-			equals(ref, cache.root().thousandth.x, "Method .set() returns reference to input node");
-		});
-		
-		test("Deleting values", function () {
-			var success;
-				
-			cache.set('thousandth.x.5', 1000);
-			success = cache.unset('thousandth.x.5');
-			ok(typeof cache.root().thousandth.x[5] === 'undefined', "Deleting value from cache (cache.thousandth.x.5)");
-			
-			equals(success, true, "Deletion returns success flag");
-			
-			equals(cache.unset('thousandth.x.5'), false, "Attempting to deletie non-existent value");
-		});
-		
 		module("Queries");
 		
-		test("Wildcarcache", function () {
+		test("Wildcards", function () {
 			// testing single-level wildcarcache
 			deepEqual(
 				cache.multiget('fourth.*'),
@@ -105,6 +85,17 @@ var test = function (test) {
 				cache.multiget('*.1'),
 				[{}, {a: "One", b: "Two"}],
 				"Collecting nodes from path '*.1'");
+		});
+		
+		test("OR relation", function () {
+			deepEqual(
+				cache.multiget(['fourth', [1, 3]]),
+				[{a: "One", b: "Two"}, {a: "Five", b: "Six"}],
+				"Collecting specific nodes from path 'fourth.1,3'");
+			deepEqual(
+				cache.multiget([['first', 'third']]),
+				[{ a: {}, b: {}, c: {}, d: {}, e: {} }, {}],
+				"Collecting specific nodes from path 'first,third'");
 		});
 		
 		test("Skipping", function () {
@@ -164,6 +155,30 @@ var test = function (test) {
 				cache.set('', {});
 			}, "Can't set root");
 		});
+		
+		module("Updating");
+		
+		test("Modifying values", function () {
+			cache.set('first.b', 1);
+			equals(cache.root().first.b, 1, "Setting value on existing path (cache.first.a)");
+			var ref = cache.set('thousandth.x.5', 1000);
+			equals(cache.root().thousandth.x[5], 1000, "Setting value on non-existing path (cache.thousandth.x.5)");
+			equals(ref, cache.root().thousandth.x, "Method .set() returns reference to input node");
+		});
+		
+		test("Deleting values", function () {
+			var success;
+				
+			cache.set('thousandth.x.5', 1000);
+			success = cache.unset('thousandth.x.5');
+			ok(typeof cache.root().thousandth.x[5] === 'undefined', "Deleting value from cache (cache.thousandth.x.5)");
+			
+			equals(success, true, "Deletion returns success flag");
+			
+			equals(cache.unset('thousandth.x.5'), false, "Attempting to deletie non-existent value");
+		});		
+		
+		module("Search");
 		
 		test("String index", function () {
 			var index = flock();
