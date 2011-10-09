@@ -100,6 +100,10 @@ var test = function (test) {
 				[{a: "One", b: "Two"}, {a: "Five", b: "Six"}],
 				"Collecting specific nodes from path 'fourth.1,3' (passed as string)");
 			deepEqual(
+				cache.multiget(['fourth', [1, 3], '*']),
+				["One", "Two", "Five", "Six"],
+				"Collecting specific nodes from path 'fourth.1,3.*'");
+			deepEqual(
 				cache.multiget([['first', 'third']]),
 				[{ a: {}, b: {}, c: {}, d: {}, e: {} }, {}],
 				"Collecting specific nodes from path 'first,third'");
@@ -132,6 +136,14 @@ var test = function (test) {
 				cache.multiget('...1'),
 				[{}, "hello", "two", "test"],
 				"Collecting nodes from path '...1'");
+			deepEqual(
+				cache.multiget(['what', '3', 'awe']),
+				["some"],
+				"Collecting nodes from path 'what.3.awe'");
+			deepEqual(
+				cache.multiget(['', '3', 'awe']),
+				["some"],
+				"Collecting nodes from path '...3.awe'");
 
 			// creating loopback
 			cache.set('test.b', cache.get('test'));
