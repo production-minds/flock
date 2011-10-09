@@ -155,9 +155,8 @@ flock = function () {
 			stack[depth] = obj;
 		}
 		
-		switch (tpath[i]) {
-		case '*':
-		case '?':
+		key = tpath[i];
+		if (key === '*' || key === '?') {
 			// processing wildcard node
 			if (i < last) {
 				for (key in obj) {
@@ -176,10 +175,7 @@ flock = function () {
 					}
 				}
 			}
-			break;
-			
-		case '':
-		case '.':
+		} else if (key === '' || key === '.' || key === null) {
 			// processing skiper node
 			if (typeof obj === 'object') {
 				for (key in obj) {
@@ -193,9 +189,20 @@ flock = function () {
 					}
 				}
 			}
-			break;
-			
-		default:
+		} else if (key instanceof Array) {
+			// processing list of nodes
+			for (j = 0; j < key.length; j++) {
+				if (i < last) {
+					walk(obj[key[j]], i + 1, depth + 1,
+						tpath, limit, stack, result);
+				} else {
+					result.push(obj[key[j]]);
+					if (--limit === 0) {
+						return result;
+					}
+				}
+			}
+		} else {
 			// processing explicit node
 			key = tpath[i];
 			if (!obj.hasOwnProperty(key)) {
@@ -212,7 +219,6 @@ flock = function () {
 					}
 				}
 			}
-			break;
 		}
 	};
 
