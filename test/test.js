@@ -41,11 +41,14 @@ var test = function (test) {
 					apath = path.split('.');
 			deepEqual(flock.resolve(''), [], "Root path");
 			deepEqual(flock.resolve(path), apath, "String path " + path);
-			deepEqual(flock.resolve('first.*.bcde...55'), ['first', '*', 'bcde', '', '55'], "Path with wildcarcache");
-			deepEqual(flock.resolve('first.*.bcde......55'), ['first', '*', 'bcde', '', '55'], "Path with erroneous wildcarcache");
+			deepEqual(flock.resolve('first.*.bcde...55'), ['first', '*', 'bcde', '', '55'], "Path with wildcards");
+			raises(function () {
+				flock.resolve('first.*.bcde......55');
+			}, "Path with erroneous wildcards");
 			raises(function () {
 				cache.multiget('fourth...');
 			}, "Path can't end in dot");
+			deepEqual(flock.resolve('first.1,2,3.*'), ['first', ['1', '2', '3'], '*'], "Array keys");
 		});
 		
 		module("Access");
@@ -64,7 +67,7 @@ var test = function (test) {
 		module("Queries");
 		
 		test("Wildcards", function () {
-			// testing single-level wildcarcache
+			// testing single-level wildcards
 			deepEqual(
 				cache.multiget('fourth.*'),
 				[{a: "One", b: "Two"}, {a: "Three", b: "Four"}, {a: "Five", b: "Six"}],
@@ -93,13 +96,21 @@ var test = function (test) {
 				[{a: "One", b: "Two"}, {a: "Five", b: "Six"}],
 				"Collecting specific nodes from path 'fourth.1,3'");
 			deepEqual(
+				cache.multiget('fourth.1,3'),
+				[{a: "One", b: "Two"}, {a: "Five", b: "Six"}],
+				"Collecting specific nodes from path 'fourth.1,3' (passed as string)");
+			deepEqual(
 				cache.multiget([['first', 'third']]),
 				[{ a: {}, b: {}, c: {}, d: {}, e: {} }, {}],
 				"Collecting specific nodes from path 'first,third'");
+			deepEqual(
+				cache.multiget('first,third'),
+				[{ a: {}, b: {}, c: {}, d: {}, e: {} }, {}],
+				"Collecting specific nodes from path 'first,third' (passed as string)");
 		});
 		
 		test("Skipping", function () {
-			// testing multi-level wildcarcache
+			// testing multi-level wildcards
 			var cache = flock({
 				1: {},
 				test: {
