@@ -73,7 +73,7 @@ var test = function (test) {
 				[{a: "One", b: "Two"}, {a: "Three", b: "Four"}, {a: "Five", b: "Six"}],
 				"Collecting nodes from path 'fourth.*'");
 			deepEqual(
-				cache.multiget('fourth.*', 1),
+				cache.multiget('fourth.*', {limit: 1}),
 				[{a: "One", b: "Two"}],
 				"Retrieving first node from path 'fourth.*'");
 			deepEqual(
@@ -88,6 +88,11 @@ var test = function (test) {
 				cache.multiget('*.1'),
 				[{}, {a: "One", b: "Two"}],
 				"Collecting nodes from path '*.1'");
+			
+			deepEqual(
+				cache.multiget('first,second.*', {mode: flock.lookup}),
+				{a: {}, b: {}, c: {}, d: {}, e: {}, 1: {}, 2: {}, 3: {}},
+				"Getting results as lookup");
 		});
 		
 		test("OR relation", function () {
@@ -173,7 +178,7 @@ var test = function (test) {
 			});
 
 			equals(cache.get(''), cache.root(), ".get('') and .root() point to the same object");
-			equals(cache.multiget('')[0], cache.root(), ".multiget('') and .root() point to the same object");
+			equals(cache.multiget(''), cache.root(), ".multiget('') and .root() point to the same object");
 			raises(function () {			
 				cache.set('', {});
 			}, "Can't set root");
