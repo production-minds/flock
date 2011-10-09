@@ -10,7 +10,9 @@
 var	exports,
 
 flock = function () {
-	var walk,
+	var RE_PATH_VALIDATOR = /^(\.{3})*([^\.,]+(\.{1,3}|,))*[^\.,]+$/,
+			RE_PATH_SKIPPER = /\.{2,}/,
+			walk,
 	
 	// - root: root object for datastore
 	flock = function (root) {
@@ -233,17 +235,30 @@ flock = function () {
 	// example: 'contacts.smith.*.ancestors...name'
 	// 					will get the names of all ancestor names for contacts w/ last name 'smith'
 	flock.resolve = function (path) {
-		// raising error if path ends in dot
-		if (path[path.length - 1] === '.') {
-			throw "flock.resolve: path can't end in dot";
-		}
-
 		// processing path
 		if (typeof path === 'string') {
-			// returning string split along dots
-			return path.length ? path.replace(/\.{2,}/, function (match, offset) {
+			// validating path
+			if (path.length && !RE_PATH_VALIDATOR.test(path)) {
+				throw "flock.resolve: invalid path";
+			}
+			
+			var keys,
+					i, key;
+			
+			// splitting along dots
+			keys = path.length ? path.replace(RE_PATH_SKIPPER, function (match, offset) {
 				return offset ? '..' : '.';
 			}).split('.') : [];
+			
+			// splitting along commas to form multiple choice keys 
+			for (i = 0; i < keys.length; i++) {
+				key = keys[i];
+				if (key.indexOf(',') > -1) {
+					keys[i] = key.split(',');
+				}
+			}
+			
+			return keys;
 		} else {
 			throw "flock.resolve: invalid argument";
 		}
