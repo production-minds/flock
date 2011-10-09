@@ -39,20 +39,13 @@ var test = function (test) {
 		test("Path resolution", function () {
 			var path = 'first.a.bcde.1.55',
 					apath = path.split('.');
-			deepEqual(flock.resolve(''), [], "Root path (empty string)");
-			deepEqual(flock.resolve([]), [], "Root path (empty array)");
+			deepEqual(flock.resolve(''), [], "Root path");
 			deepEqual(flock.resolve(path), apath, "String path " + path);
-			deepEqual(flock.resolve(apath), apath, "Array path " + path);
-			notEqual(flock.resolve(apath), apath, "Resolved path is copy.");
-			deepEqual(flock.resolve('first.*.bcde...55'), ['first', '*', 'bcde', '', '55'], "Path with wildcarcache (string)");
-			deepEqual(flock.resolve('first.*.bcde......55'), ['first', '*', 'bcde', '', '55'], "Path with erroneous wildcarcache (string)");
-			deepEqual(flock.resolve(['first', '*', 'bcde', '', '55']), ['first', '*', 'bcde', '', '55'], "Path with wildcarcache (array)");
+			deepEqual(flock.resolve('first.*.bcde...55'), ['first', '*', 'bcde', '', '55'], "Path with wildcarcache");
+			deepEqual(flock.resolve('first.*.bcde......55'), ['first', '*', 'bcde', '', '55'], "Path with erroneous wildcarcache");
 			raises(function () {
 				cache.multiget('fourth...');
-			}, "Path can't end in dot (string)");
-			raises(function () {
-				cache.multiget(['fourth', '.']);
-			}, "Path can't end in dot (array)");
+			}, "Path can't end in dot");
 		});
 		
 		module("Access");
