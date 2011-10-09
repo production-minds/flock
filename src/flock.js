@@ -85,7 +85,7 @@ flock = function () {
 			// - true: elem was present and deleted
 			// - false: elem was not present
 			unset: function (path) {
-				var tpath = flock.resolve(path),
+				var tpath = typeof path === 'object' ? path.concat([]) : flock.resolve(path),
 						key = tpath.pop(),
 						parent = self.get(tpath);
 				
@@ -106,7 +106,7 @@ flock = function () {
 				limit = limit || 0;
 				loopback = loopback || false;
 				
-				var tpath = flock.resolve(path),
+				var tpath = typeof path === 'object' ? path.concat([]) : flock.resolve(path),
 						result = [];
 				
 				if (tpath.length) {
