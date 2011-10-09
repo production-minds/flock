@@ -35,12 +35,13 @@ flock = function () {
 			// returns node on path
 			// raises TypeError on invalid path 
 			get: function (path) {
-				var tpath = flock.resolve(path),
-						tmp = root;
+				var tpath = typeof path === 'object' ? path : flock.resolve(path),
+						tmp = root,
+						i;
 				
 				// walking nodes along path
-				while (tpath.length > 0) {
-					tmp = tmp[tpath.shift()];
+				for (i = 0; i < tpath.length; i++) {
+					tmp = tmp[tpath[i]];
 				}
 				
 				// returning value on end node
@@ -52,7 +53,7 @@ flock = function () {
 			// - value: value to be set at path
 			// returns the node on the input path
 			set: function (path, value) {
-				var tpath = flock.resolve(path),
+				var tpath = typeof path === 'object' ? path : flock.resolve(path),
 						last = tpath.length - 1,
 						key, node, child,
 						i;
@@ -218,7 +219,7 @@ flock = function () {
 	//////////////////////////////
 	// Static methods
 
-	// returns an array representation of the passed string or array
+	// returns an array representation of the passed string
 	// path format is: keys separated with dots
 	// wildcards:
 	// - '*': for one level
@@ -232,10 +233,7 @@ flock = function () {
 		}
 
 		// processing path
-		if (path instanceof Array) {
-			// returning shallow copy of array
-			return path.concat([]);
-		} else if (typeof path === 'string') {
+		if (typeof path === 'string') {
 			// returning string split along dots
 			return path.length ? path.replace(/\.{2,}/, function (match, offset) {
 				return offset ? '..' : '.';
