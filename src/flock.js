@@ -172,19 +172,25 @@ flock = function () {
 					if (obj.hasOwnProperty(key)) {					
 						result.push(obj[key]);
 						if (--limit === 0) {
-							return result;
+							return;
 						}
 					}
 				}
 			}
 		} else if (key === '' || key === '.' || key === null) {
 			// processing skiper node
+			// must be object type as strings have indexes, too
 			if (typeof obj === 'object') {
 				for (key in obj) {
 					if (obj.hasOwnProperty(key)) {
 						if (key === tpath[i + 1]) {
-							result.push(obj[key]);
+							// current key matches next key in path
+							// re-walking current object but leving skipper key
+							walk(obj, i + 1, depth,
+								tpath, limit, stack, result);			
 						} else {
+							// current key doesn't match next key in path
+							// walking next level, but staying on skipper key
 							walk(obj[key], i, depth + 1,
 								tpath, limit, stack, result);
 						}
@@ -200,7 +206,7 @@ flock = function () {
 				} else {
 					result.push(obj[key[j]]);
 					if (--limit === 0) {
-						return result;
+						return;
 					}
 				}
 			}
@@ -217,7 +223,7 @@ flock = function () {
 				} else {
 					result.push(obj[key]);
 					if (--limit === 0) {
-						return result;
+						return;
 					}
 				}
 			}
