@@ -161,6 +161,7 @@ flock = function () {
 		if (key === '*' || key === '?') {
 			// processing wildcard node
 			if (i < last) {
+				// walking all nodes of this level
 				for (key in obj) {
 					if (obj.hasOwnProperty(key)) {
 						walk(obj[key], i + 1, depth + 1,
@@ -168,6 +169,7 @@ flock = function () {
 					}
 				}
 			} else {
+				// adding all leaf nodes to result
 				for (key in obj) {
 					if (obj.hasOwnProperty(key)) {					
 						result.push(obj[key]);
@@ -201,9 +203,11 @@ flock = function () {
 			// processing list of nodes
 			for (j = 0; j < key.length; j++) {
 				if (i < last) {
+					// walking all nodes specified by key
 					walk(obj[key[j]], i + 1, depth + 1,
 						tpath, limit, stack, result);
 				} else {
+					// adding all leaf nodes spec. by key to result
 					result.push(obj[key[j]]);
 					if (--limit === 0) {
 						return;
@@ -218,9 +222,11 @@ flock = function () {
 				return;
 			} else {
 				if (i < last) {
+					// walking single node
 					walk(obj[key], i + 1, depth + 1,
 						tpath, limit, stack, result);
 				} else {
+					// adding single leaf node to result
 					result.push(obj[key]);
 					if (--limit === 0) {
 						return;
