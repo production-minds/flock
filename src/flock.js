@@ -102,24 +102,29 @@ flock = function () {
 			
 			// collects end nodes specified by a wildcard path
 			// - path: path to end nodes, may contain wildcards "*"
-			// - limit: max number of entries to retrieve
-			// - loopback: traverses loopbacks
-			multiget: function (path, limit, loopback) {
-				limit = limit || 0;
-				loopback = loopback || false;
+			// - options:
+			//	 - limit: max number of entries to retrieve
+			//	 - loopback: traverses loopbacks
+			//	 - mode: flock.lookup or flock.array
+			multiget: function (path, options) {
+				options = options || {};
+				options.limit = options.limit || 0;
+				options.loopback = options.loopback || false;
+				options.mode = options.mode || flock.array;
 				
 				var tpath = typeof path === 'object' ? path.concat([]) : flock.resolve(path),
-						result = [];
+						result;
 				
 				if (tpath.length) {
 					// collecting end nodes
+					result = options.mode === flock.lookup ? {} : [];
 					walk(root, 0, 0,
 						tpath,
-						limit,
-						loopback ? null : [],
+						options.limit,
+						options.loopback ? null : [],
 						result);
 				} else {
-					result.push(root);
+					result = root;
 				}
 				
 				return result;
@@ -144,6 +149,7 @@ flock = function () {
 	// - result: resut buffer
 	walk = function (obj, i, depth, tpath, limit, stack, result) {
 		var last = tpath.length - 1,
+				isArray = result instanceof Array,
 				key, j;
 		
 		// detecting loopback
@@ -158,7 +164,7 @@ flock = function () {
 		}
 		
 		key = tpath[i];
-		if (key === '*' || key === '?') {
+		if (key === '*') {
 			// processing wildcard node
 			if (i < last) {
 				// walking all nodes of this level
@@ -172,7 +178,11 @@ flock = function () {
 				// adding all leaf nodes to result
 				for (key in obj) {
 					if (obj.hasOwnProperty(key)) {					
-						result.push(obj[key]);
+						if (isArray) {
+							result.push(obj[key]);
+						} else {
+							result[key] = obj[key];
+						}
 						if (--limit === 0) {
 							return;
 						}
@@ -208,7 +218,11 @@ flock = function () {
 						tpath, limit, stack, result);
 				} else {
 					// adding all leaf nodes spec. by key to result
-					result.push(obj[key[j]]);
+					if (isArray) {
+						result.push(obj[key[j]]);
+					} else {
+						result[key[j]] = obj[key[j]];
+					}
 					if (--limit === 0) {
 						return;
 					}
@@ -227,7 +241,11 @@ flock = function () {
 						tpath, limit, stack, result);
 				} else {
 					// adding single leaf node to result
-					result.push(obj[key]);
+					if (isArray) {
+						result.push(obj[key]);
+					} else {
+						result[key] = obj[key];
+					}
 					if (--limit === 0) {
 						return;
 					}
@@ -235,6 +253,12 @@ flock = function () {
 			}
 		}
 	};
+
+	//////////////////////////////
+	// Static variables
+
+	flock.array = 0;
+	flock.lookup = 1;
 
 	//////////////////////////////
 	// Static methods
