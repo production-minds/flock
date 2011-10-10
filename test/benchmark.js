@@ -85,7 +85,14 @@
 		buildCache();
 		buildJOrder();
 		
+		jOB.test("DB initialization", function () {
+			var tmp = flock(json);
+		}, function () {
+			var tmp = jOrder(json);
+		});
+		
 		jOB.test("Building index", buildCache, buildJOrder);
+
 		jOB.test("Querying 'Con'", function () {
 			return get("Con");
 		}, function () {
@@ -95,14 +102,14 @@
 		jOB.test("Stacked search ('Con', then 'st')",
 		function () {
 			var stage = ds.get('C.o.n'),
-					hits = ds.multiget('C.o.n...name', null, true);
-			return flock(stage).multiget('s.t...name', null, true);
+					hits = ds.multiget('C.o.n...name', {loopback: true});
+			return flock(stage).multiget('s.t...name', {loopback: true});
 		}, function () {
 			var hits = table.where([{name: 'Con'}], {renumber: true, mode: jOrder.startof});
 			return jOrder(hits)
 				.index('name', ['name'], {type: jOrder.string, ordered: true, grouped: true})
 				.where([{name: 'Const'}], {renumber: true, mode: jOrder.startof});
-		});		
+		});
 	}());	
 }(jOB));
 
