@@ -12,7 +12,6 @@ var	exports,
 flock = function () {
 	var RE_PATH_VALIDATOR = /^(\.{3})*([^\.,]+(\.{1,3}|,))*[^\.,]+$/,
 			RE_PATH_SKIPPER = /\.{2,}/,
-			walk,
 	
 	// - root: root object for datastore
 	flock = function (root) {
@@ -108,150 +107,106 @@ flock = function () {
 			//	 - mode: flock.lookup or flock.array
 			multiget: function (path, options) {
 				options = options || {};
-				options.limit = options.limit || 0;
-				options.loopback = options.loopback || false;
-				options.mode = options.mode || flock.array;
 				
 				var tpath = typeof path === 'object' ? path.concat([]) : flock.resolve(path),
-						result;
+						limit = options.limit || 0,
+						loopback = options.loopback || false,
+						result = options.mode === flock.lookup ? {} : [],
+						stack = options.loopback ? null : [];
 				
-				if (tpath.length) {
-					// collecting end nodes
-					result = options.mode === flock.lookup ? {} : [];
-					walk(root, 0, 0,
-						tpath,
-						options.limit,
-						options.loopback ? null : [],
-						result);
-				} else {
-					result = root;
+				// default case
+				if (!tpath.length) {
+					return root;
 				}
+						
+				// collects end nodes
+				// must be class level, creating a function on each call
+				// to .multiget() may impact performance significantly
+				// - obj: node data
+				// - i: current position in path
+				// - depth: current depth in tree
+				(function walk(obj, i, depth) {
+					var key, j;
+					
+					// detecting loopback
+					if (!loopback) {
+						for (j = 0; j < depth; j++) {
+							if (obj === stack[j]) {
+								return;
+							}
+						}
+						// putting current object on the stack
+						stack[depth] = obj;
+					}
+					
+					// processes one node				
+					// - key: key in object to proceed to
+					// returns flag whether to terminate traversal
+					function node(key) {
+						var last = tpath.length - 1;
+						if (i < last) {
+							walk(obj[key], i + 1, depth + 1);
+						} else {
+							if (result instanceof Array) {
+								result.push(obj[key]);
+							} else {
+								result[key] = obj[key];
+							}
+							if (--limit === 0) {
+								return true;
+							}
+						}
+						return false;
+					}
+					
+					// processing next key in path
+					key = tpath[i];
+					if (key === '*') {
+						// processing wildcard node
+						for (key in obj) {
+							if (obj.hasOwnProperty(key)) {
+								if (node(key)) {
+									return;
+								}
+							}
+						}
+					} else if ((key === '' || key === '.' || key === null) && typeof obj === 'object') {
+						// processing skipper node
+						// must be object type as strings have indexes, too
+						for (key in obj) {
+							if (obj.hasOwnProperty(key)) {
+								if (key === tpath[i + 1]) {
+									// current key matches next key in path
+									// re-walking current object but leving skipper key
+									walk(obj, i + 1, depth);			
+								} else {
+									// current key doesn't match next key in path
+									// walking next level, but staying on skipper key
+									walk(obj[key], i, depth + 1);
+								}
+							}
+						}
+					} else if (key instanceof Array) {
+						// processing list of nodes
+						for (j = 0; j < key.length; j++) {
+							if (node(key[j])) {
+								return;
+							}
+						}
+					} else {
+						// processing single node
+						key = tpath[i];
+						if (!obj.hasOwnProperty(key) || node(key)) {
+							return;
+						}
+					}
+				}(root, 0, 0));
 				
 				return result;
 			}
 		};
 		
 		return self;
-	};
-
-	//////////////////////////////
-	// Utility functions
-
-	// collects end nodes
-	// must be class level, creating a function on each call
-	// to .multiget() may impact performance significantly
-	// - obj: node data
-	// - i: current position in path
-	// - depth: current depth in tree
-	// - tpath: resolved query path
-	// - limit: max number of nodes to return
-	// - stack: stack buffer (tracks traversed nodes)
-	// - result: resut buffer
-	walk = function (obj, i, depth, tpath, limit, stack, result) {
-		var last = tpath.length - 1,
-				isArray = result instanceof Array,
-				key, j;
-		
-		// detecting loopback
-		if (stack) {
-			for (j = 0; j < depth; j++) {
-				if (obj === stack[j]) {
-					return;
-				}
-			}
-			// putting current object on the stack
-			stack[depth] = obj;
-		}
-		
-		key = tpath[i];
-		if (key === '*') {
-			// processing wildcard node
-			if (i < last) {
-				// walking all nodes of this level
-				for (key in obj) {
-					if (obj.hasOwnProperty(key)) {
-						walk(obj[key], i + 1, depth + 1,
-							tpath, limit, stack, result);
-					}
-				}
-			} else {
-				// adding all leaf nodes to result
-				for (key in obj) {
-					if (obj.hasOwnProperty(key)) {					
-						if (isArray) {
-							result.push(obj[key]);
-						} else {
-							result[key] = obj[key];
-						}
-						if (--limit === 0) {
-							return;
-						}
-					}
-				}
-			}
-		} else if (key === '' || key === '.' || key === null) {
-			// processing skiper node
-			// must be object type as strings have indexes, too
-			if (typeof obj === 'object') {
-				for (key in obj) {
-					if (obj.hasOwnProperty(key)) {
-						if (key === tpath[i + 1]) {
-							// current key matches next key in path
-							// re-walking current object but leving skipper key
-							walk(obj, i + 1, depth,
-								tpath, limit, stack, result);			
-						} else {
-							// current key doesn't match next key in path
-							// walking next level, but staying on skipper key
-							walk(obj[key], i, depth + 1,
-								tpath, limit, stack, result);
-						}
-					}
-				}
-			}
-		} else if (key instanceof Array) {
-			// processing list of nodes
-			for (j = 0; j < key.length; j++) {
-				if (i < last) {
-					// walking all nodes specified by key
-					walk(obj[key[j]], i + 1, depth + 1,
-						tpath, limit, stack, result);
-				} else {
-					// adding all leaf nodes spec. by key to result
-					if (isArray) {
-						result.push(obj[key[j]]);
-					} else {
-						result[key[j]] = obj[key[j]];
-					}
-					if (--limit === 0) {
-						return;
-					}
-				}
-			}
-		} else {
-			// processing explicit node
-			key = tpath[i];
-			if (!obj.hasOwnProperty(key)) {
-				// no such node
-				return;
-			} else {
-				if (i < last) {
-					// walking single node
-					walk(obj[key], i + 1, depth + 1,
-						tpath, limit, stack, result);
-				} else {
-					// adding single leaf node to result
-					if (isArray) {
-						result.push(obj[key]);
-					} else {
-						result[key] = obj[key];
-					}
-					if (--limit === 0) {
-						return;
-					}
-				}
-			}
-		}
 	};
 
 	//////////////////////////////
