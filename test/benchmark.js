@@ -77,7 +77,8 @@
 		
 		jOB.test("", function test_rec() {
 			var result = [],
-					key;
+				key;
+				
 			(function walk(obj, depth) {
 				if (typeof obj === 'object') {
 					for (key in obj) {
@@ -86,28 +87,28 @@
 						}
 					}
 				} else {
-					result.push(obj);
+					result.push({text: obj});
 				}
 			}(root, 0));
 
 			return result;
 		}, function test_closed() {
 			var	result = [],
-					node = root,
+					dest = {},
 					depth = 0,
-					level, key, count,
+					node,
+					from = root,
+					key, count,
 			
-			stack = [node];
+			stack = [root];
 			
 			while (1) {
-				level = stack[depth];
-				
 				// taking next child node
 				count = 0;
-				for (key in level) {
-					if (level.hasOwnProperty(key)) {
-						node = level[key];
-						delete level[key];
+				for (key in from) {
+					if (from.hasOwnProperty(key)) {
+						node = from[key];
+						delete from[key];
 						count++;
 						break;
 					}
@@ -121,25 +122,21 @@
 					} else {
 						// going one level back (reached last node on level)
 						delete stack[depth];
-						level = stack[--depth];
+						from = stack[--depth];
 						continue;
 					}
 				}
 
 				if (typeof node === 'object') {
-					// setting up next level
-					stack[++depth] = node;
+					// node is object, can go deeper
+					from = stack[++depth] = node;
 				} else {
-					// going on to next node in level
-					result.push(node);
+					// leaf node, processing
+					result.push({text: node});
 				}
 			}
-
+			
 			return result;
-		}, {
-			before: function () {
-				root = jOrder.deep(orig);			
-			}
 		});
 	}());	
 	
