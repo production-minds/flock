@@ -61,7 +61,10 @@
 	(function () {
 		jOB.benchmark("Tree traversal", "Recursive", "Iterative");
 		
-		var root = ds.root();
+		jOrder.core.MAX_DEPTH = 100;
+		
+		var orig = ds.root(),
+				root = jOrder.deep(orig);
 		
 		function keys(obj) {
 			var result = [],
@@ -86,54 +89,57 @@
 					result.push(obj);
 				}
 			}(root, 0));
-			
+
 			return result;
 		}, function test_closed() {
 			var	result = [],
 					node = root,
 					depth = 0,
-					level, key,
+					level, key, count,
 			
-			stack = [{
-				node: node,
-				keys: keys(node),
-				pos: 0
-			}];
+			stack = [node];
 			
 			while (1) {
 				level = stack[depth];
 				
-				if (level.pos === level.keys.length) {
+				// taking next child node
+				count = 0;
+				for (key in level) {
+					if (level.hasOwnProperty(key)) {
+						node = level[key];
+						delete level[key];
+						count++;
+						break;
+					}
+				}
+				
+				if (!count) {
+					// node is empty
 					if (depth === 0) {
+						// reached end of traversal
 						break;
 					} else {
 						// going one level back (reached last node on level)
 						delete stack[depth];
 						level = stack[--depth];
-						level.pos++;
 						continue;
 					}
 				}
 
-				key = level.keys[level.pos];
-				node = level.node[key];
-				
 				if (typeof node === 'object') {
 					// setting up next level
-					level = {
-						node: node,
-						keys: keys(node),
-						pos: 0
-					};
-					stack[++depth] = level;
+					stack[++depth] = node;
 				} else {
 					// going on to next node in level
 					result.push(node);
-					level.pos++;
 				}
 			}
-			
+
 			return result;
+		}, {
+			before: function () {
+				root = jOrder.deep(orig);			
+			}
 		});
 	}());	
 	
