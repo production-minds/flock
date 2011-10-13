@@ -116,6 +116,19 @@ var test = function (test) {
 				cache.multiget('first,third'),
 				[{ a: {}, b: {}, c: {}, d: {}, e: {} }, {}],
 				"Collecting specific nodes from path 'first,third' (passed as string)");
+			
+			deepEqual(
+				cache.multiget([['thousandth', 'third']]),
+				[{}],
+				"Collecting non-existent keys");
+			deepEqual(
+				cache.multiget([['thousandth', 'third']], {mode: flock.lookup}),
+				{third: {}},
+				"Collecting non-existent keys (as lookup)");
+			deepEqual(
+				cache.multiget([['thousandth', 'third']], {undef: true}),
+				[undefined, {}],
+				"Collecting non-existent keys (undefined values allowed)");
 		});
 		
 		test("Skipping", function () {
