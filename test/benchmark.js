@@ -66,18 +66,9 @@
 		var orig = ds.root(),
 				root = jOrder.deep(orig);
 		
-		function keys(obj) {
-			var result = [],
-					key;
-			for (key in obj) {
-				result.push(key);
-			}
-			return result;
-		}
-		
 		jOB.test("", function test_rec() {
 			var result = [],
-				key;
+					key;
 				
 			(function walk(obj, depth) {
 				if (typeof obj === 'object') {
@@ -94,10 +85,9 @@
 			return result;
 		}, function test_closed() {
 			var	result = [],
-					dest = {},
 					depth = 0,
 					node,
-					from = root,
+					level = root,
 					key, count,
 			
 			stack = [root];
@@ -105,10 +95,10 @@
 			while (1) {
 				// taking next child node
 				count = 0;
-				for (key in from) {
-					if (from.hasOwnProperty(key)) {
-						node = from[key];
-						delete from[key];
+				for (key in level) {
+					if (level.hasOwnProperty(key)) {
+						node = level[key];
+						delete level[key];
 						count++;
 						break;
 					}
@@ -122,14 +112,14 @@
 					} else {
 						// going one level back (reached last node on level)
 						delete stack[depth];
-						from = stack[--depth];
+						level = stack[--depth];
 						continue;
 					}
 				}
 
 				if (typeof node === 'object') {
 					// node is object, can go deeper
-					from = stack[++depth] = node;
+					level = stack[++depth] = node;
 				} else {
 					// leaf node, processing
 					result.push({text: node});
@@ -159,16 +149,26 @@
 			return table.where([{name: "Con"}], {renumber: true, mode: jOrder.startof});
 		});
 		
-		jOB.test("Stacked search ('Con', then 'st')",
-		function () {
-			var stage = ds.get('C.o.n'),
-					hits = ds.multiget('C.o.n...name', {loopback: true});
-			return flock(stage).multiget('s.t...name', {loopback: true});
-		}, function () {
-			var hits = table.where([{name: 'Con'}], {renumber: true, mode: jOrder.startof});
-			return jOrder(hits)
+		jOB.test("Stacked search ('Con', 'Cons', then 'Const')",
+		function stacked_flock() {
+			var stage, hits;
+			stage = flock(ds.get('C.o.n'));
+			hits = stage.multiget('...name', {loopback: true});
+			stage = flock(stage.get('s'));
+			hits = stage.multiget('...name', {loopback: true});			
+			stage = flock(stage.get('t'));
+			hits = stage.multiget('...name', {loopback: true});
+			return hits;
+		}, function stacked_jOrder() {
+			var hits;
+			hits = table.where([{name: 'Con'}], {renumber: true, mode: jOrder.startof});
+			hits = jOrder(hits)
+				.index('name', ['name'], {type: jOrder.string, ordered: true, grouped: true})
+				.where([{name: 'Cons'}], {renumber: true, mode: jOrder.startof});
+			hits = jOrder(hits)
 				.index('name', ['name'], {type: jOrder.string, ordered: true, grouped: true})
 				.where([{name: 'Const'}], {renumber: true, mode: jOrder.startof});
+			return hits;
 		});
 	}());	
 }(jOB));
