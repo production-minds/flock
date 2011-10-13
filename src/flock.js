@@ -103,7 +103,7 @@ flock = function () {
 			// - path: path to end nodes, may contain wildcards "*"
 			// - options:
 			//	 - limit: max number of entries to retrieve, default: unlimited
-			//	 - mode: type of return value is Object or Array (flock.lookup/flock.array), default: flock.array
+			//	 - mode: type of return value is Object or Array (flock.key/flock.values/flock.both), default: flock.array
 			//	 - loopback: whether to traverse loopbacks, default: false
 			//	 - undef: whether to collect undefined entries, default: false
 			multiget: function (path, options) {
@@ -113,7 +113,7 @@ flock = function () {
 						last = tpath.length - 1,
 						limit = options.limit || 0,
 						loopback = options.loopback || false,
-						result = options.mode === flock.lookup ? {} : [],
+						result = options.mode === flock.both ? {} : [],
 						stack = options.loopback ? null : [];
 				
 				// default case
@@ -149,10 +149,17 @@ flock = function () {
 						if (i < last) {
 							walk(value, i + 1, depth + 1);
 						} else if (options.undef || typeof value !== 'undefined') {
-							if (result instanceof Array) {
-								result.push(value);
-							} else {
+							switch (options.mode) {
+							case flock.both:
 								result[key] = value;
+								break;
+							case flock.keys:
+								result.push(key);
+								break;
+							default:
+							case flock.values:
+								result.push(value);
+								break;
 							}
 							if (--limit === 0) {
 								return true;
@@ -214,8 +221,9 @@ flock = function () {
 	//////////////////////////////
 	// Static variables
 
-	flock.array = 0;
-	flock.lookup = 1;
+	flock.keys = 0;
+	flock.values = 1;
+	flock.both = 2;
 
 	//////////////////////////////
 	// Static methods
