@@ -90,7 +90,7 @@ var test = function (test) {
 				"Collecting nodes from path '*.1'");
 			
 			deepEqual(
-				cache.multiget('first,second.*', {mode: flock.lookup}),
+				cache.multiget('first,second.*', {mode: flock.both}),
 				{a: {}, b: {}, c: {}, d: {}, e: {}, 1: {}, 2: {}, 3: {}},
 				"Getting results as lookup");
 		});
@@ -122,7 +122,7 @@ var test = function (test) {
 				[{}],
 				"Collecting non-existent keys");
 			deepEqual(
-				cache.multiget([['thousandth', 'third']], {mode: flock.lookup}),
+				cache.multiget([['thousandth', 'third']], {mode: flock.both}),
 				{third: {}},
 				"Collecting non-existent keys (as lookup)");
 			deepEqual(
