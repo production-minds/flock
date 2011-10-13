@@ -102,13 +102,15 @@ flock = function () {
 			// collects end nodes specified by a wildcard path
 			// - path: path to end nodes, may contain wildcards "*"
 			// - options:
-			//	 - limit: max number of entries to retrieve
-			//	 - loopback: traverses loopbacks
-			//	 - mode: flock.lookup or flock.array
+			//	 - limit: max number of entries to retrieve, default: unlimited
+			//	 - mode: type of return value is Object or Array (flock.lookup/flock.array), default: flock.array
+			//	 - loopback: whether to traverse loopbacks, default: false
+			//	 - undef: whether to collect undefined entries, default: false
 			multiget: function (path, options) {
 				options = options || {};
 				
 				var tpath = typeof path === 'object' ? path.concat([]) : flock.resolve(path),
+						last = tpath.length - 1,
 						limit = options.limit || 0,
 						loopback = options.loopback || false,
 						result = options.mode === flock.lookup ? {} : [],
@@ -143,14 +145,14 @@ flock = function () {
 					// - key: key in object to proceed to
 					// returns flag whether to terminate traversal
 					function node(key) {
-						var last = tpath.length - 1;
+						var value = obj[key];
 						if (i < last) {
-							walk(obj[key], i + 1, depth + 1);
-						} else {
+							walk(value, i + 1, depth + 1);
+						} else if (options.undef || typeof value !== 'undefined') {
 							if (result instanceof Array) {
-								result.push(obj[key]);
+								result.push(value);
 							} else {
-								result[key] = obj[key];
+								result[key] = value;
 							}
 							if (--limit === 0) {
 								return true;
