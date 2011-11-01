@@ -177,7 +177,8 @@ var test = function (test) {
 				1: {},
 				test: {
 					1: "hello",
-					a: "world"
+					a: "world",
+					'.': "dot"
 				},
 				what: [
 					"one",
@@ -192,9 +193,10 @@ var test = function (test) {
 
 			equals(cache.get(''), cache.root(), ".get('') and .root() point to the same object");
 			equals(cache.multiget(''), cache.root(), ".multiget('') and .root() point to the same object");
-			raises(function () {			
+			raises(function () {
 				cache.set('', {});
 			}, "Can't set root");
+			deepEqual(cache.multiget(['test', '.']), ['dot'], "Dot as key acts as regular string");
 		});
 		
 		module("Updating");
