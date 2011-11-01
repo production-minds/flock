@@ -179,7 +179,7 @@ flock = function () {
 								}
 							}
 						}
-					} else if ((key === '' || key === '.' || key === null) && typeof obj === 'object') {
+					} else if ((key === '' || key === null) && typeof obj === 'object') {
 						// processing skipper node
 						// must be object type as strings have indexes, too
 						for (key in obj) {
@@ -187,7 +187,7 @@ flock = function () {
 								if (key === tpath[i + 1]) {
 									// current key matches next key in path
 									// re-walking current object but leving skipper key
-									walk(obj, i + 1, depth);			
+									walk(obj, i + 1, depth);
 								} else {
 									// current key doesn't match next key in path
 									// walking next level, but staying on skipper key
