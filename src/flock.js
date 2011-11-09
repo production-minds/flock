@@ -99,14 +99,16 @@ flock = function () {
 				}
 			},
 			
-			// collects end nodes specified by a wildcard path
+			// collects or modifies end nodes specified by a wildcard path
 			// - path: path to end nodes, may contain wildcards "*"
 			// - options:
 			//	 - limit: max number of entries to retrieve, default: unlimited
 			//	 - mode: type of return value is Object or Array (flock.key/flock.values/flock.both), default: flock.array
 			//	 - loopback: whether to traverse loopbacks, default: false
 			//	 - undef: whether to collect undefined entries, default: false
-			multiget: function (path, options) {
+			// - custom: value to set, or callback function to execute on nodes
+			//	 when undefined, function returns collected values
+			many: function (path, options, custom) {
 				options = options || {};
 				
 				var tpath = typeof path === 'object' ? path.concat([]) : flock.resolve(path),
@@ -149,16 +151,32 @@ flock = function () {
 						if (i < last) {
 							walk(value, i + 1, depth + 1);
 						} else if (options.undef || typeof value !== 'undefined') {
-							switch (options.mode) {
-							case flock.both:
-								result[key] = value;
+							switch (typeof custom) {
+							case 'undefined':
+								// no handler, just collecting values
+								switch (options.mode) {
+								case flock.both:
+									result[key] = value;
+									break;
+								case flock.keys:
+									result.push(key);
+									break;
+								default:
+								case flock.values:
+									result.push(value);
+									break;
+								}
 								break;
-							case flock.keys:
-								result.push(key);
+							case 'function':
+								// calling custom handler on node
+								value = custom(value);
+								if (typeof value !== undefined) {
+									obj[key] = value;
+								}
 								break;
 							default:
-							case flock.values:
-								result.push(value);
+								// assigning custom value to key
+								obj[key] = custom;
 								break;
 							}
 							if (--limit === 0) {
