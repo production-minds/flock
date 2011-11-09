@@ -46,7 +46,7 @@ var test = function (test) {
 				flock.resolve('first.*.bcde......55');
 			}, "Path with erroneous wildcards");
 			raises(function () {
-				cache.multiget('fourth...');
+				cache.many('fourth...');
 			}, "Path can't end in dot");
 			deepEqual(flock.resolve('first.1,2,3.*'), ['first', ['1', '2', '3'], '*'], "Array keys");
 		});
@@ -69,64 +69,64 @@ var test = function (test) {
 		test("Wildcards", function () {
 			// testing single-level wildcards
 			deepEqual(
-				cache.multiget('fourth.*'),
+				cache.many('fourth.*'),
 				[{a: "One", b: "Two"}, {a: "Three", b: "Four"}, {a: "Five", b: "Six"}],
 				"Collecting nodes from path 'fourth.*'");
 			deepEqual(
-				cache.multiget('fourth.*', {limit: 1}),
+				cache.many('fourth.*', {limit: 1}),
 				[{a: "One", b: "Two"}],
 				"Retrieving first node from path 'fourth.*'");
 			deepEqual(
-				cache.multiget('fourth.*.a'),
+				cache.many('fourth.*.a'),
 				["One", "Three", "Five"],
 				"Collecting nodes from path 'fourth.*.a'");
 			deepEqual(
-				cache.multiget('fourth.2.*'),
+				cache.many('fourth.2.*'),
 				["Three", "Four"],
 				"Collecting nodes from path 'fourth.2.*'");
 			deepEqual(
-				cache.multiget('*.1'),
+				cache.many('*.1'),
 				[{}, {a: "One", b: "Two"}],
 				"Collecting nodes from path '*.1'");
 			
 			deepEqual(
-				cache.multiget('first,second.*', {mode: flock.both}),
+				cache.many('first,second.*', {mode: flock.both}),
 				{a: {}, b: {}, c: {}, d: {}, e: {}, 1: {}, 2: {}, 3: {}},
 				"Getting results as lookup");
 		});
 		
 		test("OR relation", function () {
 			deepEqual(
-				cache.multiget(['fourth', [1, 3]]),
+				cache.many(['fourth', [1, 3]]),
 				[{a: "One", b: "Two"}, {a: "Five", b: "Six"}],
 				"Collecting specific nodes from path 'fourth.1,3'");
 			deepEqual(
-				cache.multiget('fourth.1,3'),
+				cache.many('fourth.1,3'),
 				[{a: "One", b: "Two"}, {a: "Five", b: "Six"}],
 				"Collecting specific nodes from path 'fourth.1,3' (passed as string)");
 			deepEqual(
-				cache.multiget(['fourth', [1, 3], '*']),
+				cache.many(['fourth', [1, 3], '*']),
 				["One", "Two", "Five", "Six"],
 				"Collecting specific nodes from path 'fourth.1,3.*'");
 			deepEqual(
-				cache.multiget([['first', 'third']]),
+				cache.many([['first', 'third']]),
 				[{ a: {}, b: {}, c: {}, d: {}, e: {} }, {}],
 				"Collecting specific nodes from path 'first,third'");
 			deepEqual(
-				cache.multiget('first,third'),
+				cache.many('first,third'),
 				[{ a: {}, b: {}, c: {}, d: {}, e: {} }, {}],
 				"Collecting specific nodes from path 'first,third' (passed as string)");
 			
 			deepEqual(
-				cache.multiget([['thousandth', 'third']]),
+				cache.many([['thousandth', 'third']]),
 				[{}],
 				"Collecting non-existent keys");
 			deepEqual(
-				cache.multiget([['thousandth', 'third']], {mode: flock.both}),
+				cache.many([['thousandth', 'third']], {mode: flock.both}),
 				{third: {}},
 				"Collecting non-existent keys (as lookup)");
 			deepEqual(
-				cache.multiget([['thousandth', 'third']], {undef: true}),
+				cache.many([['thousandth', 'third']], {undef: true}),
 				[undefined, {}],
 				"Collecting non-existent keys (undefined values allowed)");
 		});
@@ -151,15 +151,15 @@ var test = function (test) {
 			});
 
 			deepEqual(
-				cache.multiget('...1'),
+				cache.many('...1'),
 				[{}, "hello", "two", "test"],
 				"Collecting nodes from path '...1'");
 			deepEqual(
-				cache.multiget(['what', '3', 'awe']),
+				cache.many(['what', '3', 'awe']),
 				["some"],
 				"Collecting nodes from path 'what.3.awe'");
 			deepEqual(
-				cache.multiget(['', '3', 'awe']),
+				cache.many(['', '3', 'awe']),
 				["some"],
 				"Collecting nodes from path '...3.awe'");
 
@@ -167,7 +167,7 @@ var test = function (test) {
 			cache.set('test.b', cache.get('test'));
 			ok(typeof cache.get('test.b') !== 'undefined', "Loopback set");
 			deepEqual(
-				cache.multiget('...1'),
+				cache.many('...1'),
 				[{}, "hello", "two", "test"],
 				"Loopbacks don't affect result");
 		});
@@ -192,11 +192,11 @@ var test = function (test) {
 			});
 
 			equals(cache.get(''), cache.root(), ".get('') and .root() point to the same object");
-			equals(cache.multiget(''), cache.root(), ".multiget('') and .root() point to the same object");
+			equals(cache.many(''), cache.root(), ".many('') and .root() point to the same object");
 			raises(function () {
 				cache.set('', {});
 			}, "Can't set root");
-			deepEqual(cache.multiget(['test', '.']), ['dot'], "Dot as key acts as regular string");
+			deepEqual(cache.many(['test', '.']), ['dot'], "Dot as key acts as regular string");
 		});
 		
 		module("Updating");
@@ -219,7 +219,46 @@ var test = function (test) {
 			equals(success, true, "Deletion returns success flag");
 			
 			equals(cache.unset('thousandth.x.5'), false, "Attempting to deletie non-existent value");
-		});		
+		});
+		
+		test("Multiple nodes", function () {
+			console.log(cache.root());
+			cache.many('fourth.*.a', null, "A");
+			
+			deepEqual(cache.get('fourth'), {
+				1: {
+					a: "A",
+					b: "Two"
+				},
+				2: {
+					a: "A",
+					b: "Four"
+				},
+				3: {
+					a: "A",
+					b: "Six"
+				}
+			}, "Setting the value 'A' on several nodes");
+			
+			cache.many('fourth.*.b', null, function (leaf) {
+				return leaf + "X";
+			});
+			
+			deepEqual(cache.get('fourth'), {
+				1: {
+					a: "A",
+					b: "TwoX"
+				},
+				2: {
+					a: "A",
+					b: "FourX"
+				},
+				3: {
+					a: "A",
+					b: "SixX"
+				}
+			}, "Adding character 'X' to each leaf node on path");
+		});
 		
 		module("Search");
 		
@@ -241,31 +280,31 @@ var test = function (test) {
 			set("wedding");
 
 			// querying data			
-			deepEqual(index.multiget("w.o...name"), [
+			deepEqual(index.many("w.o...name"), [
 				"world",
 				"worn",
 				"wounded"
 			], "wo...");
-			deepEqual(index.multiget("h.e.r...name"), [
+			deepEqual(index.many("h.e.r...name"), [
 				"hero",
 				"hers"
 			], "her...");
-			deepEqual(index.multiget("w...name"), [
+			deepEqual(index.many("w...name"), [
 				"world",
 				"worn",
 				"wounded",
 				"wedding"
 			], "w...");
-			deepEqual(index.multiget("h...name"), [
+			deepEqual(index.many("h...name"), [
 				"hello",
 				"hero",
 				"hers"
 			], "h...");
-			deepEqual(index.multiget("w.o.*.n...name"), [
+			deepEqual(index.many("w.o.*.n...name"), [
 				"worn",
 				"wounded"
 			], "wo*n...");
-			deepEqual(index.multiget("*.e...name"), [
+			deepEqual(index.many("*.e...name"), [
 				"hello",
 				"hero",
 				"hers",
