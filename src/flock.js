@@ -99,6 +99,25 @@ flock = function () {
 				}
 			},
 			
+			mget: function (path, options) {
+				return self.many(path, options);
+			},
+			
+			mset: function (path, value, options) {
+				options = options || {};
+				options.value = value;
+				delete options.mode;
+				self.many(path, options);
+				return self;
+			},
+			
+			munset: function (path, options) {
+				options = options || {};
+				options.mode = flock.del;
+				self.many(path, options);
+				return self;
+			},
+
 			// collects or modifies end nodes specified by a wildcard path
 			// - path: path to end nodes, may contain wildcards "*"
 			// - options:
