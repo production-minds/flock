@@ -103,19 +103,24 @@ flock = function () {
 			// - path: path to end nodes, may contain wildcards "*"
 			// - options:
 			//	 - limit: max number of entries to retrieve, default: unlimited
-			//	 - mode: type of return value is Object or Array (flock.key/flock.values/flock.both), default: flock.array
+			//	 - mode: type of return value is Object or Array (flock.key/flock.values/flock.both/flock.del), default: flock.array
 			//	 - loopback: whether to traverse loopbacks, default: false
 			//	 - undef: whether to collect undefined entries, default: false
-			// - custom: value to set, or callback function to execute on nodes
-			//	 when undefined, function returns collected values
-			many: function (path, options, custom) {
+			//	 - value: value to set, or callback function to execute on nodes
+			//		 when undefined, function returns collected values
+			many: function (path, options) {
 				options = options || {};
+				
+				// setting defaults
+				if (!options.value && typeof options.mode === 'undefined') {
+					options.mode = flock.values;
+				}
 				
 				var tpath = typeof path === 'object' ? path.concat([]) : flock.resolve(path),
 						last = tpath.length - 1,
 						limit = options.limit || 0,
 						loopback = options.loopback || false,
-						result = options.mode === flock.both ? {} : [],
+						result = {2: {}, 4: 0}[options.mode] || [],
 						stack = options.loopback ? null : [];
 				
 				// default case
@@ -151,32 +156,33 @@ flock = function () {
 						if (i < last) {
 							walk(value, i + 1, depth + 1);
 						} else if (options.undef || typeof value !== 'undefined') {
-							switch (typeof custom) {
-							case 'undefined':
-								// no handler, just collecting values
-								switch (options.mode) {
-								case flock.both:
-									result[key] = value;
-									break;
-								case flock.keys:
-									result.push(key);
-									break;
-								default:
-								case flock.values:
-									result.push(value);
-									break;
-								}
+							switch (options.mode) {
+							case flock.values:
+								result.push(value);
 								break;
-							case 'function':
-								// calling custom handler on node
-								value = custom(value);
-								if (typeof value !== undefined) {
-									obj[key] = value;
-								}
+							case flock.keys:
+								result.push(key);
+								break;
+							case flock.both:
+								result[key] = value;
+								break;
+							case flock.del:
+								delete result[key];
+								break;
+							case flock.count:
+								result++;
 								break;
 							default:
-								// assigning custom value to key
-								obj[key] = custom;
+								if (typeof options.value === 'function') {
+									// calling custom handler on node
+									value = options.value(value);
+									if (typeof value !== undefined) {
+										obj[key] = value;
+									}
+								} else {
+									// assigning custom value to key
+									obj[key] = options.value;
+								}
 								break;
 							}
 							if (--limit === 0) {
@@ -242,6 +248,8 @@ flock = function () {
 	flock.keys = 0;
 	flock.values = 1;
 	flock.both = 2;
+	flock.del = 3;
+	flock.count = 4;
 
 	//////////////////////////////
 	// Static methods
