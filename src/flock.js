@@ -112,7 +112,8 @@ flock = function () {
 				options = options || {};
 				
 				// setting defaults
-				if (!options.value && typeof options.mode === 'undefined') {
+				if (typeof options.value === 'undefined' &&
+					typeof options.mode === 'undefined') {
 					options.mode = flock.values;
 				}
 				
@@ -152,41 +153,52 @@ flock = function () {
 					// - key: key in object to proceed to
 					// returns flag whether to terminate traversal
 					function node(key) {
-						var value = obj[key];
+						var value;
 						if (i < last) {
-							walk(value, i + 1, depth + 1);
-						} else if (options.undef || typeof value !== 'undefined') {
-							switch (options.mode) {
-							case flock.values:
-								result.push(value);
-								break;
-							case flock.keys:
-								result.push(key);
-								break;
-							case flock.both:
-								result[key] = value;
-								break;
-							case flock.del:
-								delete obj[key];
-								break;
-							case flock.count:
-								result++;
-								break;
-							default:
+							if (obj.hasOwnProperty(key)) {
+								walk(obj[key], i + 1, depth + 1);
+							}
+						} else {
+							if (typeof options.mode !== 'undefined') {
+								// when querying or deleting
+								value = obj[key];
+								if (options.undef || typeof value !== 'undefined') {
+									switch (options.mode) {
+									case flock.values:
+										result.push(value);
+										break;
+									case flock.keys:
+										result.push(key);
+										break;
+									case flock.both:
+										result[key] = value;
+										break;
+									case flock.del:
+										delete obj[key];
+										break;
+									case flock.count:
+										result++;
+										break;
+									}
+									if (--limit === 0) {
+										return true;
+									}
+								}
+							} else {
+								// when updating
 								if (typeof options.value === 'function') {
 									// calling custom handler on node
-									value = options.value(value);
-									if (typeof value !== undefined) {
+									value = options.value(obj[key]);
+									if (typeof value !== 'undefined') {
 										obj[key] = value;
 									}
 								} else {
 									// assigning custom value to key
 									obj[key] = options.value;
 								}
-								break;
-							}
-							if (--limit === 0) {
-								return true;
+								if (--limit === 0) {
+									return true;
+								}
 							}
 						}
 						return false;
@@ -229,7 +241,7 @@ flock = function () {
 					} else {
 						// processing single node
 						key = tpath[i];
-						if (!obj.hasOwnProperty(key) || node(key)) {
+						if (node(key)) {
 							return;
 						}
 					}
