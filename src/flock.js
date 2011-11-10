@@ -167,7 +167,7 @@ flock = function () {
 								result[key] = value;
 								break;
 							case flock.del:
-								delete result[key];
+								delete obj[key];
 								break;
 							case flock.count:
 								result++;
