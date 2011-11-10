@@ -130,6 +130,12 @@ var test = function (test) {
 				[undefined, {}],
 				"Collecting non-existent keys (undefined values allowed)");
 		});
+
+		test("Counting", function () {
+			equals(cache.many('first.*', {mode: flock.count}), 5, "5 elements on path 'first.*'");
+			equals(cache.many('fourth.*.a', {mode: flock.count}), 3, "3 elements on path 'fourth.*.a'");
+			equals(cache.many('...a', {mode: flock.count}), 4, "4 elements on path '...a'");
+		});
 		
 		test("Skipping", function () {
 			// testing multi-level wildcards
