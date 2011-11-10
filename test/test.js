@@ -222,8 +222,7 @@ var test = function (test) {
 		});
 		
 		test("Multiple nodes", function () {
-			console.log(cache.root());
-			cache.many('fourth.*.a', null, "A");
+			cache.many('fourth.*.a', {value: "A"});
 			
 			deepEqual(cache.get('fourth'), {
 				1: {
@@ -240,9 +239,9 @@ var test = function (test) {
 				}
 			}, "Setting the value 'A' on several nodes");
 			
-			cache.many('fourth.*.b', null, function (leaf) {
+			cache.many('fourth.*.b', {value: function (leaf) {
 				return leaf + "X";
-			});
+			}});
 			
 			deepEqual(cache.get('fourth'), {
 				1: {
