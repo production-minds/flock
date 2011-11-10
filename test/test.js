@@ -263,10 +263,30 @@ var test = function (test) {
 					b: "SixX"
 				}
 			}, "Adding character 'X' to each leaf node on path");
+			
+			cache.many('fourth.*.c', {value: "C"});
+			console.log(cache.root());
+			deepEqual(cache.get('fourth'), {
+				1: {
+					a: "A",
+					b: "TwoX",
+					c: "C"
+				},
+				2: {
+					a: "A",
+					b: "FourX",
+					c: "C"
+				},
+				3: {
+					a: "A",
+					b: "SixX",
+					c: "C"
+				}
+			}, "Adding new node 'c' ('C') to 'fourth.*'");			
 		});
 		
 		test("Deleting multiple nodes", function () {
-			cache.many('fourth.*.a', {mode: flock.del});
+			cache.many('fourth.*.a,c', {mode: flock.del});
 			deepEqual(cache.get('fourth'), {
 				1: {
 					b: "TwoX"
@@ -277,7 +297,7 @@ var test = function (test) {
 				3: {
 					b: "SixX"
 				}
-			}, "Deleted 'fourth.*.a'");
+			}, "Deleted 'fourth.*.a,c'");
 		});
 		
 		module("Search");
