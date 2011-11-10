@@ -227,7 +227,7 @@ var test = function (test) {
 			equals(cache.unset('thousandth.x.5'), false, "Attempting to deletie non-existent value");
 		});
 		
-		test("Multiple nodes", function () {
+		test("Modifying multiple nodes", function () {
 			cache.many('fourth.*.a', {value: "A"});
 			
 			deepEqual(cache.get('fourth'), {
@@ -263,6 +263,21 @@ var test = function (test) {
 					b: "SixX"
 				}
 			}, "Adding character 'X' to each leaf node on path");
+		});
+		
+		test("Deleting multiple nodes", function () {
+			cache.many('fourth.*.a', {mode: flock.del});
+			deepEqual(cache.get('fourth'), {
+				1: {
+					b: "TwoX"
+				},
+				2: {
+					b: "FourX"
+				},
+				3: {
+					b: "SixX"
+				}
+			}, "Deleted 'fourth.*.a'");
 		});
 		
 		module("Search");
