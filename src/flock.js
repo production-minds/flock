@@ -101,10 +101,19 @@ flock = function () {
 				}
 			},
 			
+			// retrieves multiple nodes
+			// - path: pattern describing nodes
+			// - options: see self.many()
+			// returns an object or array of found nodes
 			mget: function (path, options) {
 				return self.many(path, options);
 			},
 			
+			// sets multiple nodes
+			// - path: pattern describing target nodes
+			// 	 leaf node does not have to exist
+			// - value: value to set, or callback to call on each leaf node
+			// - options: see self.many()
 			mset: function (path, value, options) {
 				options = options || {};
 				options.value = value || {};
@@ -113,6 +122,9 @@ flock = function () {
 				return self;
 			},
 			
+			// removes multiple nodes
+			// - path: pattern describing target nodes
+			// - options: see self.many()
 			munset: function (path, options) {
 				options = options || {};
 				options.mode = flock.del;
@@ -176,28 +188,36 @@ flock = function () {
 					function node(key) {
 						var value;
 						if (i < last) {
+							// current node has children, burrowing one level deeper
 							if (obj.hasOwnProperty(key)) {
 								walk(obj[key], i + 1, depth + 1);
 							}
 						} else {
+							// leaf node reached
 							if (typeof options.mode !== 'undefined') {
 								// when querying or deleting
 								value = obj[key];
 								if (options.undef || typeof value !== 'undefined') {
 									switch (options.mode) {
 									case flock.values:
+										// collecting value from nodes
 										result.push(value);
 										break;
 									case flock.keys:
+										// collecting key from node
 										result.push(key);
 										break;
 									case flock.both:
+										// collecting key AND value from node
+										// WARNING: new values with same key overwrite old
 										result[key] = value;
 										break;
 									case flock.del:
+										// deleting node
 										delete obj[key];
 										break;
 									case flock.count:
+										// counting node
 										result++;
 										break;
 									}
@@ -278,11 +298,12 @@ flock = function () {
 	//////////////////////////////
 	// Static variables
 
-	flock.keys = 0;
-	flock.values = 1;
-	flock.both = 2;
-	flock.del = 3;
-	flock.count = 4;
+	// these constants tell the traversal process to...
+	flock.keys = 0;			// collect leaf keys
+	flock.values = 1;		// collect leaf values
+	flock.both = 2;			// collect key:value pairs of leaf nodes
+	flock.del = 3;			// delete leaf nodes
+	flock.count = 4;		// count leaf nodes
 
 	//////////////////////////////
 	// Static methods
