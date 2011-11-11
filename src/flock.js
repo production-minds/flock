@@ -51,9 +51,11 @@ flock = function () {
 			
 			// sets node at the given path
 			// - path: array representing path
-			// - value: value to be set at path
+			// - value: value to be set on path. default: {}
 			// returns the node on the input path
 			set: function (path, value) {
+				value = value || {};
+				
 				var tpath = typeof path === 'object' ? path : flock.resolve(path),
 						last = tpath.length - 1,
 						key, node, child,
@@ -105,7 +107,7 @@ flock = function () {
 			
 			mset: function (path, value, options) {
 				options = options || {};
-				options.value = value;
+				options.value = value || {};
 				delete options.mode;
 				self.many(path, options);
 				return self;
