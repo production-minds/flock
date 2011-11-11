@@ -208,6 +208,9 @@ var test = function (test) {
 		module("Updating");
 		
 		test("Modifying values", function () {
+			cache.set('first.b');
+			deepEqual(cache.get(['first', 'b']), {}, "Setting empty object by default");
+				
 			cache.set('first.b', 1);
 			equals(cache.root().first.b, 1, "Setting value on existing path (cache.first.a)");
 			var ref = cache.set('thousandth.x.5', 1000);
@@ -228,8 +231,23 @@ var test = function (test) {
 		});
 		
 		test("Modifying multiple nodes", function () {
+			cache.mset('fourth.*.a');
+			deepEqual(cache.get('fourth'), {
+				1: {
+					a: {},
+					b: "Two"
+				},
+				2: {
+					a: {},
+					b: "Four"
+				},
+				3: {
+					a: {},
+					b: "Six"
+				}
+			}, "Setting empty object by default");
+
 			cache.many('fourth.*.a', {value: "A"});
-			
 			deepEqual(cache.get('fourth'), {
 				1: {
 					a: "A",
@@ -248,7 +266,6 @@ var test = function (test) {
 			cache.many('fourth.*.b', {value: function (leaf) {
 				return leaf + "X";
 			}});
-			
 			deepEqual(cache.get('fourth'), {
 				1: {
 					a: "A",
