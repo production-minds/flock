@@ -256,7 +256,7 @@ flock = function () {
 								}
 							}
 						}
-					} else if ((key === '' || key === null) && typeof obj === 'object') {
+					} else if (key === null && typeof obj === 'object') {
 						// processing skipper node
 						// must be object type as strings have indexes, too
 						for (key in obj) {
@@ -331,10 +331,13 @@ flock = function () {
 				return offset ? '..' : '.';
 			}).split('.') : [];
 			
-			// splitting along commas to form multiple choice keys 
 			for (i = 0; i < keys.length; i++) {
 				key = keys[i];
-				if (key.indexOf(',') > -1) {
+				if (key === '') {
+					// substituting nulls in place of empty strings
+					keys[i] = null;
+				} else if (key.indexOf(',') > -1) {
+					// splitting along commas to form multiple choice keys 
 					keys[i] = key.split(',');
 				}
 			}
