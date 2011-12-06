@@ -41,7 +41,7 @@ var test = function (test) {
 					apath = path.split('.');
 			deepEqual(flock.resolve(''), [], "Root path");
 			deepEqual(flock.resolve(path), apath, "String path " + path);
-			deepEqual(flock.resolve('first.*.bcde...55'), ['first', '*', 'bcde', '', '55'], "Path with wildcards");
+			deepEqual(flock.resolve('first.*.bcde...55'), ['first', '*', 'bcde', null, '55'], "Path with wildcards");
 			raises(function () {
 				flock.resolve('first.*.bcde......55');
 			}, "Path with erroneous wildcards");
@@ -165,7 +165,7 @@ var test = function (test) {
 				["some"],
 				"Collecting nodes from path 'what.3.awe'");
 			deepEqual(
-				cache.many(['', '3', 'awe']),
+				cache.many([null, '3', 'awe']),
 				["some"],
 				"Collecting nodes from path '...3.awe'");
 
