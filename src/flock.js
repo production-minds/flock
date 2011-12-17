@@ -117,7 +117,7 @@ flock = function () {
 			// - options: see self.many()
 			mset: function (path, value, options) {
 				options = options || {};
-				options.value = value || {};
+				options.value = typeof value === 'undefined' ? {} : value;
 				delete options.mode;
 				self.many(path, options);
 				return self;
