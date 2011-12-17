@@ -54,7 +54,8 @@ flock = function () {
 			// - value: value to be set on path. default: {}
 			// returns the node on the input path
 			set: function (path, value) {
-				value = value || {};
+				// when value is omitted, default value is empty object
+				value = typeof value === 'undefined' ? {} : value;
 				
 				var tpath = typeof path === 'object' ? path : flock.resolve(path),
 						last = tpath.length - 1,
