@@ -1,4 +1,4 @@
-/*global flock, module, test, ok, equals, notEqual, deepEqual, raises, console */
+/*global flock, module, test, ok, equal, notEqual, deepEqual, raises, console */
 (function (flock) {
     var cache = flock({
         first: {
@@ -34,7 +34,7 @@
 
     test("Path resolution", function () {
         var path = 'first.a.bcde.1.55',
-                apath = path.split('.');
+			apath = path.split('.');
         deepEqual(flock.resolve(''), [], "Root path");
         deepEqual(flock.resolve(path), apath, "String path " + path);
         deepEqual(flock.resolve('first.*.bcde...55'), ['first', '*', 'bcde', null, '55'], "Path with wildcards");
@@ -128,9 +128,9 @@
     });
 
     test("Counting", function () {
-        equals(cache.many('first.*', {mode: flock.count}), 5, "5 elements on path 'first.*'");
-        equals(cache.many('fourth.*.a', {mode: flock.count}), 3, "3 elements on path 'fourth.*.a'");
-        equals(cache.many('...a', {mode: flock.count}), 4, "4 elements on path '...a'");
+        equal(cache.many('first.*', {mode: flock.count}), 5, "5 elements on path 'first.*'");
+        equal(cache.many('fourth.*.a', {mode: flock.count}), 3, "3 elements on path 'fourth.*.a'");
+        equal(cache.many('...a', {mode: flock.count}), 4, "4 elements on path '...a'");
     });
 
     test("Skipping", function () {
@@ -193,8 +193,8 @@
             ]
         });
 
-        equals(cache.get(''), cache.root(), ".get('') and .root() point to the same object");
-        equals(cache.many(''), cache.root(), ".many('') and .root() point to the same object");
+        equal(cache.get(''), cache.root(), ".get('') and .root() point to the same object");
+        equal(cache.many(''), cache.root(), ".many('') and .root() point to the same object");
         raises(function () {
             cache.set('', {});
         }, "Can't set root");
@@ -204,14 +204,21 @@
     module("Updating");
 
     test("Modifying values", function () {
+		// saving backup
+		var tmp = cache.root().first.b,
+			ref;
+
         cache.set('first.b');
         deepEqual(cache.get(['first', 'b']), {}, "Setting empty object by default");
 
         cache.set('first.b', 1);
-        equals(cache.root().first.b, 1, "Setting value on existing path (cache.first.a)");
-        var ref = cache.set('thousandth.x.5', 1000);
-        equals(cache.root().thousandth.x[5], 1000, "Setting value on non-existing path (cache.thousandth.x.5)");
-        equals(ref, cache.root().thousandth.x, "Method .set() returns reference to input node");
+        equal(cache.root().first.b, 1, "Setting value on existing path (cache.first.a)");
+        ref = cache.set('thousandth.x.5', 1000);
+        equal(cache.root().thousandth.x[5], 1000, "Setting value on non-existing path (cache.thousandth.x.5)");
+        equal(ref, cache.root().thousandth.x, "Method .set() returns reference to input node");
+
+		// restoring modified node
+		cache.root().first.b = tmp;
     });
 
     test("Deleting values", function () {
@@ -221,9 +228,9 @@
         success = cache.unset('thousandth.x.5');
         ok(typeof cache.root().thousandth.x[5] === 'undefined', "Deleting value from cache (cache.thousandth.x.5)");
 
-        equals(success, true, "Deletion returns success flag");
+        equal(success, true, "Deletion returns success flag");
 
-        equals(cache.unset('thousandth.x.5'), false, "Attempting to deletie non-existent value");
+        equal(cache.unset('thousandth.x.5'), false, "Attempting to deletie non-existent value");
     });
 
     test("Modifying multiple nodes", function () {
@@ -378,4 +385,3 @@
         ], "*e...");
     });
 }(flock));
-
