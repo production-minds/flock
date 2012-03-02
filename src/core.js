@@ -1,5 +1,5 @@
 /**
- * Basic Datastore Operations
+ * Core Datastore Functionality
  */
 var flock = flock || {};
 

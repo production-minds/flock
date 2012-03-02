@@ -5,7 +5,7 @@
  */
 var flock = flock || {};
 
-flock.event = (function (basic, live) {
+flock.event = (function (core, live) {
     var self;
 
     self = {
@@ -17,7 +17,7 @@ flock.event = (function (basic, live) {
          * @param handler {function} Event handler.
          */
         subscribe: function (root, path, eventName, handler) {
-            var node = basic.get(root, path),
+            var node = core.get(root, path),
                 meta, handlers;
 
             if (typeof node === 'object' &&
@@ -44,12 +44,12 @@ flock.event = (function (basic, live) {
          * Unsubscribes from datastore event.
          * @param root {object} Datastore root.
          * @param path {Array} Datastore path for subscription.
-         * @param eventName {string} Name of event to subscribe to.
-         * @param handler {function} Event handler.
+         * @param [eventName] {string} Name of event to subscribe to.
+         * @param [handler] {function} Event handler.
          */
         unsubscribe: function (root, path, eventName, handler) {
-            var meta = basic.get(root, path.concat([live.META])),
-                handlers = basic.get(root, path.concat([live.META, 'handlers'])),
+            var meta = core.get(root, path.concat([live.META])),
+                handlers = core.get(root, path.concat([live.META, 'handlers'])),
                 i;
 
             if (typeof handlers === 'object') {
@@ -87,10 +87,10 @@ flock.event = (function (basic, live) {
          * @param root {object} Datastore root.
          * @param path {Array} Datastore path for subscription.
          * @param eventName {string} Name of event to subscribe to.
-         * @param data [object} Custom data to be passed to event handlers.
+         * @param data {object} Custom data to be passed to event handlers.
          */
         trigger: function (root, path, eventName, data) {
-            var handlers = basic.get(root, path.concat([live.META, 'handlers', eventName])),
+            var handlers = core.get(root, path.concat([live.META, 'handlers', eventName])),
                 i;
 
             if (typeof handlers === 'object') {
