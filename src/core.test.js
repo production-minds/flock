@@ -1,6 +1,6 @@
 /*global flock, module, test, ok, equal, deepEqual */
 (function (basic) {
-    module("Basic");
+    module("Core");
 
     var data = {
         hi: 'There!',
