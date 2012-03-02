@@ -16,6 +16,21 @@ flock.live = (function () {
         META: META,
 
         /**
+         * Adds meta node to datastore node. Node is identified by its parent and name.
+         * Consequently, the root node cannot be given a meta node.
+         * @param parent {object} Parent node.
+         * @param name {string} Name of node in parent.
+         */
+        addMeta: function (parent, name) {
+            var node = parent[name];
+            node[META] = {
+                self: node,
+                name: name,
+                parent: parent
+            };
+        },
+
+        /**
          * Traverses datastore and adds meta-nodes, thus making
          * the datastore information 'live'.
          * @param node {object} Non-live data.
@@ -29,11 +44,7 @@ flock.live = (function () {
                         typeof node[prop] === 'object'
                     ) {
                         // adding meta node to node being traversed
-                        node[prop][META] = {
-                            self: node[prop],
-                            name: prop,
-                            parent: node
-                        };
+                        self.addMeta(node, prop);
 
                         // continuing traversal
                         self.init(node[prop]);

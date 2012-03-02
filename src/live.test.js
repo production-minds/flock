@@ -15,6 +15,7 @@
     live.init(data);
 
     test("Initialization", function () {
+        ok(typeof data[live.META] === 'undefined', "root node has no meta node.");
         equal(data.hello[live.META].name, 'hello', "Node name stored in meta node.");
         equal(data.hello[live.META].self, data.hello, "Node reference stored in meta node.");
         equal(data.hello[live.META].parent, data, "Parent node reference stored in meta node.");
