@@ -1,11 +1,9 @@
 /**
- * Live Datastore Functionality
- *
- * The live datastore enables bidirectional 'blind' traversal between nodes.
+ * Basic Datastore Operations
  */
 var flock = flock || {};
 
-flock.basic = (function () {
+flock.core = (function () {
     var self;
 
     self = {

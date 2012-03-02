@@ -25,4 +25,4 @@
         basic.set(data, ['hello', 'yall', 'folks'], "test");
         equal(data.hello.yall.folks, "test", "Value set on non-existing path");
     });
-}(flock.basic));
+}(flock.core));

@@ -111,5 +111,5 @@ flock.event = (function (basic, live) {
     };
 
     return self;
-}(flock.basic,
+}(flock.core,
     flock.live));
