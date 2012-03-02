@@ -1,7 +1,7 @@
 /**
  * Core Datastore Functionality
  */
-var flock = flock || {};
+/*global flock*/
 
 flock.core = (function () {
     var self;
@@ -44,7 +44,7 @@ flock.core = (function () {
                 node = node[key];
             }
             node[name] = value;
-            return self;
+            return flock;
         }
     };
 

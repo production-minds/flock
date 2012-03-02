@@ -3,7 +3,7 @@
  *
  * The live datastore enables bidirectional 'blind' traversal between nodes.
  */
-var flock = flock || {};
+/*global flock */
 
 flock.live = (function () {
     var META = '.meta',
@@ -52,7 +52,7 @@ flock.live = (function () {
                 }
             }
 
-            return self;
+            return flock;
         },
 
         /**

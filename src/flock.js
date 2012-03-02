@@ -189,9 +189,9 @@ var	flock;
 
                 /**
                  * Collects end nodes.
-				 * @param obj {object} Node to walk.
-				 * @param i {number} Current position in path,
-				 * @param depth {number} Current depth in tree.
+                 * @param obj {object} Node to walk.
+                 * @param i {number} Current position in path,
+                 * @param depth {number} Current depth in tree.
                  * TODO: must be class level, creating a function on each call
                  * to .many() may impact performance significantly
                  */
@@ -209,11 +209,11 @@ var	flock;
                         stack[depth] = obj;
                     }
 
-					/**
-					 * Processes key node.
-					 * @param key {string} Key in object to proceed to.
-					 * @return {boolean} Whether to terminate traversal.
-					 */
+                    /**
+                     * Processes key node.
+                     * @param key {string} Key in object to proceed to.
+                     * @return {boolean} Whether to terminate traversal.
+                     */
                     function node(key) {
                         var value;
                         if (i < last) {
@@ -325,27 +325,17 @@ var	flock;
     };
 
     //////////////////////////////
-    // Static variables
-
-    // these constants tell the traversal process to...
-    flock.keys = 0;			// collect leaf keys
-    flock.values = 1;		// collect leaf values
-    flock.both = 2;			// collect key:value pairs of leaf nodes
-    flock.del = 3;			// delete leaf nodes
-    flock.count = 4;		// count leaf nodes
-
-    //////////////////////////////
     // Static methods
 
-	/**
-	 * Validates and resolves datastore path.
-	 * @param path {string|Array} Datastore path.
-	 * @example
-	 * 'contacts.smith.*.ancestors...name'
-	 * will get the names of all ancestor names for contacts w/ last name 'smith'
-	 * @return {Array} Valid datastore path in array notation.
-	 * @throws {string} On invalid input path.
-	 */
+    /**
+     * Validates and resolves datastore path.
+     * @param path {string|Array} Datastore path.
+     * @example
+     * 'contacts.smith.*.ancestors...name'
+     * will get the names of all ancestor names for contacts w/ last name 'smith'
+     * @return {Array} Valid datastore path in array notation.
+     * @throws {string} On invalid input path.
+     */
     flock.resolve = function (path) {
         // processing path
         if (typeof path === 'string') {

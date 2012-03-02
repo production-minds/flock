@@ -3,7 +3,7 @@
  *
  * Requires live datastore.
  */
-var flock = flock || {};
+/*global flock */
 
 flock.event = (function (core, live) {
     var self;
@@ -37,7 +37,7 @@ flock.event = (function (core, live) {
                 handlers[eventName].push(handler);
             }
 
-            return self;
+            return flock;
         },
 
         /**
@@ -78,7 +78,7 @@ flock.event = (function (core, live) {
                     delete meta.handlers;
                 }
 
-                return self;
+                return flock;
             }
         },
 
@@ -106,7 +106,7 @@ flock.event = (function (core, live) {
                 }
             }
 
-            return self;
+            return flock;
         }
     };
 
