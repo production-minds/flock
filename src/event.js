@@ -15,26 +15,30 @@ flock.event = (function (core, live) {
          * @param path {Array} Datastore path for subscription.
          * @param eventName {string} Name of event to subscribe to.
          * @param handler {function} Event handler.
+         * @throws {string}
          */
         subscribe: function (root, path, eventName, handler) {
-            var node = core.get(root, path),
-                meta, handlers;
+            var meta = core.get(root, path.concat([live.META])),
+                handlers;
 
-            if (typeof node === 'object' &&
-                typeof handler === 'function'
-            ) {
-                // making sure handler containers exists
-                meta = node[live.META];
-                if (!meta.hasOwnProperty('handlers')) {
-                    meta.handlers = {};
-                }
-                handlers = meta.handlers;
-                if (!handlers.hasOwnProperty(eventName)) {
-                    handlers[eventName] = [];
-                }
+            if (typeof meta === 'object') {
+                if (typeof handler === 'function') {
+                    // making sure handler containers exists
+                    if (!meta.hasOwnProperty('handlers')) {
+                        meta.handlers = {};
+                    }
+                    handlers = meta.handlers;
+                    if (!handlers.hasOwnProperty(eventName)) {
+                        handlers[eventName] = [];
+                    }
 
-                // adding handler to event
-                handlers[eventName].push(handler);
+                    // adding handler to event
+                    handlers[eventName].push(handler);
+                } else {
+                    throw "flock.event.subscribe: Handler is not a function.";
+                }
+            } else {
+                throw "flock.event.subscribe: Invalid path or non-live datastore node.";
             }
 
             return flock;

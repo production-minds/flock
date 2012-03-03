@@ -1,4 +1,4 @@
-/*global flock, module, test, ok, equal, deepEqual */
+/*global flock, module, test, ok, equal, deepEqual, raises */
 (function (live, event) {
     module("Event");
 
@@ -16,6 +16,13 @@
 
     test("Subscription", function () {
         function testHandler() { }
+
+        raises(function () {
+            event.subscribe(data, ['hello', 'world'], 'testEvent', "nonFunction");
+        }, "Invalid event handler raises error.");
+        raises(function () {
+            event.subscribe(data, ['hello', 'world', 'center'], 'testEvent', testHandler);
+        }, "Invalid datastore node raises error.");
 
         event.subscribe(data, ['hello', 'world'], 'testEvent', testHandler);
         event.subscribe(data, ['hello'], 'otherEvent', testHandler);
