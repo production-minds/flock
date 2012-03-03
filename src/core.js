@@ -3,7 +3,7 @@
  */
 /*global flock*/
 
-flock.core = (function () {
+flock.core = (function (utils) {
     var self;
 
     self = {
@@ -15,14 +15,16 @@ flock.core = (function () {
         get: function (root, path) {
             var i, key,
                 node = root;
+
             for (i = 0; i < path.length; i++) {
                 key = path[i];
-                if (!node.hasOwnProperty(key)) {
-                    return;
-                } else {
+                if (node.hasOwnProperty(key)) {
                     node = node[key];
+                } else {
+                    return;
                 }
             }
+
             return node;
         },
 
@@ -36,6 +38,7 @@ flock.core = (function () {
             var i, key,
                 name = path.pop(),
                 node = root;
+
             for (i = 0; i < path.length; i++) {
                 key = path[i];
                 if (!node.hasOwnProperty(key)) {
@@ -43,10 +46,51 @@ flock.core = (function () {
                 }
                 node = node[key];
             }
+
+            // setting value as leaf node
             node[name] = value;
+
+            return flock;
+        },
+
+        /**
+         * Removes a node from the datastore. Cleans up empty parent nodes
+         * until the first non-empty ancestor node.
+         * @param root {object} Datastore root.
+         * @param path {Array} Datastore path.
+         */
+        unset: function (root, path) {
+            var i, key,
+                node = root,
+                lastMulti = {
+                    node: root,
+                    name: utils.firstProperty(root)
+                };
+
+            for (i = 0; i < path.length; i++) {
+                key = path[i];
+                if (node.hasOwnProperty(key)) {
+                    if (!utils.isSingle(node)) {
+                        lastMulti = {
+                            node: node,
+                            name: key
+                        };
+                    }
+                    node = node[key];
+                } else {
+                    // invalid path, nothing to unset
+                    return flock;
+                }
+            }
+
+            // cutting back to last multi-property node
+            if (lastMulti) {
+                delete lastMulti.node[lastMulti.name];
+            }
+
             return flock;
         }
     };
 
     return self;
-}());
+}(flock.utils));

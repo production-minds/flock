@@ -25,4 +25,36 @@
         basic.set(data, ['hello', 'yall', 'folks'], "test");
         equal(data.hello.yall.folks, "test", "Value set on non-existing path");
     });
+
+    test("Unsetting", function () {
+        var data = {
+            hi: 'There!',
+            hello: {
+                world: {
+                    center: "!!"
+                },
+                all: "hey"
+            }
+        };
+
+        basic.unset(data, ['hi']);
+        deepEqual(data, {
+            hello: {
+                world: {
+                    center: "!!"
+                },
+                all: "hey"
+            }
+        }, "Single node removed");
+
+        basic.unset(data, ['hello', 'world', 'center']);
+        deepEqual(data, {
+            hello: {
+                all: "hey"
+            }
+        }, "Node removed with all empty anestors");
+
+        basic.unset(data, ['hello', 'all']);
+        deepEqual(data, {}, "Remaining nodes removed with all empty anestors");
+    });
 }(flock.core));
