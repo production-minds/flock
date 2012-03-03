@@ -54,12 +54,31 @@ flock.core = (function (utils) {
         },
 
         /**
+         * Removes a single node from the datastore.
+         * @param root {object} Datastore root.
+         * @param path {Array} Datastore path.
+         */
+        unset: function (root, path) {
+            var name = path.pop(),
+                parent = self.get(root, path);
+
+            if (typeof parent === 'object' &&
+                parent.hasOwnProperty(name)
+                ) {
+                // removing node node
+                delete parent[name];
+            }
+
+            return flock;
+        },
+
+        /**
          * Removes a node from the datastore. Cleans up empty parent nodes
          * until the first non-empty ancestor node.
          * @param root {object} Datastore root.
          * @param path {Array} Datastore path.
          */
-        unset: function (root, path) {
+        cleanup: function (root, path) {
             var i, key,
                 node = root,
                 lastMulti = {

@@ -37,7 +37,38 @@
             }
         };
 
-        basic.unset(data, ['hi']);
+        basic.unset(data, ['hello', 'world', 'center']);
+        deepEqual(data, {
+            hi: 'There!',
+            hello: {
+                world: {
+                },
+                all: "hey"
+            }
+        }, "Single node removed");
+
+        basic.unset(data, ['hello', 'all']);
+        deepEqual(data, {
+            hi: 'There!',
+            hello: {
+                world: {
+                }
+            }
+        }, "Single node removed");
+    });
+
+    test("Cleanup", function () {
+        var data = {
+            hi: 'There!',
+            hello: {
+                world: {
+                    center: "!!"
+                },
+                all: "hey"
+            }
+        };
+
+        basic.cleanup(data, ['hi']);
         deepEqual(data, {
             hello: {
                 world: {
@@ -47,14 +78,14 @@
             }
         }, "Single node removed");
 
-        basic.unset(data, ['hello', 'world', 'center']);
+        basic.cleanup(data, ['hello', 'world', 'center']);
         deepEqual(data, {
             hello: {
                 all: "hey"
             }
-        }, "Node removed with all empty anestors");
+        }, "Node removed with all empty ancestors");
 
-        basic.unset(data, ['hello', 'all']);
-        deepEqual(data, {}, "Remaining nodes removed with all empty anestors");
+        basic.cleanup(data, ['hello', 'all']);
+        deepEqual(data, {}, "Remaining nodes removed with all empty ancestors");
     });
 }(flock.core));
