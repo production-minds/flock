@@ -31,6 +31,16 @@ flock.live = (function () {
         },
 
         /**
+         * Removes meta node from datastore node.
+         * @param node {object} Datastore node.
+         */
+        removeMeta: function (node) {
+            if (node.hasOwnProperty(META)) {
+                delete node[META];
+            }
+        },
+
+        /**
          * Traverses datastore and adds meta-nodes, thus making
          * the datastore information 'live'.
          * @param node {object} Non-live data.
