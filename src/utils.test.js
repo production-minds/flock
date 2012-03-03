@@ -13,6 +13,15 @@
         }
     };
 
+    test("Methods and poperties", function () {
+        var staticTest = function (a, b) {
+                return a + b;
+            },
+            instanceTest = utils.genMethod(staticTest, [5]);
+
+        equal(instanceTest(4), 9, "Generated method remembers arguments");
+    });
+
     test("Objects", function () {
         equal(utils.isEmpty({}), true, "Empty object tested for empty");
         equal(utils.isEmpty({foo: "bar"}), false, "Non-empty object tested for empty");

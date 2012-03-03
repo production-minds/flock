@@ -6,6 +6,18 @@
 flock.utils = (function () {
     var self = {
         /**
+         * Generates a method that is based on a function,
+         * but bolts its first N arguments.
+         * @param handler {function} Model function,
+         * @param args {Array} Fix arguments (first N of handler's args).
+         */
+        genMethod: function (handler, args) {
+            return function () {
+                return handler.apply(this, args.concat(Array.prototype.slice.call(arguments)));
+            };
+        },
+
+        /**
          * Tests an object for having no (own) properties.
          * @param object {object} Test object.
          */
