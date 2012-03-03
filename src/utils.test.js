@@ -13,6 +13,18 @@
         }
     };
 
+    test("Objects", function () {
+        equal(utils.isEmpty({}), true, "Empty object tested for empty");
+        equal(utils.isEmpty({foo: "bar"}), false, "Non-empty object tested for empty");
+
+        equal(utils.isSingle({}), false, "Empty object tested for single");
+        equal(utils.isSingle({foo: "bar"}), true, "Single-property object tested for single");
+        equal(utils.isSingle({foo: "bar", what: "eva"}), false, "Multi-property object tested for single");
+
+        equal(utils.firstProperty({foo: "bar"}), 'foo', "First property of an object");
+        ok(typeof utils.firstProperty({}) === 'undefined', "First property of an empty object");
+    });
+
     test("Delegation", function () {
         var tmp,
             key, count;

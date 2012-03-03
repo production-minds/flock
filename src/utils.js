@@ -6,6 +6,54 @@
 flock.utils = (function () {
     var self = {
         /**
+         * Tests an object for having no (own) properties.
+         * @param object {object} Test object.
+         */
+        isEmpty: function (object) {
+            var result = true,
+                key;
+            for (key in object) {
+                if (object.hasOwnProperty(key)) {
+                    result = false;
+                    break;
+                }
+            }
+            return result;
+        },
+
+        /**
+         * Tests object for having exactly 1 (own) property
+         * @param object {object} Test object.
+         */
+        isSingle: function (object) {
+            var result = false,
+                key,
+                count = 0;
+            for (key in object) {
+                if (object.hasOwnProperty(key)) {
+                    result = ++count === 1;
+                    if (count > 1) {
+                        break;
+                    }
+                }
+            }
+            return result;
+        },
+
+        /**
+         * Retrieves the first available property of an object.
+         * @param object {object} Test object.
+         */
+        firstProperty: function (object) {
+            var key;
+            for (key in object) {
+                if (object.hasOwnProperty(key)) {
+                    return key;
+                }
+            }
+        },
+
+        /**
          * Delegates a single property from one object to another.
          * @param dest {object} Destination object, ie. that receives the properties.
          * @param source {object} Source object, ie. that offers the properties.
