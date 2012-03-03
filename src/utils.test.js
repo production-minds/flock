@@ -1,4 +1,4 @@
-/*global flock, module, test, ok, equal, deepEqual */
+/*global flock, module, test, ok, equal, deepEqual, raises */
 (function (utils) {
     module("Utils");
 
@@ -8,7 +8,8 @@
             world: {
                 center: "!!"
             },
-            all: "hey"
+            all: "hey",
+            third: 3
         }
     };
 
@@ -17,17 +18,29 @@
             key, count;
 
         tmp = {};
+        utils.delegateProperty(tmp, data, 'hi');
+        equal(tmp.hi, data.hi, "Delegating single property");
+
+        raises(function () {
+            utils.delegateProperty(tmp, data, 'hi');
+        }, "Attempting to overwrite existing property fails");
+
+        utils.delegateProperty(tmp, data, 'hi', true);
+        equal(tmp.hi, data.hi, "Overwriting single property in silent mode");
+
+        tmp = {};
         utils.delegate(tmp, data);
         deepEqual(tmp, data, "Delegating all properties");
 
         tmp = {};
         count = 0;
-        utils.delegate(tmp, data, ['hi']);
+        utils.delegate(tmp, data.hello, ['world', 'third']);
         for (key in tmp) {
             if (tmp.hasOwnProperty(key)) {
                 count++;
             }
         }
-        ok(count === 1 && tmp.hi === data.hi, "Delegating single property");
+        ok(count === 2 && tmp.world === data.hello.world && tmp.third === data.hello.third,
+            "Delegating specified properties");
     });
 }(flock.utils));
