@@ -119,5 +119,11 @@ flock.utils = (function () {
         }
     };
 
+    // delegating utils to flock object
+    self.delegate(flock, self, [
+        'delegate',
+        'isEmpty'
+    ]);
+
     return self;
 }());

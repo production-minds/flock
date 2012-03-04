@@ -32,6 +32,11 @@
 
     module("Flock");
 
+    test("Utils", function () {
+        equal(flock.delegate, flock.utils.delegate, "Delegation method delegated");
+        equal(flock.isEmpty, flock.utils.isEmpty, "Empty object tester method delegated");
+    });
+
     test("Core", function () {
         deepEqual(cache.get(['first', 'a']).root(), {}, "Simple get");
 
