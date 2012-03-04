@@ -1,6 +1,6 @@
 /*global flock, module, test, ok, equal, notEqual, deepEqual, raises, console */
-(function () {
-    var cache = flock({
+(function ($) {
+    var cache = $({
         first: {
             a: {},
             b: {},
@@ -33,28 +33,53 @@
     module("Flock");
 
     test("Utils", function () {
-        equal(flock.delegate, flock.utils.delegate, "Delegation method delegated");
-        equal(flock.isEmpty, flock.utils.isEmpty, "Empty object tester method delegated");
+        equal($.delegate, $.utils.delegate, "Delegation method delegated");
+        equal($.isEmpty, $.utils.isEmpty, "Empty object tester method delegated");
     });
 
     test("Core", function () {
-        deepEqual(cache.get(['first', 'a']).root(), {}, "Simple get");
+        deepEqual(cache.get(['fourth', '1', 'a']).root(), "One", "Simple get");
 
         deepEqual(
             cache
                 .get(['fourth', '1'])
                 .get(['a'])
-                .root(),
+                    .root(),
             "One",
-            "Stacked get");
+            "Stacked get"
+        );
 
         deepEqual(
             cache
                 .get(['fourth', '1'])
                 .set(['c'], "Hello!")
                 .get(['c'])
-                .root(),
+                    .root(),
             "Hello!",
-            "Stacked set & get");
+            "Stacked set & get"
+        );
     });
-}());
+
+    test("Live", function () {
+        cache.init();
+
+        equal(
+            cache
+                .get(['fourth', '1'])
+                .parent()
+                    .root(),
+            cache
+                .get(['fourth'])
+                    .root(),
+            "Parent acquired"
+        );
+
+        deepEqual(
+            cache
+                .get(['fourth', '1'])
+                    .path(),
+            ['fourth', '1'],
+            "Path resolution"
+        );
+    });
+}(flock));

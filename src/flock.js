@@ -27,12 +27,14 @@ var	flock;
      * @param [options] {object} Options: nolive, noquery.
      */
     flock = function (root, options) {
-        // creating default root object
+        // creating default arguments
         root = root || {};
+        options = options || {};
 
         // shortcuts
         var genMethod = flock.utils.genMethod,
             core = flock.core,
+            live = flock.live,
             args = [root],
             self = {};
 
@@ -51,6 +53,13 @@ var	flock;
         self.set = genMethod(core.set, args, self);
         self.unset = genMethod(core.unset, args, self);
         self.cleanup = genMethod(core.cleanup, args, self);
+
+        // live
+        if (!options.hasOwnProperty('nolive')) {
+            self.init = genMethod(live.init, args, self);
+            self.path = genMethod(live.path, args);
+            self.parent = genMethod(live.parent, args, nodeMapper);
+        }
 
         return self;
     };
