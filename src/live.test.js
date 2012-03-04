@@ -25,16 +25,22 @@
     });
 
     test("Setting", function () {
-        var value = {
-            foo: {
-                bar: 'wut'
-            }
-        };
+        var
+            value = {
+                foo: {
+                    bar: 'wut'
+                }
+            },
+            tmp;
 
-        live.set(data, ['hello', 'more'], value);
+        tmp = live.set(data, ['hello', 'more'], value);
 
+        equal(tmp, data.hello, "Set returns parent of changed node");
         equal(data.hello.more.foo.bar, 'wut', "Branch added to datastore.");
         equal(data.hello.more[live.META].name, 'more', "Meta nodes added to branch nodes");
+
+        live.set(data, ['hello', 'world', 'center'], "blah");
+        equal(data.hello.world.center, 'blah', "Setting ordinal node");
     });
 
     test("Traversal", function () {

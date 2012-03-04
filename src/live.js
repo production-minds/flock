@@ -113,36 +113,27 @@ flock.live = (function (core) {
         /**
          * Sets value on node with meta nodes added.
          * @param node {object} Datastore node.
-         * @param path {Array} Datastore path.
+         * @param path {string|Array} Datastore path.
          * @param value {object} Value to set on path.
+         * @returns {object} Parent of the changed node.
          */
         set: function (node, path, value) {
-            var tpath = core.normalizePath(path),
-                name,
-                branch, tmp;
+            var parent = core.set(node, path, value),
+                i, key;
 
-            // seeking to the first absent key
-            while (tpath.length) {
-                if (!node.hasOwnProperty(tpath[0])) {
-                    name = tpath.shift();
+            // searching for first uninitialized node
+            for (i = 0; i < path.length; i++) {
+                key = path[i];
+                if (!node[key].hasOwnProperty(META)) {
                     break;
                 }
-                node = node[tpath.shift()];
+                node = node[key];
             }
 
-            // assembling new branch
-            branch = value;
-            while (tpath.length) {
-                tmp = {};
-                tmp[tpath.pop()] = branch;
-                branch = tmp;
-            }
+            // initializing
+            self.init(node[key], node, key);
 
-            // initializing new branch
-            self.init(value, node, name);
-
-            // setting branch as leaf node
-            node[name] = value;
+            return parent;
         },
 
         //////////////////////////////
