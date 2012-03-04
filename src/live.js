@@ -81,6 +81,10 @@ flock.live = (function () {
         init: function (node) {
             var prop;
 
+            // adding empty meta node
+            node[META] = node[META] || {};
+
+            // processing child nodes
             for (prop in node) {
                 if (node.hasOwnProperty(prop)) {
                     if (prop !== META &&
@@ -105,7 +109,9 @@ flock.live = (function () {
          */
         path: function (node) {
             var result = [];
-            while (typeof node[META] === 'object') {
+            while (typeof node[META] === 'object' &&
+                node[META].hasOwnProperty('name')
+                ) {
                 result.unshift(node[META].name);
                 node = node[META].parent;
             }

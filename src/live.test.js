@@ -1,5 +1,5 @@
 /*global flock, module, test, ok, equal, deepEqual, raises */
-(function (live) {
+(function (live, utils) {
     module("Live");
 
     var data = {
@@ -15,7 +15,7 @@
     live.init(data);
 
     test("Initialization", function () {
-        ok(typeof data[live.META] === 'undefined', "root node has no meta node.");
+        ok(utils.isEmpty(data[live.META]), "root node has empty meta node.");
         equal(data.hello[live.META].name, 'hello', "Node name stored in meta node.");
         equal(data.hello[live.META].self, data.hello, "Node reference stored in meta node.");
         equal(data.hello[live.META].parent, data, "Parent node reference stored in meta node.");
@@ -32,4 +32,5 @@
             live.name(data.hello.world.center);
         }, "Meta getter throws error on ordinal (leaf) node");
     });
-}(flock.live));
+}(flock.live,
+    flock.utils));
