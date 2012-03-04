@@ -52,7 +52,7 @@ flock.live = (function () {
                 if (node.hasOwnProperty(prop)) {
                     if (prop !== META &&
                         typeof node[prop] === 'object'
-                    ) {
+                        ) {
                         // adding meta node to node being traversed
                         self.addMeta(node, prop);
 
@@ -74,6 +74,19 @@ flock.live = (function () {
                 node = node[META].parent;
             }
             return result;
+        },
+
+        /**
+         * Obtains parent node.
+         * @param node {object} Datastore node.
+         * @throws {string} When node is not live.
+         */
+        parent: function (node) {
+            if (node.hasOwnProperty(META)) {
+                return node[META].parent;
+            } else {
+                throw "flock.live.parent: Non-live node.";
+            }
         }
     };
 

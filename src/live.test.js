@@ -24,4 +24,8 @@
     test("Path resolution", function () {
         deepEqual(live.path(data.hello.world), ['hello', 'world'], "Node path resolved");
     });
+
+    test("Traversal", function () {
+        equal(live.parent(data.hello.world), data.hello, "Obtaining parent node");
+    });
 }(flock.live));
