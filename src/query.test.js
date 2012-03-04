@@ -177,7 +177,7 @@
             ]
         };
 
-        equal(query.many(data, ''), data, ".many('') and .root() point to the same object");
+        equal(query.many(data, ''), data, ".many('') and datastore root point to the same object");
         deepEqual(query.many(data, ['test', '.']), ['dot'], "Dot as key acts as regular string");
     });
 
