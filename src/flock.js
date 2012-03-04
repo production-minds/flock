@@ -54,8 +54,6 @@ var	flock;
 
         // core
         self.get = genMethod(core.get, args, nodeMapper);
-        self.set = genMethod(core.set, args, self);
-        self.unset = genMethod(core.unset, args, self);
         self.cleanup = genMethod(core.cleanup, args, self);
 
         // live
@@ -65,15 +63,29 @@ var	flock;
             self.parent = genMethod(live.parent, args, nodeMapper);
             self.name = genMethod(live.name, args);
 
-            // live overwrites set with its own version
-            self.set = genMethod(live.set, args, self);
-
             // event - must have live for events
             if (!options.noevent && event) {
                 self.on = genMethod(event.subscribe, args, self);
                 self.off = genMethod(event.unsubscribe, args, self);
                 self.trigger = genMethod(event.trigger, args, self);
             }
+        }
+
+        // modification methods
+        if (!options.nolive && live) {
+            if (!options.noevent && event) {
+                // evented set
+                self.set = genMethod(event.set, args, self);
+                self.unset = genMethod(event.unset, args, self);
+            } else {
+                // live set
+                self.set = genMethod(live.set, args, self);
+                self.unset = genMethod(core.unset, args, self);
+            }
+        } else {
+            // core set
+            self.set = genMethod(core.set, args, self);
+            self.unset = genMethod(core.unset, args, self);
         }
 
         return self;
