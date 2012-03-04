@@ -57,6 +57,11 @@
         equal(i, 1, "Event triggered on source node");
         equal(j, 1, "Event bubbled to parent");
 
+        j = 0;
+        event.unsubscribe(data.hello.world);
+        event.trigger(data.hello.world, 'testEvent');
+        equal(j, 1, "Event bubbled to parent from non-capturing node");
+
         raises(function () {
             event.trigger(data.hello.all, 'testEvent');
         }, "Triggering event on ordinal node raises error");

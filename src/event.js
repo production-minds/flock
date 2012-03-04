@@ -107,11 +107,11 @@ flock.event = (function (core, live) {
                     for (i = 0; i < handlers.length; i++) {
                         handlers[i](node, data);
                     }
+                }
 
-                    // bubbling event up the datastore tree
-                    if (typeof meta.parent === 'object') {
-                        self.trigger(meta.parent, eventName, data);
-                    }
+                // bubbling event up the datastore tree
+                if (typeof meta.parent === 'object') {
+                    self.trigger(meta.parent, eventName, data);
                 }
             } else {
                 throw "flock.event.trigger: " + ERROR_NONTRAVERSABLE;
