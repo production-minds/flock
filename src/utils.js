@@ -21,9 +21,9 @@ flock.utils = (function () {
             } else {
                 return function () {
                     var result = handler.apply(this, args.concat(Array.prototype.slice.call(arguments)));
-                    return typeof result !== 'undefined' ?
-                        result :
-                        mapper;
+                    return typeof mapper !== 'undefined' ?
+                        mapper :
+                        result;
                 };
             }
         },
