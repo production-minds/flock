@@ -38,13 +38,13 @@
     });
 
     test("Core", function () {
-        deepEqual(cache.get(['fourth', '1', 'a']).root(), "One", "Simple get");
+        deepEqual(cache.get(['fourth', '1', 'a']).node(), "One", "Simple get");
 
         deepEqual(
             cache
                 .get(['fourth', '1'])
                 .get(['a'])
-                    .root(),
+                    .node(),
             "One",
             "Stacked get"
         );
@@ -54,7 +54,7 @@
                 .get(['fourth', '1'])
                 .set(['c'], "Hello!")
                 .get(['c'])
-                    .root(),
+                    .node(),
             "Hello!",
             "Stacked set & get"
         );
@@ -67,10 +67,10 @@
             cache
                 .get(['fourth', '1'])
                 .parent()
-                    .root(),
+                    .node(),
             cache
                 .get(['fourth'])
-                    .root(),
+                    .node(),
             "Parent acquired"
         );
 

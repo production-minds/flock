@@ -23,26 +23,26 @@ var	flock;
     /**
      * Flock constructor
      * @constructor
-     * @param [root] {object} Root object for datastore. When omitted, empty object is assumed.
+     * @param [node] {object} Root object for datastore. When omitted, empty object is assumed.
      * @param [options] {object} Options: nolive, noquery.
      */
-    flock = function (root, options) {
+    flock = function (node, options) {
         // creating default arguments
-        root = root || {};
+        node = node || {};
         options = options || {};
 
         // shortcuts
         var genMethod = flock.utils.genMethod,
             core = flock.core,
             live = flock.live,
-            args = [root],
+            args = [node],
             self = {};
 
         //////////////////////////////
         // Getters, setters
 
-        self.root = function () {
-            return root;
+        self.node = function () {
+            return node;
         };
 
         //////////////////////////////
@@ -70,6 +70,6 @@ var	flock;
      * Root returns undefined.
      */
     flock.empty = {
-        root: function () {}
+        node: function () {}
     };
 }());
