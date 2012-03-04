@@ -19,13 +19,16 @@ flock.core = (function (utils) {
         normalizePath: function (path) {
             var result;
             if (typeof path === 'string') {
+                // validating string path
                 if (path.match(RE_PATHVALIDATOR)) {
+                    // generating array notation by splitting string
                     result = path.split(RE_PATHSEPARATOR);
                 } else {
                     throw "flock.core.normalizePath: " + ERROR_INVALIDPATH;
                 }
             } else if (path instanceof Array) {
-                result = path;
+                // creating shallow copy of path array
+                result = path.concat([]);
             } else {
                 throw "flock.core.normalizePath: " + ERROR_INVALIDPATH;
             }

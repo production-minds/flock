@@ -1,4 +1,4 @@
-/*global flock, module, test, ok, equal, deepEqual, raises */
+/*global flock, module, test, ok, equal, notEqual, deepEqual, raises */
 (function (core) {
     module("Core");
 
@@ -40,7 +40,8 @@
             'second',
             'thi rd'
         ];
-        equal(core.normalizePath(arrNotation), arrNotation, "validating array path returns itself");
+        notEqual(core.normalizePath(arrNotation), arrNotation, "Array input returns copy");
+        deepEqual(core.normalizePath(arrNotation), arrNotation, "Array copy is identical to original");
     });
 
     test("Getting", function () {
