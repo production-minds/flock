@@ -56,7 +56,7 @@ flock.query = (function () {
          * Retrieves multiple nodes.
          * @param root {object} Datastore root.
          * @param path {string|Array} Datastore path expression.
-         * @param options {object} Options.
+         * @param [options] {object} Options.
          * @return {object / Array} Collected nodes.
          * @see self.many()
          */
@@ -68,8 +68,8 @@ flock.query = (function () {
          * Sets multiple nodes.
          * @param root {object} Datastore root.
          * @param path {string|Array} Datastore path expression.
-         * @param value {object} Value to set on path.
-         * @param options {object} Options.
+         * @param [value] {object} Value to set on path.
+         * @param [options] {object} Options.
          * @return {object} Reference to self.
          * @see self.many()
          */
@@ -85,7 +85,7 @@ flock.query = (function () {
          * Removes multiple nodes.
          * @param root {object} Datastore root.
          * @param path {string|Array} Datastore path expression.
-         * @param options {object} Options.
+         * @param [options] {object} Options.
          * @return {object} Reference to self.
          */
         munset: function (root, path, options) {
@@ -99,7 +99,7 @@ flock.query = (function () {
          * Collects or modifies end nodes.
          * @param root {object} Datastore root.
          * @param path {string|Array} Datastore path expression.
-         * @param options {object} Options.
+         * @param [options] {object} Options.
          *	 - limit: max number of entries to retrieve, default: unlimited
          *	 - mode: type of return value is Object or Array (flock.key/flock.values/flock.both/flock.del), default: flock.array
          *	 - loopback: whether to traverse loopbacks, default: false
