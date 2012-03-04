@@ -29,7 +29,10 @@ var	flock;
     flock = function (node, options) {
         // creating default arguments
         node = node || {};
-        options = options || {};
+        options = options || {
+            nolive: false,
+            noevent: false
+        };
 
         // shortcuts
         var genMethod = flock.utils.genMethod,
@@ -56,14 +59,17 @@ var	flock;
         self.cleanup = genMethod(core.cleanup, args, self);
 
         // live
-        if (!options.hasOwnProperty('nolive')) {
+        if (!options.nolive && live) {
             self.init = genMethod(live.init, args, self);
             self.path = genMethod(live.path, args);
             self.parent = genMethod(live.parent, args, nodeMapper);
             self.name = genMethod(live.name, args);
 
+            // live overwrites set with its own version
+            self.set = genMethod(live.set, args, self);
+
             // event - must have live for events
-            if (!options.hasOwnProperty('noevent')) {
+            if (!options.noevent && event) {
                 self.on = genMethod(event.subscribe, args, self);
                 self.off = genMethod(event.unsubscribe, args, self);
                 self.trigger = genMethod(event.trigger, args, self);
