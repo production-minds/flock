@@ -41,11 +41,11 @@ flock.core = (function (utils) {
          * @param path {Array} Datastore path.
          */
         get: function (node, path) {
-            var i, key,
+            var key,
                 tpath = self.normalizePath(path);
 
-            for (i = 0; i < tpath.length; i++) {
-                key = tpath[i];
+            while (tpath.length) {
+                key = tpath.shift();
                 if (node.hasOwnProperty(key)) {
                     node = node[key];
                 } else {
@@ -63,12 +63,12 @@ flock.core = (function (utils) {
          * @param value {object} Value to set on path
          */
         set: function (node, path, value) {
-            var i, key,
+            var key,
                 tpath = self.normalizePath(path),
                 name = tpath.pop();
 
-            for (i = 0; i < tpath.length; i++) {
-                key = tpath[i];
+            while (tpath.length) {
+                key = tpath.shift();
                 if (!node.hasOwnProperty(key)) {
                     node[key] = {};
                 }
@@ -105,14 +105,14 @@ flock.core = (function (utils) {
          */
         cleanup: function (node, path) {
             var tpath = self.normalizePath(path),
-                i, key,
+                key,
                 lastMulti = {
                     node: node,
                     name: utils.firstProperty(node)
                 };
 
-            for (i = 0; i < tpath.length; i++) {
-                key = tpath[i];
+            while (tpath.length) {
+                key = tpath.shift();
                 if (node.hasOwnProperty(key)) {
                     if (!utils.isSingle(node)) {
                         lastMulti = {
