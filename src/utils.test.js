@@ -24,7 +24,10 @@
         equal(instanceTest(4), 9, "Generated method remembers arguments");
 
         instanceTest = utils.genMethod(undefTest, [5], function() { return "ready"; });
-        equal(instanceTest(4), "ready", "Generated method returns specified value");
+        equal(instanceTest(4), "ready", "Generated method applies mapper");
+
+        instanceTest = utils.genMethod(undefTest, [5], "foo");
+        equal(instanceTest(4), "foo", "Generated method returns specified (non-function) value");
     });
 
     test("Objects", function () {

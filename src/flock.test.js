@@ -42,5 +42,14 @@
                 .root(),
             "One",
             "Stacked get");
+
+        deepEqual(
+            cache
+                .get(['fourth', '1'])
+                .set(['c'], "Hello!")
+                .get(['c'])
+                .root(),
+            "Hello!",
+            "Stacked set & get");
     });
 }());

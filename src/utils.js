@@ -11,6 +11,7 @@ flock.utils = (function () {
          * @param handler {function} Model function,
          * @param args {Array} Fix arguments (first N of handler's args).
          * @param [mapper] {function} Function that maps the return value.
+         * Treated as return value when non-function.
          */
         genMethod: function (handler, args, mapper) {
             if (typeof mapper === 'function') {
@@ -19,7 +20,10 @@ flock.utils = (function () {
                 };
             } else {
                 return function () {
-                    return handler.apply(this, args.concat(Array.prototype.slice.call(arguments)));
+                    var result = handler.apply(this, args.concat(Array.prototype.slice.call(arguments)));
+                    return typeof result !== 'undefined' ?
+                        result :
+                        mapper;
                 };
             }
         },

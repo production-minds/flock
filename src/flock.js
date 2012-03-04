@@ -11,6 +11,16 @@ var	flock;
 
 (function () {
     /**
+     * Maps a datastore node to a flock object.
+     * @param node {object} Datastore node.
+     */
+    function nodeMapper(node) {
+        return typeof node !== 'undefined' ?
+            flock(node) :
+            flock.empty;
+    }
+
+    /**
      * Flock constructor
      * @constructor
      * @param [root] {object} Root object for datastore. When omitted, empty object is assumed.
@@ -24,42 +34,23 @@ var	flock;
         var genMethod = flock.utils.genMethod,
             core = flock.core,
             args = [root],
-            self;
+            self = {};
 
-        /**
-         * Maps anything to the current object.
-         */
-        function defaultMapper() {
-            return self;
-        }
+        //////////////////////////////
+        // Getters, setters
 
-        /**
-         * Maps a datastore node to a flock object.
-         * @param node {object} Datastore node.
-         */
-        function nodeMapper(node) {
-            return typeof node !== 'undefined' ?
-                flock(node) :
-                flock.empty;
-        }
-
-        self = {
-            //////////////////////////////
-            // Getters, setters
-
-            root: function () {
-                return root;
-            },
-
-            //////////////////////////////
-            // Delegates
-
-            // core
-            get: genMethod(core.get, args, nodeMapper),
-            set: genMethod(core.set, args, defaultMapper),
-            unset: genMethod(core.unset, args, defaultMapper),
-            cleanup: genMethod(core.cleanup, args, defaultMapper)
+        self.root = function () {
+            return root;
         };
+
+        //////////////////////////////
+        // Delegates
+
+        // core
+        self.get = genMethod(core.get, args, nodeMapper);
+        self.set = genMethod(core.set, args, self);
+        self.unset = genMethod(core.unset, args, self);
+        self.cleanup = genMethod(core.cleanup, args, self);
 
         return self;
     };
