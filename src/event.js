@@ -8,6 +8,9 @@
 flock.event = (function (core, live) {
     var ERROR_NONTRAVERSABLE = "Non-traversable datastore node.",
         ERROR_HANDLERNOTFUNCTION = "Handler is not a function.",
+        EVENT_CHANGE = 'change',
+        EVENT_ADD = 'add',
+        EVENT_REMOVE = 'remove',
         self;
 
     self = {
@@ -92,7 +95,7 @@ flock.event = (function (core, live) {
          * Triggers event on specified datastore path.
          * @param node {object} Datastore node.
          * @param eventName {string} Name of event to subscribe to.
-         * @param data {object} Custom data to be passed to event handlers.
+         * @param [data] {object} Custom data to be passed to event handlers.
          * @throws {string} On untraversable node.
          */
         trigger: function (node, eventName, data) {
@@ -116,6 +119,65 @@ flock.event = (function (core, live) {
             } else {
                 throw "flock.event.trigger: " + ERROR_NONTRAVERSABLE;
             }
+        },
+
+        /**
+         * Sets a singe value on the given datastore path and triggers an event.
+         * @param node {object} Datastore node.
+         * @param path {string|Array} Datastore path.
+         * @param value {object} Value to set on path
+         */
+        set: function (node, path, value) {
+            // storing 'before' node
+            var before = core.get(node, path),
+                after,
+                parent;
+
+            // setting value
+            parent = live.set(node, path, value);
+
+            // acquiring 'after' node
+            after = core.get(node, path);
+
+            // triggering event
+            self.trigger(
+                parent,
+                typeof before === 'undefined' ?
+                    EVENT_ADD :
+                    EVENT_CHANGE,
+                {
+                    before: before,
+                    after: after
+                }
+            );
+
+            return parent;
+        },
+
+        /**
+         * Removes a single node from the datastore and triggers an event.
+         * @param node {object} Datastore node.
+         * @param path {string|Array} Datastore path.
+         */
+        unset: function (node, path) {
+            // storing 'before' node
+            var before = core.get(node, path),
+                parent;
+
+            if (typeof before !== 'undefined') {
+                parent = core.unset(node, path);
+
+                // triggering event
+                self.trigger(
+                    parent,
+                    EVENT_REMOVE,
+                    {
+                        before: before
+                    }
+                );
+            }
+
+            return parent;
         }
     };
 

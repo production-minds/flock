@@ -66,5 +66,43 @@
             event.trigger(data.hello.all, 'testEvent');
         }, "Triggering event on ordinal node raises error");
     });
+
+    test("Setting", function () {
+        var i, tmp;
+        function onChange() { i++; }
+        function onAdd() { i += 2; }
+
+        event.subscribe(data, 'add', onAdd);
+        event.subscribe(data, 'change', onChange);
+
+        // testing data update
+        i = 0;
+        tmp = event.set(data, ['hello', 'world', 'center'], "blah");
+        equal(tmp, data.hello.world, "Set returns parent of changed node");
+        equal(i, 1, "Update triggers 'change' event");
+
+        // testing data addition
+        i = 0;
+        event.set(data, ['hello', 'world', 'whatever'], "blah");
+        equal(i, 2, "Addition triggers 'add' event");
+
+        event.unsubscribe(data, 'add', onAdd);
+        event.unsubscribe(data, 'change', onChange);
+    });
+
+    test("Unsetting", function () {
+        var i, tmp;
+        function onRemove() { i++; }
+
+        event.subscribe(data, 'remove', onRemove);
+
+        i = 0;
+        tmp = event.unset(data, ['hello', 'world', 'center']);
+        equal(tmp, data.hello.world, "Unset returns parent of removed node");
+        equal(i, 1, "Unsetting triggers 'remove' event");
+
+        event.unset(data, ['hello', 'world', 'center']);
+        equal(i, 1, "Unsetting non-existing path doesn't trigger event");
+    });
 }(flock.live,
     flock.event));
