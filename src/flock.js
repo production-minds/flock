@@ -59,6 +59,7 @@ var	flock;
             self.init = genMethod(live.init, args, self);
             self.path = genMethod(live.path, args);
             self.parent = genMethod(live.parent, args, nodeMapper);
+            self.name = genMethod(live.name, args);
         }
 
         return self;

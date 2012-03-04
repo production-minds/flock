@@ -81,5 +81,13 @@
             ['fourth', '1'],
             "Path resolution"
         );
+
+        equal(
+            cache
+                .get(['first', 'a'])
+                    .name(),
+            "a",
+            "Node name retrieval"
+        );
     });
 }(flock));

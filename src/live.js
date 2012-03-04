@@ -7,13 +7,31 @@
 
 flock.live = (function () {
     var META = '.meta',
+        utils,
         self;
 
-    self = {
+    utils = {
         /**
-         * Meta node identifier
+         * Generates getter for a meta property.
+         * @param metaName {string} Meta property name.
          */
-        META: META,
+        genMetaGetter: function (metaName) {
+            /**
+             * Retrieves a meta property from datastore node.
+             * @param node {object} Datastore node.
+             */
+            return function (node) {
+                if (typeof node === 'object') {
+                    if (node.hasOwnProperty(META)) {
+                        return node[META][metaName];
+                    } else {
+                        throw "flock.live." + metaName + ": Non-traversable node.";
+                    }
+                } else {
+                    throw "flock.live." + metaName + ": Ordinal node.";
+                }
+            };
+        },
 
         /**
          * Adds meta node to datastore node. Node is identified by its parent and name.
@@ -38,7 +56,22 @@ flock.live = (function () {
             if (node.hasOwnProperty(META)) {
                 delete node[META];
             }
-        },
+        }
+    };
+
+    self = {
+        //////////////////////////////
+        // Constants
+
+        META: META,
+
+        //////////////////////////////
+        // Utilities
+
+        utils: utils,
+
+        //////////////////////////////
+        // Control
 
         /**
          * Traverses datastore and adds meta-nodes, thus making
@@ -54,7 +87,7 @@ flock.live = (function () {
                         typeof node[prop] === 'object'
                         ) {
                         // adding meta node to node being traversed
-                        self.addMeta(node, prop);
+                        utils.addMeta(node, prop);
 
                         // continuing traversal
                         self.init(node[prop]);
@@ -62,6 +95,9 @@ flock.live = (function () {
                 }
             }
         },
+
+        //////////////////////////////
+        // Traversal
 
         /**
          * Retrieves current path of a node.
@@ -76,18 +112,11 @@ flock.live = (function () {
             return result;
         },
 
-        /**
-         * Obtains parent node.
-         * @param node {object} Datastore node.
-         * @throws {string} When node is not live.
-         */
-        parent: function (node) {
-            if (node.hasOwnProperty(META)) {
-                return node[META].parent;
-            } else {
-                throw "flock.live.parent: Non-live node.";
-            }
-        }
+        //////////////////////////////
+        // Meta Getters
+
+        parent: utils.genMetaGetter('parent'),
+        name: utils.genMetaGetter('name')
     };
 
     return self;

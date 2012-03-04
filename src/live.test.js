@@ -1,4 +1,4 @@
-/*global flock, module, test, ok, equal, deepEqual */
+/*global flock, module, test, ok, equal, deepEqual, raises */
 (function (live) {
     module("Live");
 
@@ -27,5 +27,9 @@
 
     test("Traversal", function () {
         equal(live.parent(data.hello.world), data.hello, "Obtaining parent node");
+        equal(live.name(data.hello.world), 'world', "Obtaining node name");
+        raises(function () {
+            live.name(data.hello.world.center);
+        }, "Meta getter throws error on ordinal (leaf) node");
     });
 }(flock.live));
