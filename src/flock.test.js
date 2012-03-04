@@ -60,9 +60,9 @@
         );
     });
 
-    test("Live", function () {
-        cache.init();
+    cache.init();
 
+    test("Live", function () {
         equal(
             cache
                 .get(['fourth', '1'])
@@ -89,5 +89,28 @@
             "a",
             "Node name retrieval"
         );
+    });
+
+    test("Events", function () {
+        var i;
+        function testHandler() { i++; }
+
+        // triggering event on child node and capturing on parent node
+        cache.get(['fourth'])
+            .on('testEvent', testHandler);
+        i = 0;
+        cache.get(['fourth', '1'])
+            .trigger('testEvent', "moreInfo");
+        equal(i, 1, "Event triggered and captured");
+        cache.get(['fourth'])
+            .off('testEvent');
+
+        // capturing event on root node
+        cache.on('testEvent', testHandler);
+        i = 0;
+        cache.get(['fourth', '1'])
+            .trigger('testEvent', "moreInfo");
+        equal(i, 1, "Event captured on root node");
+        cache.off('testEvent');
     });
 }(flock));

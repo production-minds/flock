@@ -35,6 +35,7 @@ var	flock;
         var genMethod = flock.utils.genMethod,
             core = flock.core,
             live = flock.live,
+            event = flock.event,
             args = [node],
             self = {};
 
@@ -60,6 +61,13 @@ var	flock;
             self.path = genMethod(live.path, args);
             self.parent = genMethod(live.parent, args, nodeMapper);
             self.name = genMethod(live.name, args);
+        }
+
+        // event
+        if (!options.hasOwnProperty('noevent')) {
+            self.on = genMethod(event.subscribe, args, self);
+            self.off = genMethod(event.unsubscribe, args, self);
+            self.trigger = genMethod(event.trigger, args, self);
         }
 
         return self;
