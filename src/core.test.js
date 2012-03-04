@@ -60,8 +60,7 @@
         equal(tmp, data.hello.world, "Set returns parent of changed node");
         equal(data.hello.world.test, "test", "Value set on existing node");
 
-        tmp = core.set(data, ['hello', 'yall', 'folks'], "test");
-        equal(tmp, data.hello.yall, "Set returns parent of changed node");
+        core.set(data, ['hello', 'yall', 'folks'], "test");
         equal(data.hello.yall.folks, "test", "Value set on non-existing path");
     });
 
@@ -79,9 +78,7 @@
             tmp;
 
         tmp = core.unset(data, ['hello', 'world', 'center']);
-
         equal(tmp, data.hello.world, "Unset returns parent of removed node");
-
         deepEqual(data, {
             hi: 'There!',
             hello: {
@@ -91,10 +88,7 @@
             }
         }, "Single ordinal node removed");
 
-        tmp = core.unset(data, ['hello', 'all']);
-
-        equal(tmp, data.hello, "Unset returns parent of removed node");
-
+        core.unset(data, ['hello', 'all']);
         deepEqual(data, {
             hi: 'There!',
             hello: {
