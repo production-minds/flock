@@ -21,11 +21,11 @@ flock.core = (function (utils) {
                 if (node.hasOwnProperty(key)) {
                     node = node[key];
                 } else {
-                    return;
+                    return flock.empty;
                 }
             }
 
-            return node;
+            return flock(node);
         },
 
         /**
@@ -49,8 +49,6 @@ flock.core = (function (utils) {
 
             // setting value as leaf node
             node[name] = value;
-
-            return flock;
         },
 
         /**
@@ -60,7 +58,7 @@ flock.core = (function (utils) {
          */
         unset: function (root, path) {
             var name = path.pop(),
-                parent = self.get(root, path);
+                parent = self.get(root, path).root();
 
             if (typeof parent === 'object' &&
                 parent.hasOwnProperty(name)
@@ -68,8 +66,6 @@ flock.core = (function (utils) {
                 // removing node node
                 delete parent[name];
             }
-
-            return flock;
         },
 
         /**
@@ -98,7 +94,7 @@ flock.core = (function (utils) {
                     node = node[key];
                 } else {
                     // invalid path, nothing to unset
-                    return flock;
+                    return;
                 }
             }
 
@@ -106,8 +102,6 @@ flock.core = (function (utils) {
             if (lastMulti) {
                 delete lastMulti.node[lastMulti.name];
             }
-
-            return flock;
         }
     };
 

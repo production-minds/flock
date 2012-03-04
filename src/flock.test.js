@@ -33,6 +33,6 @@
     module("Flock");
 
     test("Core", function () {
-        deepEqual(cache.get(['first', 'a']), {}, "Core functions work");
+        deepEqual(cache.get(['first', 'a']).root(), {}, "Core functions work");
     });
 }());

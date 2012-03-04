@@ -18,7 +18,7 @@ flock.event = (function (core, live) {
          * @throws {string}
          */
         subscribe: function (root, path, eventName, handler) {
-            var meta = core.get(root, path.concat([live.META])),
+            var meta = core.get(root, path.concat([live.META])).root(),
                 handlers;
 
             if (typeof meta === 'object') {
@@ -40,8 +40,6 @@ flock.event = (function (core, live) {
             } else {
                 throw "flock.event.subscribe: Invalid path or non-live datastore node.";
             }
-
-            return flock;
         },
 
         /**
@@ -52,8 +50,8 @@ flock.event = (function (core, live) {
          * @param [handler] {function} Event handler.
          */
         unsubscribe: function (root, path, eventName, handler) {
-            var meta = core.get(root, path.concat([live.META])),
-                handlers = core.get(root, path.concat([live.META, 'handlers'])),
+            var meta = core.get(root, path.concat([live.META])).root(),
+                handlers = core.get(root, path.concat([live.META, 'handlers'])).root(),
                 i;
 
             if (typeof handlers === 'object') {
@@ -81,8 +79,6 @@ flock.event = (function (core, live) {
                     // removing all handlers altogether
                     delete meta.handlers;
                 }
-
-                return flock;
             }
         },
 
@@ -94,7 +90,7 @@ flock.event = (function (core, live) {
          * @param data {object} Custom data to be passed to event handlers.
          */
         trigger: function (root, path, eventName, data) {
-            var handlers = core.get(root, path.concat([live.META, 'handlers', eventName])),
+            var handlers = core.get(root, path.concat([live.META, 'handlers', eventName])).root(),
                 i;
 
             if (typeof handlers === 'object') {
@@ -109,8 +105,6 @@ flock.event = (function (core, live) {
                     self.trigger(root, path, eventName, data);
                 }
             }
-
-            return flock;
         }
     };
 

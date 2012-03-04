@@ -61,8 +61,6 @@ flock.live = (function () {
                     }
                 }
             }
-
-            return flock;
         },
 
         /**

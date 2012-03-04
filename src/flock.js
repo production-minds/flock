@@ -23,26 +23,32 @@ var	flock;
         var genMethod = flock.utils.genMethod,
             core = flock.core,
             args = [root],
-            self;
+            self = {};
 
-        self = {
-            //////////////////////////////
-            // Getters, setters
+        //////////////////////////////
+        // Getters, setters
 
-            root: function () {
-                return root;
-            },
-
-            //////////////////////////////
-            // Delegates
-
-            // core
-            get: genMethod(core.get, args),
-            set: genMethod(core.set, args),
-            unset: genMethod(core.unset, args),
-            cleanup: genMethod(core.cleanup, args)
+        self.root = function () {
+            return root;
         };
 
+        //////////////////////////////
+        // Delegates
+
+        // core
+        self.get = genMethod(core.get, args);
+        self.set = genMethod(core.set, args, self);
+        self.unset = genMethod(core.unset, args, self);
+        self.cleanup = genMethod(core.cleanup, args, self);
+
         return self;
+    };
+
+    /**
+     * Empty flock object.
+     * Root returns undefined.
+     */
+    flock.empty = {
+        root: function () {}
     };
 }());
