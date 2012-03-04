@@ -5,7 +5,7 @@
  */
 /*global flock */
 
-flock.live = (function () {
+flock.live = (function (core) {
     var META = '.meta',
         utils,
         self;
@@ -34,18 +34,26 @@ flock.live = (function () {
         },
 
         /**
-         * Adds meta node to datastore node. Node is identified by its parent and name.
-         * Consequently, the root node cannot be given a meta node.
-         * @param parent {object} Parent node.
+         * Adds meta node to a single datastore node. When no explicit node is provided,
+         * node is identified by its parent and name.
+         * @param parent {object} Reference to parent node.
          * @param name {string} Name of node in parent.
+         * @param [node] {object} Datastore node.
          */
-        addMeta: function (parent, name) {
-            var node = parent[name];
-            node[META] = {
-                self: node,
-                name: name,
-                parent: parent
-            };
+        addMeta: function (parent, name, node) {
+            var meta;
+
+            // taking node from parent when no node is explicitly provided
+            node = node || parent[name];
+
+            // adding meta node
+            meta = node[META] = {};
+            meta.self = node;
+            if (typeof parent === 'object' &&
+                typeof name === 'string') {
+                meta.parent = parent;
+                meta.name = name;
+            }
         },
 
         /**
@@ -77,12 +85,14 @@ flock.live = (function () {
          * Traverses datastore and adds meta-nodes, thus making
          * the datastore information 'live'.
          * @param node {object} Non-live data.
+         * @param [parent] {object} Parent node.
+         * @param [name] {string} Name of the
          */
-        init: function (node) {
+        init: function (node, parent, name) {
             var prop;
 
-            // adding empty meta node
-            node[META] = node[META] || {};
+            // adding meta node
+            utils.addMeta(parent, name, node);
 
             // processing child nodes
             for (prop in node) {
@@ -90,14 +100,49 @@ flock.live = (function () {
                     if (prop !== META &&
                         typeof node[prop] === 'object'
                         ) {
-                        // adding meta node to node being traversed
-                        utils.addMeta(node, prop);
-
                         // continuing traversal
-                        self.init(node[prop]);
+                        self.init(node[prop], node, prop);
                     }
                 }
             }
+        },
+
+        //////////////////////////////
+        // Access
+
+        /**
+         * Sets value on node with meta nodes added.
+         * @param node {object} Datastore node.
+         * @param path {Array} Datastore path.
+         * @param value {object} Value to set on path.
+         */
+        set: function (node, path, value) {
+            var tpath = core.normalizePath(path),
+                name,
+                branch, tmp;
+
+            // seeking to the first absent key
+            while (tpath.length) {
+                if (!node.hasOwnProperty(tpath[0])) {
+                    name = tpath.shift();
+                    break;
+                }
+                node = node[tpath.shift()];
+            }
+
+            // assembling new branch
+            branch = value;
+            while (tpath.length) {
+                tmp = {};
+                tmp[tpath.pop()] = branch;
+                branch = tmp;
+            }
+
+            // initializing new branch
+            self.init(value, node, name);
+
+            // setting branch as leaf node
+            node[name] = value;
         },
 
         //////////////////////////////
@@ -126,4 +171,4 @@ flock.live = (function () {
     };
 
     return self;
-}());
+}(flock.core));
