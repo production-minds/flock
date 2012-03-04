@@ -24,7 +24,7 @@ var	flock;
      * Flock constructor
      * @constructor
      * @param [node] {object} Root object for datastore. When omitted, empty object is assumed.
-     * @param [options] {object} Options: nolive, noquery.
+     * @param [options] {object} Options: nolive, noevent, noquery.
      */
     flock = function (node, options) {
         // creating default arguments
@@ -61,13 +61,13 @@ var	flock;
             self.path = genMethod(live.path, args);
             self.parent = genMethod(live.parent, args, nodeMapper);
             self.name = genMethod(live.name, args);
-        }
 
-        // event
-        if (!options.hasOwnProperty('noevent')) {
-            self.on = genMethod(event.subscribe, args, self);
-            self.off = genMethod(event.unsubscribe, args, self);
-            self.trigger = genMethod(event.trigger, args, self);
+            // event - must have live for events
+            if (!options.hasOwnProperty('noevent')) {
+                self.on = genMethod(event.subscribe, args, self);
+                self.off = genMethod(event.unsubscribe, args, self);
+                self.trigger = genMethod(event.trigger, args, self);
+            }
         }
 
         return self;
