@@ -18,7 +18,7 @@ flock.event = (function (core, live) {
          * @throws {string}
          */
         subscribe: function (root, path, eventName, handler) {
-            var meta = core.get(root, path.concat([live.META])).root(),
+            var meta = core.get(root, path.concat([live.META])),
                 handlers;
 
             if (typeof meta === 'object') {
@@ -50,8 +50,8 @@ flock.event = (function (core, live) {
          * @param [handler] {function} Event handler.
          */
         unsubscribe: function (root, path, eventName, handler) {
-            var meta = core.get(root, path.concat([live.META])).root(),
-                handlers = core.get(root, path.concat([live.META, 'handlers'])).root(),
+            var meta = core.get(root, path.concat([live.META])),
+                handlers = core.get(root, path.concat([live.META, 'handlers'])),
                 i;
 
             if (typeof handlers === 'object') {
@@ -90,7 +90,7 @@ flock.event = (function (core, live) {
          * @param data {object} Custom data to be passed to event handlers.
          */
         trigger: function (root, path, eventName, data) {
-            var handlers = core.get(root, path.concat([live.META, 'handlers', eventName])).root(),
+            var handlers = core.get(root, path.concat([live.META, 'handlers', eventName])),
                 i;
 
             if (typeof handlers === 'object') {

@@ -21,11 +21,11 @@ flock.core = (function (utils) {
                 if (node.hasOwnProperty(key)) {
                     node = node[key];
                 } else {
-                    return flock.empty;
+                    return;
                 }
             }
 
-            return flock(node);
+            return node;
         },
 
         /**
@@ -58,7 +58,7 @@ flock.core = (function (utils) {
          */
         unset: function (root, path) {
             var name = path.pop(),
-                parent = self.get(root, path).root();
+                parent = self.get(root, path);
 
             if (typeof parent === 'object' &&
                 parent.hasOwnProperty(name)

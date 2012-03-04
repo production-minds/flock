@@ -23,7 +23,7 @@
         instanceTest = utils.genMethod(staticTest, [5]);
         equal(instanceTest(4), 9, "Generated method remembers arguments");
 
-        instanceTest = utils.genMethod(undefTest, [5], "ready");
+        instanceTest = utils.genMethod(undefTest, [5], function() { return "ready"; });
         equal(instanceTest(4), "ready", "Generated method returns specified value");
     });
 

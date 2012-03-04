@@ -13,9 +13,9 @@
     };
 
     test("Getting", function () {
-        equal(basic.get(data, ['hi']).root(), "There!", "Getting ordinal value");
-        equal(basic.get(data, ['hello', 'world']).root(), data.hello.world, "Getting datastore node");
-        ok(typeof basic.get(data, ['hello', 'yall']).root() === 'undefined', "Attempting to get from invalid path returns undefined");
+        equal(basic.get(data, ['hi']), "There!", "Getting ordinal value");
+        equal(basic.get(data, ['hello', 'world']), data.hello.world, "Getting datastore node");
+        ok(typeof basic.get(data, ['hello', 'yall']) === 'undefined', "Attempting to get from invalid path returns undefined");
     });
 
     test("Setting", function () {

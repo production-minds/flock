@@ -33,6 +33,14 @@
     module("Flock");
 
     test("Core", function () {
-        deepEqual(cache.get(['first', 'a']).root(), {}, "Core functions work");
+        deepEqual(cache.get(['first', 'a']).root(), {}, "Simple get");
+
+        deepEqual(
+            cache
+                .get(['fourth', '1'])
+                .get(['a'])
+                .root(),
+            "One",
+            "Stacked get");
     });
 }());

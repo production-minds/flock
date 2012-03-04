@@ -10,15 +10,18 @@ flock.utils = (function () {
          * but bolts its first N arguments.
          * @param handler {function} Model function,
          * @param args {Array} Fix arguments (first N of handler's args).
-         * @param [retval] {object} Value returned when handler returns undefined.
+         * @param [mapper] {function} Function that maps the return value.
          */
-        genMethod: function (handler, args, retval) {
-            return function () {
-                var result = handler.apply(this, args.concat(Array.prototype.slice.call(arguments)));
-                return typeof result !== 'undefined' ?
-                    result :
-                    retval;
-            };
+        genMethod: function (handler, args, mapper) {
+            if (typeof mapper === 'function') {
+                return function () {
+                    return mapper(handler.apply(this, args.concat(Array.prototype.slice.call(arguments))));
+                };
+            } else {
+                return function () {
+                    return handler.apply(this, args.concat(Array.prototype.slice.call(arguments)));
+                };
+            }
         },
 
         /**

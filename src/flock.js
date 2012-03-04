@@ -20,26 +20,46 @@ var	flock;
         // creating default root object
         root = root || {};
 
+        // shortcuts
         var genMethod = flock.utils.genMethod,
             core = flock.core,
             args = [root],
-            self = {};
+            self;
 
-        //////////////////////////////
-        // Getters, setters
+        /**
+         * Maps anything to the current object.
+         */
+        function defaultMapper() {
+            return self;
+        }
 
-        self.root = function () {
-            return root;
+        /**
+         * Maps a datastore node to a flock object.
+         * @param node {object} Datastore node.
+         */
+        function nodeMapper(node) {
+            return typeof node !== 'undefined' ?
+                flock(node) :
+                flock.empty;
+        }
+
+        self = {
+            //////////////////////////////
+            // Getters, setters
+
+            root: function () {
+                return root;
+            },
+
+            //////////////////////////////
+            // Delegates
+
+            // core
+            get: genMethod(core.get, args, nodeMapper),
+            set: genMethod(core.set, args, defaultMapper),
+            unset: genMethod(core.unset, args, defaultMapper),
+            cleanup: genMethod(core.cleanup, args, defaultMapper)
         };
-
-        //////////////////////////////
-        // Delegates
-
-        // core
-        self.get = genMethod(core.get, args);
-        self.set = genMethod(core.set, args, self);
-        self.unset = genMethod(core.unset, args, self);
-        self.cleanup = genMethod(core.cleanup, args, self);
 
         return self;
     };
