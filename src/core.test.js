@@ -1,5 +1,5 @@
-/*global flock, module, test, ok, equal, deepEqual */
-(function (basic) {
+/*global flock, module, test, ok, equal, deepEqual, raises */
+(function (core) {
     module("Core");
 
     var data = {
@@ -12,17 +12,51 @@
         }
     };
 
+    test("Path normalization", function () {
+        raises(function () {
+            core.normalizePath('...fds.fd');
+        }, "Validation fails on leading dots");
+
+        raises(function () {
+            core.normalizePath('fds.fd..');
+        }, "Validation fails on trailing dots");
+
+        raises(function () {
+            core.normalizePath(1000);
+        }, "Validation fails on invalid argument type");
+
+        deepEqual(
+            core.normalizePath('first.second.thi rd'),
+            [
+                'first',
+                'second',
+                'thi rd'
+            ],
+            "String path converted to array notation"
+        );
+
+        var arrNotation = [
+            'first',
+            'second',
+            'thi rd'
+        ];
+        equal(core.normalizePath(arrNotation), arrNotation, "validating array path returns itself");
+    });
+
     test("Getting", function () {
-        equal(basic.get(data, ['hi']), "There!", "Getting ordinal value");
-        equal(basic.get(data, ['hello', 'world']), data.hello.world, "Getting datastore node");
-        ok(typeof basic.get(data, ['hello', 'yall']) === 'undefined', "Attempting to get from invalid path returns undefined");
+        equal(core.get(data, ['hi']), "There!", "Getting ordinal value");
+        equal(core.get(data, ['hello', 'world']), data.hello.world, "Getting datastore node");
+        equal(core.get(data, 'hello.world'), data.hello.world, "Getting datastore node w/ path in string notation");
+        ok(typeof core.get(data, [
+            'hello', 'yall'
+        ]) === 'undefined', "Attempting to get from invalid path returns undefined");
     });
 
     test("Setting", function () {
-        basic.set(data, ['hello', 'world', 'test'], "test");
+        core.set(data, ['hello', 'world', 'test'], "test");
         equal(data.hello.world.test, "test", "Value set on existing node");
 
-        basic.set(data, ['hello', 'yall', 'folks'], "test");
+        core.set(data, ['hello', 'yall', 'folks'], "test");
         equal(data.hello.yall.folks, "test", "Value set on non-existing path");
     });
 
@@ -37,7 +71,7 @@
             }
         };
 
-        basic.unset(data, ['hello', 'world', 'center']);
+        core.unset(data, ['hello', 'world', 'center']);
         deepEqual(data, {
             hi: 'There!',
             hello: {
@@ -47,7 +81,7 @@
             }
         }, "Single node removed");
 
-        basic.unset(data, ['hello', 'all']);
+        core.unset(data, ['hello', 'all']);
         deepEqual(data, {
             hi: 'There!',
             hello: {
@@ -68,7 +102,7 @@
             }
         };
 
-        basic.cleanup(data, ['hi']);
+        core.cleanup(data, ['hi']);
         deepEqual(data, {
             hello: {
                 world: {
@@ -78,14 +112,14 @@
             }
         }, "Single node removed");
 
-        basic.cleanup(data, ['hello', 'world', 'center']);
+        core.cleanup(data, ['hello', 'world', 'center']);
         deepEqual(data, {
             hello: {
                 all: "hey"
             }
         }, "Node removed with all empty ancestors");
 
-        basic.cleanup(data, ['hello', 'all']);
+        core.cleanup(data, ['hello', 'all']);
         deepEqual(data, {}, "Remaining nodes removed with all empty ancestors");
     });
 }(flock.core));
