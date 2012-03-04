@@ -17,9 +17,14 @@
         var staticTest = function (a, b) {
                 return a + b;
             },
-            instanceTest = utils.genMethod(staticTest, [5]);
+            undefTest = function () { },
+            instanceTest;
 
+        instanceTest = utils.genMethod(staticTest, [5]);
         equal(instanceTest(4), 9, "Generated method remembers arguments");
+
+        instanceTest = utils.genMethod(undefTest, [5], "ready");
+        equal(instanceTest(4), "ready", "Generated method returns specified value");
     });
 
     test("Objects", function () {

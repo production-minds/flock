@@ -10,10 +10,14 @@ flock.utils = (function () {
          * but bolts its first N arguments.
          * @param handler {function} Model function,
          * @param args {Array} Fix arguments (first N of handler's args).
+         * @param [retval] {object} Value returned when handler returns undefined.
          */
-        genMethod: function (handler, args) {
+        genMethod: function (handler, args, retval) {
             return function () {
-                return handler.apply(this, args.concat(Array.prototype.slice.call(arguments)));
+                var result = handler.apply(this, args.concat(Array.prototype.slice.call(arguments)));
+                return typeof result !== 'undefined' ?
+                    result :
+                    retval;
             };
         },
 
