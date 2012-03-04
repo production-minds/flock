@@ -38,7 +38,7 @@ flock.core = (function (utils) {
         /**
          * Gets a single value from the given datastore path.
          * @param node {object} Datastore root.
-         * @param path {Array} Datastore path.
+         * @param path {string|Array} Datastore path.
          */
         get: function (node, path) {
             var key,
@@ -59,8 +59,9 @@ flock.core = (function (utils) {
         /**
          * Sets a singe value on the given datastore path.
          * @param node {object} Datastore node.
-         * @param path {Array} Datastore path.
+         * @param path {string|Array} Datastore path.
          * @param value {object} Value to set on path
+         * @returns {object} Parent of the changed node.
          */
         set: function (node, path, value) {
             var key,
@@ -77,12 +78,15 @@ flock.core = (function (utils) {
 
             // setting value as leaf node
             node[name] = value;
+
+            return node;
         },
 
         /**
          * Removes a single node from the datastore.
          * @param node {object} Datastore node.
-         * @param path {Array} Datastore path.
+         * @param path {string|Array} Datastore path.
+         * @returns {object} Parent of the removed node.
          */
         unset: function (node, path) {
             var tpath = self.normalizePath(path),
@@ -95,13 +99,15 @@ flock.core = (function (utils) {
                 // removing node node
                 delete parent[name];
             }
+
+            return parent;
         },
 
         /**
          * Removes a node from the datastore. Cleans up empty parent nodes
          * until the first non-empty ancestor node.
          * @param node {object} Datastore node.
-         * @param path {Array} Datastore path.
+         * @param path {string|Array} Datastore path.
          */
         cleanup: function (node, path) {
             var tpath = self.normalizePath(path),
