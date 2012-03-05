@@ -6,33 +6,12 @@
 /*global flock */
 
 flock.live = (function (core) {
-    var META = '.meta',
+    var ERROR_NONTRAVERSABLE = "Non-traversable datastore node.",
+        META = '.meta',
         utils,
         self;
 
     utils = {
-        /**
-         * Generates getter for a meta property.
-         * @param metaName {string} Meta property name.
-         */
-        genMetaGetter: function (metaName) {
-            /**
-             * Retrieves a meta property from datastore node.
-             * @param node {object} Datastore node.
-             */
-            return function (node) {
-                if (typeof node === 'object') {
-                    if (node.hasOwnProperty(META)) {
-                        return node[META][metaName];
-                    } else {
-                        throw "flock.live." + metaName + ": Non-traversable node.";
-                    }
-                } else {
-                    throw "flock.live." + metaName + ": Ordinal node.";
-                }
-            };
-        },
-
         /**
          * Adds meta node to a single datastore node. When no explicit node is provided,
          * node is identified by its parent and name.
@@ -154,11 +133,53 @@ flock.live = (function (core) {
             return result;
         },
 
-        //////////////////////////////
-        // Meta Getters
+        /**
+         * Returns ancestor node (or self) with the specified name.
+         * @param node {object} Datastore node.
+         * @param name {string} Node name.
+         */
+        closest: function (node, name) {
+            if (typeof node === 'object' &&
+                node.hasOwnProperty(META)
+                ) {
+                while (typeof node === 'object' &&
+                    node[META].name !== name
+                    ) {
+                    node = node[META].parent;
+                }
+                return node;
+            } else {
+                throw "flock.live.parent: " + ERROR_NONTRAVERSABLE;
+            }
+        },
 
-        parent: utils.genMetaGetter('parent'),
-        name: utils.genMetaGetter('name')
+        /**
+         * Returns immediate node parent.
+         * @param node {object} Datastore node.
+         */
+        parent: function (node) {
+            if (typeof node === 'object' &&
+                node.hasOwnProperty(META)
+                ) {
+                return node[META].parent;
+            } else {
+                throw "flock.live.parent: " + ERROR_NONTRAVERSABLE;
+            }
+        },
+
+        /**
+         * Returns node name.
+         * @param node {object} Datastore node.
+         */
+        name: function (node) {
+            if (typeof node === 'object' &&
+                node.hasOwnProperty(META)
+                ) {
+                return node[META].name;
+            } else {
+                throw "flock.live.name: " + ERROR_NONTRAVERSABLE;
+            }
+        }
     };
 
     return self;

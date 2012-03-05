@@ -45,6 +45,11 @@
 
     test("Traversal", function () {
         equal(live.parent(data.hello.world), data.hello, "Obtaining parent node");
+
+        equal(live.closest(data.hello.world, 'world'), data.hello.world, "Closest node named 'world' is self");
+        equal(live.closest(data.hello.world, 'hello'), data.hello, "Closest node named 'hello' is parent");
+        ok(typeof live.closest(data.hello.world, 'invalid') === 'undefined', "No closest node named 'invalid'");
+
         equal(live.name(data.hello.world), 'world', "Obtaining node name");
         raises(function () {
             live.name(data.hello.world.center);
