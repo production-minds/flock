@@ -39,14 +39,9 @@ var flock;
         //////////////////////////////
         // Getters, setters
 
-        function getNode() {
+        self.node = function () {
             return node;
-        }
-
-        self.node = getNode;
-
-        /** @deprecated Since version 0.2. Use flock.node() instead. */
-        self.root = getNode;
+        };
 
         //////////////////////////////
         // Delegates

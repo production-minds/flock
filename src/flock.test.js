@@ -38,8 +38,6 @@
     });
 
     test("Core", function () {
-        equal(cache.node(), cache.root(), "Legacy means of accessing root node");
-
         deepEqual(cache.get(['fourth', '1', 'a']).node(), "One", "Simple get");
 
         deepEqual(
