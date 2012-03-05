@@ -1,7 +1,7 @@
 /**
  * Flock Wrapper Object
  */
-var	flock;
+var flock;
 
 (function () {
     /**
@@ -39,9 +39,12 @@ var	flock;
         //////////////////////////////
         // Getters, setters
 
-        self.node = function () {
+        function getNode() {
             return node;
-        };
+        }
+
+        self.node = getNode;
+        self.root = getNode;
 
         //////////////////////////////
         // Delegates
