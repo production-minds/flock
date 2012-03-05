@@ -54,7 +54,7 @@
         equal(live.closest(data.hello.world, 'hello'), data.hello, "Closest node named 'hello' is parent");
         ok(typeof live.closest(data.hello.world, 'invalid') === 'undefined', "No closest node named 'invalid'");
 
-        equal(live.name(data.hello.world), 'world', "Obtaining node name");
+        equal(live.name(data.hello.world), 'world', "Obtaining node name (key in parent)");
         raises(function () {
             live.name(data.hello.world.center);
         }, "Meta getter throws error on ordinal (leaf) node");

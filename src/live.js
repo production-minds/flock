@@ -11,7 +11,7 @@ flock.live = (function (core) {
 
     errors = {
         ERROR_NONTRAVERSABLE: "Non-traversable datastore node.",
-        ERROR_FORBIDDENNODENAME: "Forbidden node name"
+        ERROR_FORBIDDENKEY: "Forbidden key."
     };
 
     utils = {
@@ -107,7 +107,7 @@ flock.live = (function (core) {
             // checking path for forbidden node
             for (i = 0; i < path.length; i++) {
                 if (path[i] === META) {
-                    throw "flock.live.set: " + errors.ERROR_FORBIDDENNODENAME;
+                    throw "flock.live.set: " + errors.ERROR_FORBIDDENKEY;
                 }
             }
 
