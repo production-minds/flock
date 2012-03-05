@@ -44,6 +44,8 @@ var flock;
         }
 
         self.node = getNode;
+
+        /** @deprecated Since version 0.2. Use flock.node() instead. */
         self.root = getNode;
 
         //////////////////////////////
@@ -91,7 +93,7 @@ var flock;
 
     /**
      * Empty flock object.
-     * Root returns undefined.
+     * Node method returns undefined.
      */
     flock.empty = {
         node: function () {}
