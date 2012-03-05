@@ -10,7 +10,8 @@ flock.live = (function (core) {
         errors, utils, self;
 
     errors = {
-        ERROR_NONTRAVERSABLE: "Non-traversable datastore node."
+        ERROR_NONTRAVERSABLE: "Non-traversable datastore node.",
+        ERROR_FORBIDDENNODENAME: "Forbidden node name"
     };
 
     utils = {
@@ -100,8 +101,18 @@ flock.live = (function (core) {
          * @returns {object} Parent of the changed node.
          */
         set: function (node, path, value) {
-            var parent = core.set(node, path, value),
+            var parent,
                 i, key;
+
+            // checking path for forbidden node
+            for (i = 0; i < path.length; i++) {
+                if (path[i] === META) {
+                    throw "flock.live.set: " + errors.ERROR_FORBIDDENNODENAME;
+                }
+            }
+
+            // setting value on path
+            parent = core.set(node, path, value);
 
             // searching for first uninitialized node
             for (i = 0; i < path.length; i++) {

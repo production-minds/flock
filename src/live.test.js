@@ -41,6 +41,10 @@
 
         live.set(data, ['hello', 'world', 'center'], "blah");
         equal(data.hello.world.center, 'blah', "Setting ordinal node");
+
+        raises(function () {
+            live.set(data, ['hello', 'world', live.META], "blah");
+        }, "Setting fails on path with META key in it");
     });
 
     test("Traversal", function () {
