@@ -6,10 +6,12 @@
 /*global flock */
 
 flock.live = (function (core) {
-    var ERROR_NONTRAVERSABLE = "Non-traversable datastore node.",
-        META = '.meta',
-        utils,
-        self;
+    var META = '.meta',
+        errors, utils, self;
+
+    errors = {
+        ERROR_NONTRAVERSABLE: "Non-traversable datastore node."
+    };
 
     utils = {
         /**
@@ -55,6 +57,7 @@ flock.live = (function (core) {
         //////////////////////////////
         // Utilities
 
+        errors: errors,
         utils: utils,
 
         //////////////////////////////
@@ -149,7 +152,7 @@ flock.live = (function (core) {
                 }
                 return node;
             } else {
-                throw "flock.live.parent: " + ERROR_NONTRAVERSABLE;
+                throw "flock.live.parent: " + errors.ERROR_NONTRAVERSABLE;
             }
         },
 
@@ -163,7 +166,7 @@ flock.live = (function (core) {
                 ) {
                 return node[META].parent;
             } else {
-                throw "flock.live.parent: " + ERROR_NONTRAVERSABLE;
+                throw "flock.live.parent: " + errors.ERROR_NONTRAVERSABLE;
             }
         },
 
@@ -177,7 +180,7 @@ flock.live = (function (core) {
                 ) {
                 return node[META].name;
             } else {
-                throw "flock.live.name: " + ERROR_NONTRAVERSABLE;
+                throw "flock.live.name: " + errors.ERROR_NONTRAVERSABLE;
             }
         }
     };

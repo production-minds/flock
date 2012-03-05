@@ -6,10 +6,21 @@
 flock.core = (function (utils) {
     var RE_PATHVALIDATOR = /^([^\.]+\.)*[^\.]+$/,
         RE_PATHSEPARATOR = /\./,
-        ERROR_INVALIDPATH = "Invalid path.",
-        self;
+        errors, self;
+
+    errors = {
+        ERROR_INVALIDPATH: "Invalid path."
+    };
 
     self = {
+        //////////////////////////////
+        // Utilities
+
+        errors: errors,
+
+        //////////////////////////////
+        // Control
+
         /**
          * Validates simple datastore path.
          * @param path {string|Array} Datastore path to be validated.
@@ -24,13 +35,13 @@ flock.core = (function (utils) {
                     // generating array notation by splitting string
                     result = path.split(RE_PATHSEPARATOR);
                 } else {
-                    throw "flock.core.normalizePath: " + ERROR_INVALIDPATH;
+                    throw "flock.core.normalizePath: " + errors.ERROR_INVALIDPATH;
                 }
             } else if (path instanceof Array) {
                 // creating shallow copy of path array
                 result = path.concat([]);
             } else {
-                throw "flock.core.normalizePath: " + ERROR_INVALIDPATH;
+                throw "flock.core.normalizePath: " + errors.ERROR_INVALIDPATH;
             }
             return result;
         },

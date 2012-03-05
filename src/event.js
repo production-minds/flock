@@ -6,14 +6,28 @@
 /*global flock */
 
 flock.event = (function (core, live) {
-    var ERROR_NONTRAVERSABLE = "Non-traversable datastore node.",
-        ERROR_HANDLERNOTFUNCTION = "Handler is not a function.",
-        EVENT_CHANGE = 'change',
-        EVENT_ADD = 'add',
-        EVENT_REMOVE = 'remove',
-        self;
+    var errors, events, self;
+
+    errors = {
+        ERROR_HANDLERNOTFUNCTION: "Handler is not a function."
+    };
+
+    events = {
+        EVENT_CHANGE: 'change',
+        EVENT_ADD: 'add',
+        EVENT_REMOVE: 'remove'
+    };
 
     self = {
+        //////////////////////////////
+        // Utilities
+
+        events: events,
+        errors: errors,
+
+        //////////////////////////////
+        // Control
+
         /**
          * Subscribes to datastore event.
          * @param node {object} Datastore node.
@@ -39,10 +53,10 @@ flock.event = (function (core, live) {
                     // adding handler to event
                     handlers[eventName].push(handler);
                 } else {
-                    throw "flock.event.subscribe: " + ERROR_HANDLERNOTFUNCTION;
+                    throw "flock.event.subscribe: " + errors.ERROR_HANDLERNOTFUNCTION;
                 }
             } else {
-                throw "flock.event.subscribe: " + ERROR_NONTRAVERSABLE;
+                throw "flock.event.subscribe: " + live.errors.ERROR_NONTRAVERSABLE;
             }
         },
 
@@ -87,7 +101,7 @@ flock.event = (function (core, live) {
                     }
                 }
             } else {
-                throw "flock.event.unsubscribe: " + ERROR_NONTRAVERSABLE;
+                throw "flock.event.unsubscribe: " + live.errors.ERROR_NONTRAVERSABLE;
             }
         },
 
@@ -117,7 +131,7 @@ flock.event = (function (core, live) {
                     self.trigger(meta.parent, eventName, data);
                 }
             } else {
-                throw "flock.event.trigger: " + ERROR_NONTRAVERSABLE;
+                throw "flock.event.trigger: " + live.errors.ERROR_NONTRAVERSABLE;
             }
         },
 
@@ -145,8 +159,8 @@ flock.event = (function (core, live) {
                 self.trigger(
                     parent,
                     typeof before === 'undefined' ?
-                        EVENT_ADD :
-                        EVENT_CHANGE,
+                        events.EVENT_ADD :
+                        events.EVENT_CHANGE,
                     {
                         before: before,
                         after: after
@@ -175,7 +189,7 @@ flock.event = (function (core, live) {
                 if (trigger !== false) {
                     self.trigger(
                         parent,
-                        EVENT_REMOVE,
+                        events.EVENT_REMOVE,
                         {
                             before: before
                         }
