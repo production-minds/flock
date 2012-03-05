@@ -81,6 +81,9 @@
         equal(tmp, data.hello.world, "Set returns parent of changed node");
         equal(i, 1, "Update triggers 'change' event");
 
+        event.set(data, ['hello', 'world', 'center'], "boo", false);
+        equal(i, 1, "Non-triggering call to event.set()");
+
         // testing data addition
         i = 0;
         event.set(data, ['hello', 'world', 'whatever'], "blah");
@@ -97,9 +100,14 @@
         event.subscribe(data, 'remove', onRemove);
 
         i = 0;
+        data.hello.world.center = "a";
         tmp = event.unset(data, ['hello', 'world', 'center']);
         equal(tmp, data.hello.world, "Unset returns parent of removed node");
         equal(i, 1, "Unsetting triggers 'remove' event");
+
+        data.hello.world.center = "a";
+        event.unset(data, ['hello', 'world', 'center'], false);
+        equal(i, 1, "Non-triggering call to event.unset()");
 
         event.unset(data, ['hello', 'world', 'center']);
         equal(i, 1, "Unsetting non-existing path doesn't trigger event");

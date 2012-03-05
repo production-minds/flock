@@ -126,8 +126,9 @@ flock.event = (function (core, live) {
          * @param node {object} Datastore node.
          * @param path {string|Array} Datastore path.
          * @param value {object} Value to set on path
+         * @param [trigger] {boolean} Whether to trigger. Default: true.
          */
-        set: function (node, path, value) {
+        set: function (node, path, value, trigger) {
             // storing 'before' node
             var before = core.get(node, path),
                 after,
@@ -140,16 +141,18 @@ flock.event = (function (core, live) {
             after = core.get(node, path);
 
             // triggering event
-            self.trigger(
-                parent,
-                typeof before === 'undefined' ?
-                    EVENT_ADD :
-                    EVENT_CHANGE,
-                {
-                    before: before,
-                    after: after
-                }
-            );
+            if (trigger !== false) {
+                self.trigger(
+                    parent,
+                    typeof before === 'undefined' ?
+                        EVENT_ADD :
+                        EVENT_CHANGE,
+                    {
+                        before: before,
+                        after: after
+                    }
+                );
+            }
 
             return parent;
         },
@@ -158,8 +161,9 @@ flock.event = (function (core, live) {
          * Removes a single node from the datastore and triggers an event.
          * @param node {object} Datastore node.
          * @param path {string|Array} Datastore path.
+         * @param [trigger] {boolean} Whether to trigger. Default: true.
          */
-        unset: function (node, path) {
+        unset: function (node, path, trigger) {
             // storing 'before' node
             var before = core.get(node, path),
                 parent;
@@ -168,13 +172,15 @@ flock.event = (function (core, live) {
                 parent = core.unset(node, path);
 
                 // triggering event
-                self.trigger(
-                    parent,
-                    EVENT_REMOVE,
-                    {
-                        before: before
-                    }
-                );
+                if (trigger !== false) {
+                    self.trigger(
+                        parent,
+                        EVENT_REMOVE,
+                        {
+                            before: before
+                        }
+                    );
+                }
             }
 
             return parent;
