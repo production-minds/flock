@@ -1,11 +1,5 @@
 /**
- * Flock - JavaScript Key-Value Cache
- *
- * In-memory key-value store. Stores entire tree structure in memory.
- * Use for complex lookups, as memcache on top of a persistence layer,
- * or as an in-memory DHT node.
- *
- * https://github.com/wwidd/flock
+ * Flock Wrapper Object
  */
 var	flock;
 
