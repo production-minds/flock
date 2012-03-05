@@ -6,11 +6,12 @@
 flock.query = (function () {
     var RE_PATH_VALIDATOR = /^(\.{3})*([^\.,]+(\.{1,3}|,))*[^\.,]+$/,
         RE_PATH_SKIPPER = /\.{2,}/,
+        ERROR_INVALIDPATH = "Invalid path.",
         self;
 
     self = {
         /**
-         * Validates and resolves datastore path.
+         * Validates and normalizes datastore path.
          * @param path {string|Array} Datastore path.
          * @example
          * 'contacts.smith.*.ancestors...name'
@@ -18,81 +19,43 @@ flock.query = (function () {
          * @return {Array} Valid datastore path in array notation.
          * @throws {string} On invalid input path.
          */
-        resolve: function (path) {
-            // processing path
+        normalizePath: function (path) {
             if (typeof path === 'string') {
                 // validating path
                 if (path.length && !RE_PATH_VALIDATOR.test(path)) {
-                    throw "flock.resolve: invalid path";
+                    throw "flock.resolve: " + ERROR_INVALIDPATH;
                 }
 
-                var keys,
-                    i,
-                    key;
+                var tpath,
+                    i, key;
 
                 // splitting along dots
-                keys = path.length ? path.replace(RE_PATH_SKIPPER, function (match, offset) {
-                    return offset ? '..' : '.';
-                }).split('.') : [];
+                tpath = path.length ?
+                    path.replace(
+                        RE_PATH_SKIPPER,
+                        function (match, offset) {
+                            return offset ? '..' : '.';
+                        }
+                    ).split('.') :
+                    [];
 
-                for (i = 0; i < keys.length; i++) {
-                    key = keys[i];
+                for (i = 0; i < tpath.length; i++) {
+                    key = tpath[i];
                     if (key === '') {
                         // substituting nulls in place of empty strings
-                        keys[i] = null;
+                        tpath[i] = null;
                     } else if (key.indexOf(',') > -1) {
                         // splitting along commas to form multiple choice keys
-                        keys[i] = key.split(',');
+                        tpath[i] = key.split(',');
                     }
                 }
 
-                return keys;
+                return tpath;
+            } else if (path instanceof Array) {
+                return path.concat([]);
             } else {
-                throw "flock.resolve: invalid argument";
+                throw "flock.resolve: " + ERROR_INVALIDPATH;
             }
-        },
-
-        /**
-         * Retrieves multiple nodes.
-         * @param root {object} Datastore root.
-         * @param path {string|Array} Datastore path expression.
-         * @param [options] {object} Options.
-         * @return {object / Array} Collected nodes.
-         * @see self.many()
-         */
-        mget: function (root, path, options) {
-            return self.many(root, path, options);
-        },
-
-        /**
-         * Sets multiple nodes.
-         * @param root {object} Datastore root.
-         * @param path {string|Array} Datastore path expression.
-         * @param [value] {object} Value to set on path.
-         * @param [options] {object} Options.
-         * @return {object} Reference to self.
-         * @see self.many()
-         */
-        mset: function (root, path, value, options) {
-            options = options || {};
-            options.value = typeof value === 'undefined' ? {} : value;
-            delete options.mode;
-            self.many(root, path, options);
-            return self;
-        },
-
-        /**
-         * Removes multiple nodes.
-         * @param root {object} Datastore root.
-         * @param path {string|Array} Datastore path expression.
-         * @param [options] {object} Options.
-         * @return {object} Reference to self.
-         */
-        munset: function (root, path, options) {
-            options = options || {};
-            options.mode = flock.del;
-            self.many(root, path, options);
-            return self;
         },
 
         /**
@@ -100,26 +63,25 @@ flock.query = (function () {
          * @param root {object} Datastore root.
          * @param path {string|Array} Datastore path expression.
          * @param [options] {object} Options.
-         *	 - limit: max number of entries to retrieve, default: unlimited
-         *	 - mode: type of return value is Object or Array (flock.key/flock.values/flock.both/flock.del), default: flock.array
-         *	 - loopback: whether to traverse loopbacks, default: false
-         *	 - undef: whether to collect undefined entries, default: false
-         *	 - value: value to set, or callback function to execute on nodes
-         *		 when undefined, function returns collected values
+         *     - limit: max number of entries to retrieve, default: unlimited
+         *     - mode: type of return value is Object or Array (flock.key/flock.values/flock.both/flock.del), default: flock.array
+         *     - loopback: whether to traverse loopbacks, default: false
+         *     - undef: whether to collect undefined entries, default: false
+         *     - value: value to set, or callback function to execute on nodes
+         *       when undefined, function returns collected values
          * @return {object} Collected nodes.
          */
-        many: function (root, path, options) {
+        query: function (root, path, options) {
             options = options || {};
 
             // setting defaults
-            if (
-                typeof options.value === 'undefined' &&
-                    typeof options.mode === 'undefined'
-            ) {
+            if (typeof options.value === 'undefined' &&
+                typeof options.mode === 'undefined'
+                ) {
                 options.mode = flock.values;
             }
 
-            var tpath = typeof path === 'object' ? path.concat([]) : self.resolve(path),
+            var tpath = typeof path === 'object' ? path.concat([]) : self.normalizePath(path),
                 last = tpath.length - 1,
                 limit = options.limit || 0,
                 loopback = options.loopback || false,
