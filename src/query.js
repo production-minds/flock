@@ -41,7 +41,7 @@ flock.query = (function (constants) {
             if (typeof path === 'string') {
                 // validating path
                 if (path.length && !RE_PATH_VALIDATOR.test(path)) {
-                    throw "flock.resolve: " + errors.ERROR_INVALIDPATH;
+                    throw "flock.query.normalizePath: " + errors.ERROR_INVALIDPATH;
                 }
 
                 var tpath,
@@ -72,13 +72,13 @@ flock.query = (function (constants) {
             } else if (path instanceof Array) {
                 return path.concat([]);
             } else {
-                throw "flock.resolve: " + errors.ERROR_INVALIDPATH;
+                throw "flock.query.normalizePath: " + errors.ERROR_INVALIDPATH;
             }
         },
 
         /**
          * Collects or modifies end nodes.
-         * @param root {object} Datastore root.
+         * @param node {object} Datastore root.
          * @param path {string|Array} Datastore path expression.
          * @param [options] {object} Options.
          *     - limit: max number of entries to retrieve, default: unlimited
@@ -89,7 +89,7 @@ flock.query = (function (constants) {
          *       when undefined, function returns collected values
          * @return {object} Collected nodes.
          */
-        query: function (root, path, options) {
+        query: function (node, path, options) {
             options = options || {};
 
             // setting defaults
@@ -108,7 +108,7 @@ flock.query = (function (constants) {
 
             // default case
             if (!tpath.length) {
-                return root;
+                return node;
             }
 
             /**
@@ -243,7 +243,7 @@ flock.query = (function (constants) {
                         return;
                     }
                 }
-            }(root, 0, 0));
+            }(node, 0, 0));
 
             return result;
         }
