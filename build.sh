@@ -26,13 +26,22 @@ src/constants.js \
 src/query.js \
 > "build/$NAME.js"
 
-if type jsmin >/dev/null 2>&1
+if type yui-compressor >/dev/null 2>&1
 then
+    echo Minifying using YUI compressor.
+    yui-compressor "build/$NAME.js" > build/tmp.js
+elif type jsmin >/dev/null 2>&1
+then
+    echo Minifying using Jsmin.
     jsmin < "build/$NAME.js" > build/tmp.js
+else
+    echo No minifier found, skipping minification.
+fi
+
+if [ -f build/tmp.js ]
+then
     cat src/license.js build/tmp.js > "build/$NAMEMIN.js"
     rm build/tmp.js
-else
-    echo Jsmin not found. Skipping minification.
 fi
 
 echo Done.
