@@ -7,11 +7,11 @@
 
 flock.constants = (function (utils) {
     var self = {
-        keys: 0,        // collect leaf keys
-        values: 1,      // collect leaf values
-        both: 2,        // collect key:value pairs of leaf nodes
-        del: 3,         // delete leaf nodes
-        count: 4        // count leaf nodes
+        KEYS: 0,        // collect leaf keys
+        VALUES: 1,      // collect leaf values
+        BOTH: 2,        // collect key:value pairs of leaf nodes
+        DEL: 3,         // delete leaf nodes
+        COUNT: 4        // count leaf nodes
     };
 
     // delegating constants on flock object

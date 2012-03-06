@@ -5,7 +5,7 @@
  */
 /*global flock */
 
-flock.event = (function (core, live) {
+flock.event = (function (core, utils, live) {
     var errors, events, self;
 
     errors = {
@@ -19,12 +19,6 @@ flock.event = (function (core, live) {
     };
 
     self = {
-        //////////////////////////////
-        // Utilities
-
-        events: events,
-        errors: errors,
-
         //////////////////////////////
         // Control
 
@@ -56,7 +50,7 @@ flock.event = (function (core, live) {
                     throw "flock.event.subscribe: " + errors.ERROR_HANDLERNOTFUNCTION;
                 }
             } else {
-                throw "flock.event.subscribe: " + live.errors.ERROR_NONTRAVERSABLE;
+                throw "flock.event.subscribe: " + live.ERROR_NONTRAVERSABLE;
             }
         },
 
@@ -101,7 +95,7 @@ flock.event = (function (core, live) {
                     }
                 }
             } else {
-                throw "flock.event.unsubscribe: " + live.errors.ERROR_NONTRAVERSABLE;
+                throw "flock.event.unsubscribe: " + live.ERROR_NONTRAVERSABLE;
             }
         },
 
@@ -131,7 +125,7 @@ flock.event = (function (core, live) {
                     self.trigger(meta.parent, eventName, data);
                 }
             } else {
-                throw "flock.event.trigger: " + live.errors.ERROR_NONTRAVERSABLE;
+                throw "flock.event.trigger: " + live.ERROR_NONTRAVERSABLE;
             }
         },
 
@@ -201,6 +195,11 @@ flock.event = (function (core, live) {
         }
     };
 
+    // delegating errors
+    utils.delegate(self, events);
+    utils.delegate(self, errors);
+
     return self;
 }(flock.core,
+    flock.utils,
     flock.live));

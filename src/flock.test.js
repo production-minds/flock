@@ -117,7 +117,7 @@
     test("Querying", function () {
         deepEqual(
             cache
-                .query('fourth.*', {mode: flock.both})
+                .query('fourth.*', {mode: flock.BOTH})
                 .get('1')
                     .node(),
             cache

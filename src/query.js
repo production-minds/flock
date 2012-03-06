@@ -3,7 +3,7 @@
  */
 /*global flock */
 
-flock.query = (function (constants) {
+flock.query = (function (constants, utils) {
     var RE_PATH_VALIDATOR = /^(\.{3})*([^\.,]+(\.{1,3}|,))*[^\.,]+$/,
         RE_PATH_SKIPPER = /\.{2,}/,
 
@@ -96,7 +96,7 @@ flock.query = (function (constants) {
             if (typeof options.value === 'undefined' &&
                 typeof options.mode === 'undefined'
                 ) {
-                options.mode = constants.values;
+                options.mode = constants.VALUES;
             }
 
             var tpath = typeof path === 'object' ? path.concat([]) : self.normalizePath(path),
@@ -156,24 +156,24 @@ flock.query = (function (constants) {
                             value = obj[key];
                             if (options.undef || typeof value !== 'undefined') {
                                 switch (options.mode) {
-                                case constants.values:
+                                case constants.VALUES:
                                     // collecting value from nodes
                                     result.push(value);
                                     break;
-                                case constants.keys:
+                                case constants.KEYS:
                                     // collecting key from node
                                     result.push(key);
                                     break;
-                                case constants.both:
+                                case constants.BOTH:
                                     // collecting key AND value from node
                                     // WARNING: new values with same key overwrite old
                                     result[key] = value;
                                     break;
-                                case constants.del:
+                                case constants.DEL:
                                     // deleting node
                                     delete obj[key];
                                     break;
-                                case constants.count:
+                                case constants.COUNT:
                                     // counting node
                                     result++;
                                     break;
@@ -249,5 +249,9 @@ flock.query = (function (constants) {
         }
     };
 
+    // delegating errors
+    utils.delegate(self, errors);
+
     return self;
-}(flock.constants));
+}(flock.constants,
+    flock.utils));

@@ -14,11 +14,6 @@ flock.core = (function (utils) {
 
     self = {
         //////////////////////////////
-        // Utilities
-
-        errors: errors,
-
-        //////////////////////////////
         // Control
 
         /**
@@ -150,6 +145,9 @@ flock.core = (function (utils) {
             }
         }
     };
+
+    // delegating errors
+    utils.delegate(self, errors);
 
     return self;
 }(flock.utils));

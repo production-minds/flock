@@ -5,16 +5,16 @@
  */
 /*global flock */
 
-flock.live = (function (core) {
+flock.live = (function (core, utils) {
     var META = '.meta',
-        errors, utils, self;
+        errors, privates, self;
 
     errors = {
         ERROR_NONTRAVERSABLE: "Non-traversable datastore node.",
         ERROR_FORBIDDENKEY: "Forbidden key."
     };
 
-    utils = {
+    privates = {
         /**
          * Adds meta node to a single datastore node. When no explicit node is provided,
          * node is identified by its parent and name.
@@ -56,10 +56,9 @@ flock.live = (function (core) {
         META: META,
 
         //////////////////////////////
-        // Utilities
+        // Auxiliary
 
-        errors: errors,
-        utils: utils,
+        privates: privates,
 
         //////////////////////////////
         // Control
@@ -75,7 +74,7 @@ flock.live = (function (core) {
             var prop;
 
             // adding meta node
-            utils.addMeta(parent, name, node);
+            privates.addMeta(parent, name, node);
 
             // processing child nodes
             for (prop in node) {
@@ -196,5 +195,9 @@ flock.live = (function (core) {
         }
     };
 
+    // delegating errors
+    utils.delegate(self, errors);
+
     return self;
-}(flock.core));
+}(flock.core,
+    flock.utils));

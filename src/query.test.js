@@ -1,5 +1,5 @@
 /*global flock, module, test, ok, equal, notEqual, deepEqual, raises, console */
-(function (query, core) {
+(function ($, query, core) {
     var data = {
         first: {
             a: {},
@@ -71,7 +71,7 @@
             "Collecting nodes from path '*.1'");
 
         deepEqual(
-            query.query(data, 'first,second.*', {mode: flock.both}),
+            query.query(data, 'first,second.*', {mode: $.BOTH}),
             {a: {}, b: {}, c: {}, d: {}, e: {}, 1: {}, 2: {}, 3: {}},
             "Getting results as lookup");
     });
@@ -113,7 +113,7 @@
             [{}],
             "Collecting non-existent keys");
         deepEqual(
-            query.query(data, [['thousandth', 'third']], {mode: flock.both}),
+            query.query(data, [['thousandth', 'third']], {mode: $.BOTH}),
             {third: {}},
             "Collecting non-existent keys (as lookup)");
         deepEqual(
@@ -123,9 +123,9 @@
     });
 
     test("Counting", function () {
-        equal(query.query(data, 'first.*', {mode: flock.count}), 5, "5 elements on path 'first.*'");
-        equal(query.query(data, 'fourth.*.a', {mode: flock.count}), 3, "3 elements on path 'fourth.*.a'");
-        equal(query.query(data, '...a', {mode: flock.count}), 4, "4 elements on path '...a'");
+        equal(query.query(data, 'first.*', {mode: $.COUNT}), 5, "5 elements on path 'first.*'");
+        equal(query.query(data, 'fourth.*.a', {mode: $.COUNT}), 3, "3 elements on path 'fourth.*.a'");
+        equal(query.query(data, '...a', {mode: $.COUNT}), 4, "4 elements on path '...a'");
     });
 
     test("Skipping", function () {
@@ -296,7 +296,7 @@
                 b: "Six"
             }
         }});
-        query.query(data, 'fourth.*.a', {mode: flock.del});
+        query.query(data, 'fourth.*.a', {mode: $.DEL});
         deepEqual(data.fourth, {
             1: {
                 b: "Two"
@@ -314,18 +314,18 @@
         var data = {};
 
         // sets string for full text search
-        function set(name) {
+        function addWord(name) {
             core.set(data, name.split(''), {name: name});
         }
 
         // setting up cache
-        set("hello");
-        set("world");
-        set("hero");
-        set("wounded");
-        set("worn");
-        set("hers");
-        set("wedding");
+        addWord("hello");
+        addWord("world");
+        addWord("hero");
+        addWord("wounded");
+        addWord("worn");
+        addWord("hers");
+        addWord("wedding");
 
         // querying data
         deepEqual(query.query(data, "w.o...name"), [
@@ -359,5 +359,6 @@
             "wedding"
         ], "*e...");
     });
-}(flock.query,
+}(flock,
+    flock.query,
     flock.core));
