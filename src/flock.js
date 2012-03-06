@@ -25,7 +25,8 @@ var flock;
         node = node || {};
         options = options || {
             nolive: false,
-            noevent: false
+            noevent: false,
+            noquery: false
         };
 
         // shortcuts
@@ -33,6 +34,7 @@ var flock;
             core = flock.core,
             live = flock.live,
             event = flock.event,
+            query = flock.query,
             args = [node],
             self = {};
 
@@ -81,6 +83,16 @@ var flock;
             // core set
             self.set = genMethod(core.set, args, self);
             self.unset = genMethod(core.unset, args, self);
+        }
+
+        if (!options.noquery && query) {
+            if (!options.nolive && live) {
+                // setting meta key to be ignored by traversal
+                query.ignoredKey(live.META);
+            }
+
+            // query method
+            self.query = genMethod(query.query, args, nodeMapper);
         }
 
         return self;

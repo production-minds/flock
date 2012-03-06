@@ -113,4 +113,17 @@
         equal(i, 1, "Event captured on root node");
         cache.off('testEvent');
     });
+
+    test("Querying", function () {
+        deepEqual(
+            cache
+                .query('fourth.*', {mode: flock.both})
+                .get('1')
+                    .node(),
+            cache
+                .get('fourth.1')
+                    .node(),
+            "Stacked querying and getting"
+        );
+    });
 }(flock));
