@@ -21,6 +21,7 @@ flock.live = (function (core, utils) {
          * @param parent {object} Reference to parent node.
          * @param name {string} Name of node in parent.
          * @param [node] {object} Datastore node.
+         * @returns {boolean} Whether addition of meta node was successful.
          */
         addMeta: function (parent, name, node) {
             var meta;
@@ -28,23 +29,32 @@ flock.live = (function (core, utils) {
             // taking node from parent when no node is explicitly provided
             node = node || parent[name];
 
-            // adding meta node
-            meta = node[META] = {};
-            meta.self = node;
-            if (typeof parent === 'object' &&
-                typeof name === 'string') {
-                meta.parent = parent;
-                meta.name = name;
+            if (!node.hasOwnProperty(META)) {
+                // adding meta node
+                meta = node[META] = {};
+                meta.self = node;
+                if (typeof parent === 'object' &&
+                    typeof name === 'string') {
+                    meta.parent = parent;
+                    meta.name = name;
+                }
+                return true;
+            } else {
+                return false;
             }
         },
 
         /**
          * Removes meta node from datastore node.
          * @param node {object} Datastore node.
+         * @returns {boolean} Whether removal of meta node was successful.
          */
         removeMeta: function (node) {
             if (node.hasOwnProperty(META)) {
                 delete node[META];
+                return true;
+            } else {
+                return false;
             }
         }
     };
@@ -66,6 +76,9 @@ flock.live = (function (core, utils) {
         /**
          * Traverses datastore and adds meta-nodes, thus making
          * the datastore information 'live'.
+         * Stops traversal when a node already has meta node.
+         * (It is to prevent re-initialization of a sub-tree that is
+         * referenced from other than its parent node.)
          * @param node {object} Non-live data.
          * @param [parent] {object} Parent node.
          * @param [name] {string} Name of the
@@ -74,16 +87,19 @@ flock.live = (function (core, utils) {
             var prop;
 
             // adding meta node
-            privates.addMeta(parent, name, node);
+            if (privates.addMeta(parent, name, node)) {
+                // when addition is successful
+                // (ie. node didn't have a meta node already)
 
-            // processing child nodes
-            for (prop in node) {
-                if (node.hasOwnProperty(prop)) {
-                    if (prop !== META &&
-                        typeof node[prop] === 'object'
-                        ) {
-                        // continuing traversal
-                        self.init(node[prop], node, prop);
+                // processing child nodes
+                for (prop in node) {
+                    if (node.hasOwnProperty(prop)) {
+                        if (prop !== META &&
+                            typeof node[prop] === 'object'
+                            ) {
+                            // continuing traversal
+                            self.init(node[prop], node, prop);
+                        }
                     }
                 }
             }

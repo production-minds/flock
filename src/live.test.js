@@ -18,6 +18,16 @@
         equal(data.hello[live.META].name, 'hello', "Node name stored in meta node.");
         equal(data.hello[live.META].self, data.hello, "Node reference stored in meta node.");
         equal(data.hello[live.META].parent, data, "Parent node reference stored in meta node.");
+
+        // re-initialization
+        data.what = {
+            test: {
+                foo: data.hello.world
+            }
+        };
+        live.init(data.what);
+        equal(data.what.test[live.META].parent, data.what, "New sub-node initialized");
+        equal(data.what.test.foo[live.META].parent, data.hello, "Re-initialization doesn't affect exising meta nodes");
     });
 
     test("Path resolution", function () {
