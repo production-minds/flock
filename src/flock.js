@@ -67,6 +67,7 @@ var flock;
         // live
         if (!options.nolive && live) {
             self.init = genMethod(live.init, args, self);
+            self.deinit = genMethod(live.deinit, args, self);
             self.path = genMethod(live.path, args);
             self.parent = genMethod(live.parent, args, nodeMapper, options);
             self.closest = genMethod(live.closest, args, nodeMapper, options);

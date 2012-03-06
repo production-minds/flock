@@ -79,27 +79,44 @@ flock.live = (function (core, utils) {
          * Stops traversal when a node already has meta node.
          * (It is to prevent re-initialization of a sub-tree that is
          * referenced from other than its parent node.)
-         * @param node {object} Non-live data.
+         * @param node {object} Datastore (root) node.
          * @param [parent] {object} Parent node.
          * @param [name] {string} Name of the
          */
         init: function (node, parent, name) {
-            var prop;
-
-            // adding meta node
+            var key;
             if (privates.addMeta(parent, name, node)) {
                 // when addition is successful
                 // (ie. node didn't have a meta node already)
 
                 // processing child nodes
-                for (prop in node) {
-                    if (node.hasOwnProperty(prop)) {
-                        if (prop !== META &&
-                            typeof node[prop] === 'object'
+                for (key in node) {
+                    if (node.hasOwnProperty(key)) {
+                        if (key !== META &&
+                            typeof node[key] === 'object'
                             ) {
-                            // continuing traversal
-                            self.init(node[prop], node, prop);
+                            self.init(node[key], node, key);
                         }
+                    }
+                }
+            }
+        },
+
+        /**
+         * Removes meta nodes from the sub-tree specified by parameter 'node'
+         * as a root node.
+         * @param node {object} Datastore (root) node.
+         */
+        deinit: function (node) {
+            var key;
+            if (privates.removeMeta(node)) {
+                // child nodes are ignored when node has no meta node
+                // to avoid traversing already traversed branches
+
+                // processing child nodes
+                for (key in node) {
+                    if (node.hasOwnProperty(key)) {
+                        self.deinit(node[key]);
                     }
                 }
             }

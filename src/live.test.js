@@ -28,6 +28,19 @@
         live.init(data.what);
         equal(data.what.test[live.META].parent, data.what, "New sub-node initialized");
         equal(data.what.test.foo[live.META].parent, data.hello, "Re-initialization doesn't affect exising meta nodes");
+
+        // de-initializing
+        live.deinit(data);
+        ok(typeof data[live.META] === 'undefined' &&
+            typeof data.hello[live.META] === 'undefined' &&
+            typeof data.hello.world[live.META] === 'undefined' &&
+            typeof data.what[live.META] === 'undefined' &&
+            typeof data.what.test[live.META] === 'undefined',
+            "De-initialization removes meta nodes"
+        );
+
+        // restoring meta nodes
+        live.init(data);
     });
 
     test("Path resolution", function () {
