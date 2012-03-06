@@ -3,13 +3,31 @@
  */
 /*global flock */
 
-flock.query = (function () {
+flock.query = (function (constants) {
     var RE_PATH_VALIDATOR = /^(\.{3})*([^\.,]+(\.{1,3}|,))*[^\.,]+$/,
         RE_PATH_SKIPPER = /\.{2,}/,
-        ERROR_INVALIDPATH = "Invalid path.",
-        self;
+
+        ignoredKey,
+        errors, self;
+
+    errors = {
+        ERROR_INVALIDPATH: "Invalid path."
+    };
 
     self = {
+        /**
+         * Setter for excluded key. When set, traversal will
+         * ignore nodes with the specified key.
+         * @param [value] {string} Key to be ignored. When ommitted, clears ignored key.
+         */
+        ignoredKey: function (value) {
+            if (typeof value === 'string' ||
+                typeof value === 'undefined'
+                ) {
+                ignoredKey = value;
+            }
+        },
+
         /**
          * Validates and normalizes datastore path.
          * @param path {string|Array} Datastore path.
@@ -23,7 +41,7 @@ flock.query = (function () {
             if (typeof path === 'string') {
                 // validating path
                 if (path.length && !RE_PATH_VALIDATOR.test(path)) {
-                    throw "flock.resolve: " + ERROR_INVALIDPATH;
+                    throw "flock.resolve: " + errors.ERROR_INVALIDPATH;
                 }
 
                 var tpath,
@@ -54,7 +72,7 @@ flock.query = (function () {
             } else if (path instanceof Array) {
                 return path.concat([]);
             } else {
-                throw "flock.resolve: " + ERROR_INVALIDPATH;
+                throw "flock.resolve: " + errors.ERROR_INVALIDPATH;
             }
         },
 
@@ -78,7 +96,7 @@ flock.query = (function () {
             if (typeof options.value === 'undefined' &&
                 typeof options.mode === 'undefined'
                 ) {
-                options.mode = flock.values;
+                options.mode = constants.values;
             }
 
             var tpath = typeof path === 'object' ? path.concat([]) : self.normalizePath(path),
@@ -121,6 +139,10 @@ flock.query = (function () {
                  * @return {boolean} Whether to terminate traversal.
                  */
                 function node(key) {
+                    if (key === ignoredKey) {
+                        return false;
+                    }
+
                     var value;
                     if (i < last) {
                         // current node has children, burrowing one level deeper
@@ -134,24 +156,24 @@ flock.query = (function () {
                             value = obj[key];
                             if (options.undef || typeof value !== 'undefined') {
                                 switch (options.mode) {
-                                case flock.values:
+                                case constants.values:
                                     // collecting value from nodes
                                     result.push(value);
                                     break;
-                                case flock.keys:
+                                case constants.keys:
                                     // collecting key from node
                                     result.push(key);
                                     break;
-                                case flock.both:
+                                case constants.both:
                                     // collecting key AND value from node
                                     // WARNING: new values with same key overwrite old
                                     result[key] = value;
                                     break;
-                                case flock.del:
+                                case constants.del:
                                     // deleting node
                                     delete obj[key];
                                     break;
-                                case flock.count:
+                                case constants.count:
                                     // counting node
                                     result++;
                                     break;
@@ -228,4 +250,4 @@ flock.query = (function () {
     };
 
     return self;
-}());
+}(flock.constants));

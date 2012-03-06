@@ -76,6 +76,16 @@
             "Getting results as lookup");
     });
 
+    test("Ignored key", function () {
+        query.ignoredKey('2');
+        deepEqual(
+            query.query(data, 'fourth.*'),
+            [{a: "One", b: "Two"}, {a: "Five", b: "Six"}],
+            "Ignoring key '2' along path 'fourth.*'");
+
+        query.ignoredKey();
+    });
+
     test("OR relation", function () {
         deepEqual(
             query.query(data, ['fourth', [1, 3]]),
