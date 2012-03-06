@@ -26,6 +26,9 @@
         instanceTest = utils.genMethod(undefTest, [5], function() { return "ready"; });
         equal(instanceTest(4), "ready", "Generated method applies mapper");
 
+        instanceTest = utils.genMethod(staticTest, [5], function(result, custom) { return result + custom; }, 9);
+        equal(instanceTest(4), 18, "Passing custom data to mapper");
+
         instanceTest = utils.genMethod(undefTest, [5], "foo");
         equal(instanceTest(4), "foo", "Generated method returns specified (non-function) value");
     });

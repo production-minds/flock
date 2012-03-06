@@ -8,9 +8,9 @@ var flock;
      * Maps a datastore node to a flock object.
      * @param node {object} Datastore node.
      */
-    function nodeMapper(node) {
+    function nodeMapper(node, options) {
         return typeof node !== 'undefined' ?
-            flock(node) :
+            flock(node, options) :
             flock.empty;
     }
 
@@ -45,19 +45,31 @@ var flock;
             return node;
         };
 
+        /**
+         * Returns copy of the options object as to
+         * prevent it from being modified.
+         */
+        self.options = function () {
+            return {
+                nolive: options.nolive,
+                noevent: options.noevent,
+                noquery: options.noquery
+            };
+        };
+
         //////////////////////////////
         // Delegates
 
         // core
-        self.get = genMethod(core.get, args, nodeMapper);
+        self.get = genMethod(core.get, args, nodeMapper, options);
         self.cleanup = genMethod(core.cleanup, args, self);
 
         // live
         if (!options.nolive && live) {
             self.init = genMethod(live.init, args, self);
             self.path = genMethod(live.path, args);
-            self.parent = genMethod(live.parent, args, nodeMapper);
-            self.closest = genMethod(live.closest, args, nodeMapper);
+            self.parent = genMethod(live.parent, args, nodeMapper, options);
+            self.closest = genMethod(live.closest, args, nodeMapper, options);
             self.name = genMethod(live.name, args);
 
             // event - must have live for events
@@ -92,7 +104,7 @@ var flock;
             }
 
             // query method
-            self.query = genMethod(query.query, args, nodeMapper);
+            self.query = genMethod(query.query, args, nodeMapper, options);
         }
 
         return self;

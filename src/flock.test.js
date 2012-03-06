@@ -60,6 +60,33 @@
         );
     });
 
+    test("Options", function () {
+        deepEqual(cache.options(), {
+            nolive: false,
+            noevent: false,
+            noquery: false
+        }, "All flags are false by default");
+
+        var tmp = $({hello: {world: {}}}, {
+            nolive: true
+        });
+
+        deepEqual(tmp.options(), {
+            nolive: true,
+            noevent: undefined,
+            noquery: undefined
+        }, "Non-default options set (nolive: true)");
+
+        deepEqual(tmp.get('hello.world').options(), {
+            nolive: true,
+            noevent: undefined,
+            noquery: undefined
+        }, "Derived flock object preserves options");
+
+        tmp.options().noevent = true;
+        ok(typeof tmp.options().noevent === 'undefined', "Options cannot be modified through property");
+    });
+
     cache.init();
 
     test("Live", function () {

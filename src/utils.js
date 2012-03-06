@@ -11,12 +11,13 @@ flock.utils = (function () {
          * @param handler {function} Model function,
          * @param args {Array} Fix arguments (first N of handler's args).
          * @param [mapper] {function} Function that maps the return value.
+         * @param [custom] {object} Custom data to be passed to mapper.
          * Treated as return value when non-function.
          */
-        genMethod: function (handler, args, mapper) {
+        genMethod: function (handler, args, mapper, custom) {
             if (typeof mapper === 'function') {
                 return function () {
-                    return mapper(handler.apply(this, args.concat(Array.prototype.slice.call(arguments))));
+                    return mapper(handler.apply(this, args.concat(Array.prototype.slice.call(arguments))), custom);
                 };
             } else {
                 return function () {
