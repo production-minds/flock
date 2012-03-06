@@ -16,7 +16,8 @@ flock.query = (function (constants, utils) {
 
     privates = {
         /**
-         * Processes key node.
+         * Processes a single node in accordance with the current
+         * state of traversal.
          * TODO: getting rid of i, obj, and depth params
          * @param key {string} Key in object to proceed to.
          * @param obj {object} Node to walk.
@@ -31,32 +32,32 @@ flock.query = (function (constants, utils) {
             }
 
             var value,
-                that = this;
+                state = this;
 
-            if (i < that.last) {
+            if (i < state.last) {
                 // current node has children, burrowing one level deeper
                 if (obj.hasOwnProperty(key)) {
-                    privates.walk.call(that, obj[key], i + 1, depth + 1);
+                    privates.walk.call(state, obj[key], i + 1, depth + 1);
                 }
             } else {
                 // leaf node reached
-                if (typeof that.options.mode !== 'undefined') {
+                if (typeof state.options.mode !== 'undefined') {
                     // when querying or deleting
                     value = obj[key];
-                    if (that.options.undef || typeof value !== 'undefined') {
-                        switch (that.options.mode) {
+                    if (state.options.undef || typeof value !== 'undefined') {
+                        switch (state.options.mode) {
                         case constants.VALUES:
                             // collecting value from nodes
-                            that.result.push(value);
+                            state.result.push(value);
                             break;
                         case constants.KEYS:
                             // collecting key from node
-                            that.result.push(key);
+                            state.result.push(key);
                             break;
                         case constants.BOTH:
                             // collecting key AND value from node
                             // WARNING: new values with same key overwrite old
-                            that.result[key] = value;
+                            state.result[key] = value;
                             break;
                         case constants.DEL:
                             // deleting node
@@ -64,26 +65,26 @@ flock.query = (function (constants, utils) {
                             break;
                         case constants.COUNT:
                             // counting node
-                            that.result++;
+                            state.result++;
                             break;
                         }
-                        if (--that.limit === 0) {
+                        if (--state.limit === 0) {
                             return true;
                         }
                     }
                 } else {
                     // when updating
-                    if (typeof that.options.value === 'function') {
+                    if (typeof state.options.value === 'function') {
                         // calling custom handler on node
-                        value = that.options.value(obj[key]);
+                        value = state.options.value(obj[key]);
                         if (typeof value !== 'undefined') {
                             obj[key] = value;
                         }
                     } else {
                         // assigning custom value to key
-                        obj[key] = that.options.value;
+                        obj[key] = state.options.value;
                     }
-                    if (--that.limit === 0) {
+                    if (--state.limit === 0) {
                         return true;
                     }
                 }
@@ -92,7 +93,8 @@ flock.query = (function (constants, utils) {
         },
 
         /**
-         * Collects end nodes. Used internally.
+         * Collects end nodes matching the path passed in the
+         * traversal state object.
          * @param obj {object} Node to walk.
          * @param i {number} Current position in path,
          * @param depth {number} Current depth in tree.
@@ -100,27 +102,27 @@ flock.query = (function (constants, utils) {
          */
         walk: function walk(obj, i, depth) {
             var key, j,
-                that = this;
+                state = this;
 
             // detecting loopback
-            if (!that.loopback) {
+            if (!state.loopback) {
                 for (j = 0; j < depth; j++) {
-                    if (obj === that.stack[j]) {
+                    if (obj === state.stack[j]) {
                         return;
                     }
                 }
                 // putting current object on the stack
-                that.stack[depth] = obj;
+                state.stack[depth] = obj;
             }
 
 
             // processing next key in path
-            key = that.path[i];
+            key = state.path[i];
             if (key === '*') {
                 // processing wildcard node
                 for (key in obj) {
                     if (obj.hasOwnProperty(key)) {
-                        if (privates.node.call(that, key, i, obj, depth)) {
+                        if (privates.node.call(state, key, i, obj, depth)) {
                             return;
                         }
                     }
@@ -130,28 +132,28 @@ flock.query = (function (constants, utils) {
                 // must be object type as strings have indexes, too
                 for (key in obj) {
                     if (obj.hasOwnProperty(key)) {
-                        if (key === that.path[i + 1]) {
+                        if (key === state.path[i + 1]) {
                             // current key matches next key in path
                             // re-walking current object but leving skipper key
-                            privates.walk.call(that, obj, i + 1, depth);
+                            privates.walk.call(state, obj, i + 1, depth);
                         } else {
                             // current key doesn't match next key in path
                             // walking next level, but staying on skipper key
-                            privates.walk.call(that, obj[key], i, depth + 1);
+                            privates.walk.call(state, obj[key], i, depth + 1);
                         }
                     }
                 }
             } else if (key instanceof Array) {
                 // processing list of nodes
                 for (j = 0; j < key.length; j++) {
-                    if (privates.node.call(that, key[j], i, obj, depth)) {
+                    if (privates.node.call(state, key[j], i, obj, depth)) {
                         return;
                     }
                 }
             } else {
                 // processing single node
-                key = that.path[i];
-                if (privates.node.call(that, key, i, obj, depth)) {
+                key = state.path[i];
+                if (privates.node.call(state, key, i, obj, depth)) {
                     return;
                 }
             }
