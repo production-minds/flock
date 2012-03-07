@@ -62,6 +62,7 @@ var flock;
 
         // core
         self.get = genMethod(core.get, args, nodeMapper, options);
+        self.clear = genMethod(core.clear, args, self);
         self.cleanup = genMethod(core.cleanup, args, self);
 
         // live

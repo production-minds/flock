@@ -96,6 +96,9 @@
                 }
             }
         }, "Single node removed");
+
+        core.clear(data);
+        deepEqual(data, {}, "Clearing entire datastores");
     });
 
     test("Cleanup", function () {

@@ -89,6 +89,19 @@ flock.core = (function (utils) {
         },
 
         /**
+         * Clears node. Deletes all child nodes.
+         * @param node {object} Datastore node.
+         */
+        clear: function (node) {
+            var key;
+            for (key in node) {
+                if (node.hasOwnProperty(key)) {
+                    delete node[key];
+                }
+            }
+        },
+
+        /**
          * Removes a single node from the datastore.
          * @param node {object} Datastore node.
          * @param path {string|Array} Datastore path.
