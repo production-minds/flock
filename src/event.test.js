@@ -43,6 +43,7 @@
         var i, j;
         function testHandler() { i++; }
         function otherHandler() { j++; }
+        function stopHandler() { i++; return false; }
 
         event.subscribe(data.hello.world, 'testEvent', testHandler);
         event.subscribe(data.hello, 'testEvent', otherHandler);
@@ -50,17 +51,23 @@
 
         i = j = 0;
         event.trigger(data.hello.world, 'otherEvent');
-        equal(j, 1, "Event triggered");
+        equal(j, 1, "Event triggered on single subscribed node");
 
         i = j = 0;
         event.trigger(data.hello.world, 'testEvent');
-        equal(i, 1, "Event triggered on source node");
-        equal(j, 1, "Event bubbled to parent");
+        equal(i, 1, "Event triggered on source node (source and parent both have handlers)");
+        equal(j, 1, "> Event bubbled to parent");
 
         j = 0;
         event.unsubscribe(data.hello.world);
         event.trigger(data.hello.world, 'testEvent');
         equal(j, 1, "Event bubbled to parent from non-capturing node");
+
+        i = j = 0;
+        event.subscribe(data.hello.world, 'testEvent', stopHandler);
+        event.trigger(data.hello.world, 'testEvent');
+        equal(i, 1, "Event triggered on source node with handler that returns false");
+        equal(j, 0, "> Event didn't bubble bubble to parent");
 
         raises(function () {
             event.trigger(data.hello.all, 'testEvent');

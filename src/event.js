@@ -116,7 +116,10 @@ flock.event = (function (core, utils, live) {
                 if (typeof handlers === 'object') {
                     // calling handlers for event
                     for (i = 0; i < handlers.length; i++) {
-                        handlers[i](node, data);
+                        if (handlers[i](node, data) === false) {
+                            // if handler returns false (not falsey), bubbling stops
+                            return;
+                        }
                     }
                 }
 
