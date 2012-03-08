@@ -87,8 +87,6 @@
         ok(typeof tmp.options().noevent === 'undefined', "Options cannot be modified through property");
     });
 
-    cache.init();
-
     test("Live", function () {
         equal(
             cache
@@ -116,6 +114,10 @@
             "a",
             "Node name retrieval"
         );
+
+        var tmp = $({}, {nolive: true});
+        ok(typeof cache.node()[$.live.META] === 'object', "Flock with 'nolive' off does initialize by default.");
+        ok(typeof tmp.node()[$.live.META] === 'undefined', "Flock with 'nolive' on doesn't initialize by default.");
     });
 
     test("Events", function () {

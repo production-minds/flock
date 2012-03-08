@@ -67,6 +67,10 @@ var flock;
 
         // live
         if (!options.nolive && live) {
+            // initializing
+            live.init(node);
+
+            // general live methods
             self.init = genMethod(live.init, args, self);
             self.deinit = genMethod(live.deinit, args, self);
             self.path = genMethod(live.path, args);
