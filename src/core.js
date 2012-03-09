@@ -6,13 +6,36 @@
 flock.core = (function (utils) {
     var RE_PATHVALIDATOR = /^([^\.]+\.)*[^\.]+$/,
         RE_PATHSEPARATOR = /\./,
-        errors, self;
+        errors, privates, self;
 
     errors = {
         ERROR_INVALIDPATH: "Invalid path."
     };
 
+    privates = {
+        /**
+         * Determines whether a node is empty.
+         * @param node {object} Datastore node.
+         * @returns {boolean}
+         */
+        empty: function (node) {
+            var key;
+            for (key in node) {
+                if (node.hasOwnProperty(key)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    };
+
     self = {
+        //////////////////////////////
+        // Exposed
+
+        errors: errors,
+        privates: privates,
+
         //////////////////////////////
         // Control
 
@@ -66,10 +89,12 @@ flock.core = (function (utils) {
          * Sets a singe value on the given datastore path.
          * @param node {object} Datastore node.
          * @param path {string|Array} Datastore path.
-         * @param value {object} Value to set on path
+         * @param [value] {object} Value to set on path
          * @returns {object} Parent of the changed node.
          */
         set: function (node, path, value) {
+            value = value || {};
+
             var key,
                 tpath = self.normalizePath(path),
                 name = tpath.pop();

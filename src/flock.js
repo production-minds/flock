@@ -97,10 +97,13 @@ var flock;
                 self.set = genMethod(live.set, args, self);
                 self.unset = genMethod(core.unset, args, self);
             }
+
+            self.empty = genMethod(live.empty, args);
         } else {
             // core set
             self.set = genMethod(core.set, args, self);
             self.unset = genMethod(core.unset, args, self);
+            self.empty = genMethod(core.empty, args);
         }
 
         if (!options.noquery && query) {

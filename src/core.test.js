@@ -12,6 +12,11 @@
         }
     };
 
+    test("Utilities", function () {
+        ok(core.privates.empty({}), "Empty object is detected to be empty");
+        ok(!core.privates.empty({foo:"bar"}), "Non-empty object is detected to be not empty");
+    });
+
     test("Path normalization", function () {
         raises(function () {
             core.normalizePath('...fds.fd');
@@ -62,6 +67,9 @@
 
         core.set(data, ['hello', 'yall', 'folks'], "test");
         equal(data.hello.yall.folks, "test", "Value set on non-existing path");
+
+        core.set(data, ['hello', 'yall', 'folks']);
+        deepEqual(data.hello.yall.folks, {}, "Default value for set is empty object");
     });
 
     test("Unsetting", function () {

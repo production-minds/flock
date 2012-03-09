@@ -56,6 +56,23 @@ flock.live = (function (core, utils) {
             } else {
                 return false;
             }
+        },
+
+        /**
+         * Determines whether a node is empty. Doesn't count meta node.
+         * @param node {object} Datastore node.
+         * @returns {boolean}
+         */
+        empty: function (node) {
+            var key;
+            for (key in node) {
+                if (node.hasOwnProperty(key) &&
+                    key !== META
+                    ) {
+                    return false;
+                }
+            }
+            return true;
         }
     };
 
@@ -129,10 +146,12 @@ flock.live = (function (core, utils) {
          * Sets value on node with meta nodes added.
          * @param node {object} Datastore node.
          * @param path {string|Array} Datastore path.
-         * @param value {object} Value to set on path.
+         * @param [value] {object} Value to set on path.
          * @returns {object} Parent of the changed node.
          */
         set: function (node, path, value) {
+            value = value || {};
+
             var parent,
                 i, key;
 

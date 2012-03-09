@@ -14,6 +14,15 @@
 
     live.init(data);
 
+    test("Utilities", function () {
+        ok(live.privates.empty({}), "Empty object is detected to be empty");
+        ok(!live.privates.empty({foo:"bar"}), "Non-empty object is detected to be not empty");
+
+        var tmp = {};
+        tmp[live.META] = "foo";
+        ok(live.privates.empty(tmp), "Object with just one meta key is detected to be empty");
+    });
+
     test("Initialization", function () {
         equal(data.hello[live.META].name, 'hello', "Node name stored in meta node.");
         equal(data.hello[live.META].self, data.hello, "Node reference stored in meta node.");
@@ -64,6 +73,9 @@
 
         live.set(data, ['hello', 'world', 'center'], "blah");
         equal(data.hello.world.center, 'blah', "Setting ordinal node");
+
+        live.set(data, ['hello', 'world', 'foo']);
+        ok(live.privates.empty(data.hello.world.foo), "Default value for set is empty object");
 
         raises(function () {
             live.set(data, ['hello', 'world', live.META], "blah");
