@@ -6,27 +6,10 @@
 flock.core = (function (utils) {
     var RE_PATHVALIDATOR = /^([^\.]+\.)*[^\.]+$/,
         RE_PATHSEPARATOR = /\./,
-        errors, privates, self;
+        errors, self;
 
     errors = {
         ERROR_INVALIDPATH: "Invalid path."
-    };
-
-    privates = {
-        /**
-         * Determines whether a node is empty.
-         * @param node {object} Datastore node.
-         * @returns {boolean}
-         */
-        empty: function (node) {
-            var key;
-            for (key in node) {
-                if (node.hasOwnProperty(key)) {
-                    return false;
-                }
-            }
-            return true;
-        }
     };
 
     self = {
@@ -34,7 +17,6 @@ flock.core = (function (utils) {
         // Exposed
 
         errors: errors,
-        privates: privates,
 
         //////////////////////////////
         // Control

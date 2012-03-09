@@ -12,11 +12,6 @@
         }
     };
 
-    test("Utilities", function () {
-        ok(core.privates.empty({}), "Empty object is detected to be empty");
-        ok(!core.privates.empty({foo:"bar"}), "Non-empty object is detected to be not empty");
-    });
-
     test("Path normalization", function () {
         raises(function () {
             core.normalizePath('...fds.fd');

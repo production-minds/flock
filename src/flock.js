@@ -10,8 +10,8 @@ var flock;
      */
     function nodeMapper(node, options) {
         return typeof node !== 'undefined' ?
-            flock(node, options) :
-            flock.empty;
+        flock(node, options) :
+        flock.empty;
     }
 
     /**
@@ -30,11 +30,12 @@ var flock;
         };
 
         // shortcuts
-        var genMethod = flock.utils.genMethod,
+        var utils = flock.utils,
             core = flock.core,
             live = flock.live,
             event = flock.event,
             query = flock.query,
+            genMethod = utils.genMethod,
             args = [node],
             self = {};
 
@@ -103,7 +104,7 @@ var flock;
             // core set
             self.set = genMethod(core.set, args, self);
             self.unset = genMethod(core.unset, args, self);
-            self.empty = genMethod(core.empty, args);
+            self.empty = genMethod(utils.isEmpty, args);
         }
 
         if (!options.noquery && query) {
