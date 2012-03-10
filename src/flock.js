@@ -10,8 +10,8 @@ var flock;
      */
     function nodeMapper(node, options) {
         return typeof node !== 'undefined' ?
-        flock(node, options) :
-        flock.empty;
+            flock(node, options) :
+            flock.empty;
     }
 
     /**
