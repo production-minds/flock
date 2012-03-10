@@ -104,10 +104,14 @@ flock.event = (function (core, utils, live) {
          * @param node {object} Datastore node.
          * @param eventName {string} Name of event to subscribe to.
          * @param [data] {object} Custom data to be passed to event handlers.
+         * @param [target] {object} Custom target node.
          * @throws {string} On untraversable node.
          */
-        trigger: function (node, eventName, data) {
+        trigger: function (node, eventName, data, target) {
+            target = target || node;
+
             var meta = node[live.META],
+                event,
                 handlers,
                 i;
 
@@ -116,7 +120,11 @@ flock.event = (function (core, utils, live) {
                 if (typeof handlers === 'object') {
                     // calling handlers for event
                     for (i = 0; i < handlers.length; i++) {
-                        if (handlers[i](node, data) === false) {
+                        event = {
+                            name: eventName,
+                            target: target
+                        };
+                        if (handlers[i](event, data) === false) {
                             // if handler returns false (not falsey), bubbling stops
                             return;
                         }
@@ -125,7 +133,7 @@ flock.event = (function (core, utils, live) {
 
                 // bubbling event up the datastore tree
                 if (typeof meta.parent === 'object') {
-                    self.trigger(meta.parent, eventName, data);
+                    self.trigger(meta.parent, eventName, data, target);
                 }
             } else {
                 throw "flock.event.trigger: " + live.ERROR_NONTRAVERSABLE;
@@ -137,9 +145,10 @@ flock.event = (function (core, utils, live) {
          * @param node {object} Datastore node.
          * @param path {string|Array} Datastore path.
          * @param value {object} Value to set on path
+         * @param [data] {object} Custom data to be passed to event handler.
          * @param [trigger] {boolean} Whether to trigger. Default: true.
          */
-        set: function (node, path, value, trigger) {
+        set: function (node, path, value, data, trigger) {
             // storing 'before' node
             var before = core.get(node, path),
                 after,
@@ -160,7 +169,9 @@ flock.event = (function (core, utils, live) {
                         events.EVENT_CHANGE,
                     {
                         before: before,
-                        after: after
+                        after: after,
+                        name: path[path.length - 1],
+                        data: data
                     }
                 );
             }
