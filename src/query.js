@@ -166,6 +166,9 @@ flock.query = (function (constants, utils) {
 
         privates: privates,
 
+        //////////////////////////////
+        // Getters, setters
+
         /**
          * Setter for excluded key. When set, traversal will
          * ignore nodes with the specified key.
@@ -178,6 +181,9 @@ flock.query = (function (constants, utils) {
                 ignoredKey = value;
             }
         },
+
+        //////////////////////////////
+        // Control
 
         /**
          * Validates and normalizes datastore path.
@@ -225,6 +231,60 @@ flock.query = (function (constants, utils) {
             } else {
                 throw "flock.query.normalizePath: " + errors.ERROR_INVALIDPATH;
             }
+        },
+
+        /**
+         * Matches path to pattern.
+         * @param actual {string|Array} Actual path.
+         * @param expected {string|Array} Expected path. May be query pattern.
+         * @returns {boolean} Whether the actual path matches the expected one.
+         */
+        matchPath: function (actual, expected) {
+            actual = self.normalizePath(actual);
+            expected = self.normalizePath(expected);
+
+            var i = 0, j = 0,
+                key,
+                k, tmp;
+
+            while (i < actual.length && j < expected.length) {
+                key = expected[j];
+                if (key === '*') {
+                    // wildcard matches anything
+                    i++; j++;
+                } else if (key === null) {
+                    // null matches anything until
+                    // exact match or end of path reached
+                    if (j === expected.length - 1 ||
+                        actual[i] === expected[j + 1]
+                        ) {
+                        j++;
+                    } else {
+                        i++;
+                    }
+                } else if (key instanceof Array) {
+                    // multiple choices
+                    tmp = {};
+                    for (k = 0; k < key.length; k++) {
+                        tmp[key[k]] = true;
+                    }
+                    if (!tmp.hasOwnProperty(actual[i])) {
+                        return false;
+                    } else {
+                        i++; j++;
+                    }
+                } else {
+                    // otherwise looking for exact match
+                    if (actual[i] !== expected[j]) {
+                        return false;
+                    } else {
+                        i++; j++;
+                    }
+                }
+            }
+
+            return i === actual.length &&
+                j === expected.length;
         },
 
         /**

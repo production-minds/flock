@@ -47,6 +47,19 @@
         deepEqual(query.normalizePath('first.1,2,3.*'), ['first', ['1', '2', '3'], '*'], "Array keys");
     });
 
+    test("Path matching", function () {
+        equal(query.matchPath('first.a.bcde.1.55', 'first.a.bcde.1.55'), true, "Exact match");
+        equal(query.matchPath('first.a.bcde.1.55', 'first.a.*.1.55'), true, "Wildcard match");
+        equal(query.matchPath('first.a.bcde.1.55', 'first...1.55'), true, "Skipper match");
+        equal(query.matchPath('first.a.bcde.1.55', '...1.55'), true, "Leading skipper match");
+        equal(query.matchPath('first.a.bcde.1.55', 'first.a,b,c,d.bcde.1.55'), true, "Multiple key match");
+
+        equal(query.matchPath('first.a.bcde.1.55', 'first.a.u.1.55'), false, "Exact mismatch");
+        equal(query.matchPath('first.a.bcde.1.55', 'first.a.*.*.1.55'), false, "Wildcard mismatch");
+        equal(query.matchPath('first.a.bcde.1.55', 'first.a...2.55'), false, "Skipper mismatch");
+        equal(query.matchPath('first.a.bcde.1.55', 'first.b,c,d.bcde.1.55'), false, "Multiple key mismatch");
+    });
+
     test("Wildcards", function () {
         // testing single-level wildcards
         deepEqual(
