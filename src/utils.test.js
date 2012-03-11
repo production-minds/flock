@@ -3,15 +3,35 @@
     module("Utils");
 
     var data = {
-        hi: 'There!',
-        hello: {
-            world: {
-                center: "!!"
+            hi: 'There!',
+            hello: {
+                world: {
+                    center: "!!"
+                },
+                all: "hey",
+                third: 3
+            }
+        },
+
+        testData1 = {
+            a: {
+                foo: "hello",
+                bar: {
+                    test: "world"
+                }
             },
-            all: "hey",
-            third: 3
-        }
-    };
+            b: {
+                foo: "lorem",
+                bar: {
+                    test: "ipsum"
+                }
+            }
+        },
+
+        testData2 = {
+            foo: "hello",
+            bar: "world"
+        };
 
     test("Methods and poperties", function () {
         var staticTest = function (a, b) {
@@ -74,5 +94,44 @@
         }
         ok(count === 2 && tmp.world === data.hello.world && tmp.third === data.hello.third,
             "Delegating specified properties");
+    });
+
+    test("Transform", function () {
+        deepEqual(utils.transform(testData1, ['foo'], ['bar']), {
+            hello: {
+                test: "world"
+            },
+            lorem: {
+                test: "ipsum"
+            }
+        });
+
+        deepEqual(utils.transform(testData1, ['foo'], ['bar', 'test']), {
+            hello: "world",
+            lorem: "ipsum"
+        });
+
+        deepEqual(utils.transform(testData1, ['foo'], ['bar', 'test'], []), {
+            "hello": {
+                "world": {
+                    "foo": "hello",
+                    "bar": {
+                        "test": "world"
+                    }
+                }
+            },
+            "lorem": {
+                "ipsum": {
+                    "foo": "lorem",
+                    "bar": {
+                        "test": "ipsum"
+                    }
+                }
+            }
+        }, "Empty path as last node attaches child nodes to the lookup as leaf nodes");
+
+        raises(function () {
+            utils.transform(testData2, ['foo'], ['bar']);
+        }, "Non-object child nodes raise error");
     });
 }(flock.utils));

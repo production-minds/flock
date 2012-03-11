@@ -4,7 +4,18 @@
 /*global flock */
 
 flock.utils = (function () {
-    var self = {
+    var OPTIONS_MINIMAL = {
+            nolive: true,
+            noevent: true,
+            noquery: true
+        },
+        errors, self;
+
+    errors = {
+        ERROR_INVALIDNODE: "Invalid node."
+    };
+
+    self = {
         /**
          * Generates a method that is based on a function,
          * but bolts its first N arguments.
@@ -117,6 +128,41 @@ flock.utils = (function () {
                 }
             }
             return flock;
+        },
+
+        /**
+         * Transforms node structure by taking descendant values as keys in the output.
+         * @param node {object} Source node. Object with uniform child objects.
+         * Additional parameters specify the paths (in array notation) from whence
+         * to take the transformed node's keys.
+         * Empty array as last path will put the original child node as leaf node.
+         * @returns {object} Transformed node.
+         * @throws {string} When immediate child nodes are not objects.
+         * @example See unit test.
+         * TODO: either use flock as input and output, or use core methods and bare nodes
+         */
+        transform: function (node) { /*, path1, path2 */
+            var source = flock(node, OPTIONS_MINIMAL),
+                dest = flock({}, OPTIONS_MINIMAL),
+                item, path, last,
+                i;
+
+            for (item in node) {
+                if (node.hasOwnProperty(item)) {
+                    if (typeof node[item] === 'object') {
+                        path = [];
+                        for (i = 1; i < arguments.length - 1; i++) {
+                            path.push(source.get([item].concat(arguments[i])).node());
+                        }
+                        last = arguments[arguments.length - 1];
+                        dest.set(path, source.get([item].concat(last)).node());
+                    } else {
+                        throw "flock.utils.transform: " + errors.ERROR_INVALIDNODE;
+                    }
+                }
+            }
+
+            return dest.node();
         }
     };
 
