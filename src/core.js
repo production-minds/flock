@@ -9,7 +9,8 @@ flock.core = (function (utils) {
         errors, self;
 
     errors = {
-        ERROR_INVALIDPATH: "Invalid path."
+        ERROR_INVALIDPATH: "Invalid path.",
+        ERROR_INVALIDNODE: "Invalid node."
     };
 
     self = {
@@ -163,7 +164,41 @@ flock.core = (function (utils) {
             if (lastMulti) {
                 delete lastMulti.node[lastMulti.name];
             }
+        },
+
+        /**
+         * Transforms node structure by taking descendant values as keys in the output.
+         * @param node {object} Source node. Object with uniform child objects.
+         * Additional parameters specify the paths (in array notation) from whence
+         * to take the transformed node's keys.
+         * Empty array as last path will put the original child node as leaf node.
+         * @returns {object} Transformed node.
+         * @throws {string} When immediate child nodes are not objects.
+         * @example See unit test.
+         */
+        transform: function (node) { /*, path1, path2 */
+            var result = {},
+                item, path, last,
+                i;
+
+            for (item in node) {
+                if (node.hasOwnProperty(item)) {
+                    if (typeof node[item] === 'object') {
+                        path = [];
+                        for (i = 1; i < arguments.length - 1; i++) {
+                            path.push(self.get(node, [item].concat(arguments[i])));
+                        }
+                        last = arguments[arguments.length - 1];
+                        self.set(result, path, self.get(node, [item].concat(last)));
+                    } else {
+                        throw "flock.core.transform: " + errors.ERROR_INVALIDNODE;
+                    }
+                }
+            }
+
+            return result;
         }
+
     };
 
     // delegating errors

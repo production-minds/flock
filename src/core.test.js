@@ -135,4 +135,63 @@
         core.cleanup(data, ['hello', 'all']);
         deepEqual(data, {}, "Remaining nodes removed with all empty ancestors");
     });
+
+    test("Transform", function () {
+        var testDataSource = {
+                a: {
+                    foo: "hello",
+                    bar: {
+                        test: "world"
+                    }
+                },
+                b: {
+                    foo: "lorem",
+                    bar: {
+                        test: "ipsum"
+                    }
+                }
+            },
+
+            testDataDest = {
+                foo: "hello",
+                bar: "world"
+            };
+
+        deepEqual(core.transform(testDataSource, ['foo'], ['bar']), {
+            hello: {
+                test: "world"
+            },
+            lorem: {
+                test: "ipsum"
+            }
+        }, "First level values turned into two level lookup");
+
+        deepEqual(core.transform(testDataSource, ['foo'], ['bar', 'test']), {
+            hello: "world",
+            lorem: "ipsum"
+        }, "Second level values turned into one level lookup");
+
+        deepEqual(core.transform(testDataSource, ['foo'], ['bar', 'test'], []), {
+            "hello": {
+                "world": {
+                    "foo": "hello",
+                    "bar": {
+                        "test": "world"
+                    }
+                }
+            },
+            "lorem": {
+                "ipsum": {
+                    "foo": "lorem",
+                    "bar": {
+                        "test": "ipsum"
+                    }
+                }
+            }
+        }, "Empty path as last node attaches child nodes to the lookup as leaf nodes");
+
+        raises(function () {
+            core.transform(testDataDest, ['foo'], ['bar']);
+        }, "Non-object child nodes raise error");
+    });
 }(flock.core));
