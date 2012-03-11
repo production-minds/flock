@@ -55,6 +55,26 @@ flock.event = (function (core, utils, live) {
         },
 
         /**
+         * Subscribes to datastore event, unsubscribes after first time
+         * being triggered.
+         * @param node {object} Datastore node.
+         * @param eventName {string} Name of event to subscribe to.
+         * @param handler {function} Event handler.
+         */
+        once: function (node, eventName, handler) {
+            function fullHandler() {
+                // calling actual handler
+                handler.apply(this, arguments);
+
+                // unsubscribing from event immediately
+                self.unsubscribe(node, eventName, fullHandler);
+            }
+
+            // subscribing modified handler instead of actual one
+            self.subscribe(node, eventName, fullHandler);
+        },
+
+        /**
          * Unsubscribes from datastore event.
          * @param node {object} Datastore node.
          * @param [eventName] {string} Name of event to subscribe to.

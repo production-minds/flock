@@ -94,6 +94,7 @@ var flock;
             // event - must have live for events
             if (!options.noevent && event) {
                 self.on = genMethod(event.subscribe, args, self);
+                self.once = genMethod(event.once, args, self);
                 self.off = genMethod(event.unsubscribe, args, self);
                 self.trigger = genMethod(event.trigger, args, self);
             }

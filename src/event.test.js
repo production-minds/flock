@@ -82,6 +82,15 @@
         raises(function () {
             event.trigger(json.hello.all, 'testEvent');
         }, "Triggering event on ordinal node raises error");
+
+        // one-time events
+        i = 0;
+        event.unsubscribe(json.hello.world);
+        event.once(json.hello.world, 'testEvent', testHandler);
+        event.trigger(json.hello.world, 'testEvent');
+        equal(i, 1, "One-time event triggered handler");
+        event.trigger(json.hello.world, 'testEvent');
+        equal(i, 1, "Handler triggered no more upon one-time event");
     });
 
     test("Setting", function () {
