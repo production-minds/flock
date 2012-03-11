@@ -93,6 +93,18 @@
         equal(i, 1, "Handler triggered no more upon one-time event");
     });
 
+    test("Delegation", function () {
+        var i;
+        function testHandler() { i++; }
+
+        i = 0;
+        event.delegate(json, ['hello', 'world'], 'testEvent', testHandler);
+        event.trigger(json.hello.world, 'testEvent');
+        equal(i, 1, "Delegated event fired when triggered on right path");
+        event.trigger(json.hello, 'testEvent');
+        equal(i, 1, "Delegated event did not fire when triggered on wrong path");
+    });
+
     test("Setting", function () {
         // checking handler arguments
         event.subscribe(json, 'change', function (event, data) {

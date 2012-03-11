@@ -75,6 +75,28 @@ flock.event = (function (core, utils, live) {
         },
 
         /**
+         * Delegates event to a specified path. Event is captured on the node,
+         * but handler is not called unless argument 'path' matches the path
+         * of the event target.
+         * @param node {object} Datastore node.
+         * @param path {Array} Relative path to receiving node,
+         * @param eventName {string} Name of event to subscribe to.
+         * @param handler {function} Event handler.
+         * TODO: path comparison should accept queries when flock.query is in use.
+         */
+        delegate: function (node, path, eventName, handler) {
+            function fullHandler(event, data) {
+                if (live.path(event.target).join('.') === path.join('.')) {
+                    // when target path matches passed path
+                    handler.apply(this, arguments);
+                }
+            }
+
+            // subscribing modified handler instead of actual one
+            self.subscribe(node, eventName, fullHandler);
+        },
+
+        /**
          * Unsubscribes from datastore event.
          * @param node {object} Datastore node.
          * @param [eventName] {string} Name of event to subscribe to.
