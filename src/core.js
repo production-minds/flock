@@ -3,13 +3,10 @@
  */
 /*global flock*/
 
-flock.core = (function (utils) {
-    var RE_PATHVALIDATOR = /^([^\.]+\.)*[^\.]+$/,
-        RE_PATHSEPARATOR = /\./,
-        errors, self;
+flock.core = (function (u_utils, u_path) {
+    var errors, self;
 
     errors = {
-        ERROR_INVALIDPATH: "Invalid path.",
         ERROR_INVALIDNODE: "Invalid node."
     };
 
@@ -18,50 +15,13 @@ flock.core = (function (utils) {
         // Control
 
         /**
-         * Validates simple datastore path.
-         * @param path {string|Array} Datastore path to be validated.
-         * @returns {object|boolean} Path in array notation when valid, or false.
-         * @throws {string} On invalid path.
-         */
-        normalizePath: function (path) {
-            var result;
-            if (typeof path === 'string') {
-                // validating string path
-                if (path.match(RE_PATHVALIDATOR)) {
-                    // generating array notation by splitting string
-                    result = path.split(RE_PATHSEPARATOR);
-                } else {
-                    throw "flock.core.normalizePath: " + errors.ERROR_INVALIDPATH;
-                }
-            } else if (path instanceof Array) {
-                // creating shallow copy of path array
-                result = path.concat([]);
-            } else {
-                throw "flock.core.normalizePath: " + errors.ERROR_INVALIDPATH;
-            }
-            return result;
-        },
-
-        /**
-         * Compares two paths.
-         * @param actual {Array} Actial path.
-         * @param expected {Array} Expected path. May be pattern.
-         * @returns {boolean} Whether actual path matches expected path.
-         */
-        matchPath: function (actual, expected) {
-            actual = self.normalizePath(actual);
-            expected = self.normalizePath(expected);
-            return actual.join('.') === expected.join('.');
-        },
-
-        /**
          * Gets a single value from the given datastore path.
          * @param node {object} Datastore root.
          * @param path {string|Array} Datastore path.
          */
         get: function (node, path) {
             var key,
-                tpath = self.normalizePath(path);
+                tpath = u_path.normalize(path);
 
             while (tpath.length) {
                 key = tpath.shift();
@@ -86,7 +46,7 @@ flock.core = (function (utils) {
             value = value || {};
 
             var key,
-                tpath = self.normalizePath(path),
+                tpath = u_path.normalize(path),
                 name = tpath.pop();
 
             while (tpath.length) {
@@ -123,7 +83,7 @@ flock.core = (function (utils) {
          * @returns {object} Parent of the removed node.
          */
         unset: function (node, path) {
-            var tpath = self.normalizePath(path),
+            var tpath = u_path.normalize(path),
                 name = tpath.pop(),
                 parent = self.get(node, tpath);
 
@@ -144,17 +104,17 @@ flock.core = (function (utils) {
          * @param path {string|Array} Datastore path.
          */
         cleanup: function (node, path) {
-            var tpath = self.normalizePath(path),
+            var tpath = u_path.normalize(path),
                 key,
                 lastMulti = {
                     node: node,
-                    name: utils.firstProperty(node)
+                    name: u_utils.firstProperty(node)
                 };
 
             while (tpath.length) {
                 key = tpath.shift();
                 if (node.hasOwnProperty(key)) {
-                    if (!utils.isSingle(node)) {
+                    if (!u_utils.isSingle(node)) {
                         lastMulti = {
                             node: node,
                             name: key
@@ -208,7 +168,8 @@ flock.core = (function (utils) {
     };
 
     // delegating errors
-    utils.delegate(self, errors);
+    u_utils.delegate(self, errors);
 
     return self;
-}(flock.utils));
+}(flock.utils,
+    flock.path));

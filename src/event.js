@@ -85,7 +85,7 @@ flock.event = (function (core, utils, live) {
          * TODO: path comparison should accept queries when flock.query is in use.
          */
         delegate: function (node, path, eventName, handler) {
-            var matchPath = flock.query ? flock.query.matchPath : core.matchPath;
+            var matchPath = flock.query ? flock.query.matchPath : flock.path.match;
 
             function fullHandler(event, data) {
                 if (matchPath(live.path(event.target), path)) {

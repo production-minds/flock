@@ -12,43 +12,6 @@
         }
     };
 
-    test("Paths", function () {
-        raises(function () {
-            core.normalizePath('...fds.fd');
-        }, "Validation fails on leading dots");
-
-        raises(function () {
-            core.normalizePath('fds.fd..');
-        }, "Validation fails on trailing dots");
-
-        raises(function () {
-            core.normalizePath(1000);
-        }, "Validation fails on invalid argument type");
-
-        deepEqual(
-            core.normalizePath('first.second.thi rd'),
-            [
-                'first',
-                'second',
-                'thi rd'
-            ],
-            "String path converted to array notation"
-        );
-
-        var arrNotation = [
-            'first',
-            'second',
-            'thi rd'
-        ];
-        notEqual(core.normalizePath(arrNotation), arrNotation, "Array input returns copy");
-        deepEqual(core.normalizePath(arrNotation), arrNotation, "Array copy is identical to original");
-
-        // matching
-        equal(core.matchPath(['hello', 'world'], ['hello', 'world']), true, "Path matches pattern");
-        equal(core.matchPath(['hello'], ['hello', 'world']), false, "Path doesn't match pattern");
-        equal(core.matchPath('hello.world', 'hello.world'), true, "Path (string notation) matches pattern");
-    });
-
     test("Getting", function () {
         equal(core.get(data, ['hi']), "There!", "Getting ordinal value");
         equal(core.get(data, ['hello', 'world']), data.hello.world, "Getting datastore node");
