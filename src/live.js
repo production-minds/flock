@@ -19,7 +19,7 @@ flock.live = (function (core, utils) {
          * Adds meta node to a single datastore node. When no explicit node is provided,
          * node is identified by its parent and name.
          * @param parent {object} Reference to parent node.
-         * @param name {string} Name of node in parent.
+         * @param name {string} Key associated with node in parent.
          * @param [node] {object} Datastore node.
          * @returns {boolean} Whether addition of meta node was successful.
          */
@@ -108,7 +108,7 @@ flock.live = (function (core, utils) {
          * referenced from other than its parent node.)
          * @param node {object} Datastore (root) node.
          * @param [parent] {object} Parent node.
-         * @param [name] {string} Name of the
+         * @param [name] {string} Key associated with node in parent,
          */
         init: function (node, parent, name) {
             var key;
