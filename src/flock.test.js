@@ -94,7 +94,7 @@
         tmp = $({hello: {world: {}}}, {
             noinit: true
         });
-        equal(tmp.node().hasOwnProperty($.live.META), false, "Option 'noinit' prevents automatic initialization");
+        equal(tmp.node().hasOwnProperty($.live.metaKey()), false, "Option 'noinit' prevents automatic initialization");
     });
 
     test("Live", function () {
@@ -126,8 +126,8 @@
         );
 
         var tmp = $({}, {nolive: true});
-        ok(typeof cache.node()[$.live.META] === 'object', "Flock with 'nolive' off does initialize by default.");
-        ok(typeof tmp.node()[$.live.META] === 'undefined', "Flock with 'nolive' on doesn't initialize by default.");
+        ok(typeof cache.node()[$.live.metaKey()] === 'object', "Flock with 'nolive' off does initialize by default.");
+        ok(typeof tmp.node()[$.live.metaKey()] === 'undefined', "Flock with 'nolive' on doesn't initialize by default.");
     });
 
     test("Events", function () {

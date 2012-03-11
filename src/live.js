@@ -6,7 +6,7 @@
 /*global flock */
 
 flock.live = (function (core, utils) {
-    var META = '.meta',
+    var metaKey = '.meta',
         errors, privates, self;
 
     errors = {
@@ -29,9 +29,9 @@ flock.live = (function (core, utils) {
             // taking node from parent when no node is explicitly provided
             node = node || parent[name];
 
-            if (!node.hasOwnProperty(META)) {
+            if (!node.hasOwnProperty(metaKey)) {
                 // adding meta node
-                meta = node[META] = {};
+                meta = node[metaKey] = {};
                 meta.self = node;
                 if (typeof parent === 'object' &&
                     typeof name === 'string') {
@@ -50,8 +50,8 @@ flock.live = (function (core, utils) {
          * @returns {boolean} Whether removal of meta node was successful.
          */
         removeMeta: function (node) {
-            if (node.hasOwnProperty(META)) {
-                delete node[META];
+            if (node.hasOwnProperty(metaKey)) {
+                delete node[metaKey];
                 return true;
             } else {
                 return false;
@@ -67,7 +67,7 @@ flock.live = (function (core, utils) {
             var key;
             for (key in node) {
                 if (node.hasOwnProperty(key) &&
-                    key !== META
+                    key !== metaKey
                     ) {
                     return false;
                 }
@@ -78,14 +78,24 @@ flock.live = (function (core, utils) {
 
     self = {
         //////////////////////////////
-        // Constants
-
-        META: META,
-
-        //////////////////////////////
-        // Auxiliary
+        // Utilities
 
         privates: privates,
+
+        //////////////////////////////
+        // Getters, setters
+
+        /**
+         * Getter/setter for global meta key.
+         * @param [value] {string} New meta key.
+         */
+        metaKey: function (value) {
+            if (typeof value === 'string') {
+                metaKey = value;
+            } else {
+                return metaKey;
+            }
+        },
 
         //////////////////////////////
         // Control
@@ -109,7 +119,7 @@ flock.live = (function (core, utils) {
                 // processing child nodes
                 for (key in node) {
                     if (node.hasOwnProperty(key)) {
-                        if (key !== META &&
+                        if (key !== metaKey &&
                             typeof node[key] === 'object'
                             ) {
                             self.init(node[key], node, key);
@@ -157,7 +167,7 @@ flock.live = (function (core, utils) {
 
             // checking path for forbidden node
             for (i = 0; i < path.length; i++) {
-                if (path[i] === META) {
+                if (path[i] === metaKey) {
                     throw "flock.live.set: " + errors.ERROR_FORBIDDENKEY;
                 }
             }
@@ -168,7 +178,7 @@ flock.live = (function (core, utils) {
             // searching for first uninitialized node
             for (i = 0; i < path.length; i++) {
                 key = path[i];
-                if (!node[key].hasOwnProperty(META)) {
+                if (!node[key].hasOwnProperty(metaKey)) {
                     break;
                 }
                 node = node[key];
@@ -189,11 +199,11 @@ flock.live = (function (core, utils) {
          */
         path: function (node) {
             var result = [];
-            while (typeof node[META] === 'object' &&
-                node[META].hasOwnProperty('name')
+            while (typeof node[metaKey] === 'object' &&
+                node[metaKey].hasOwnProperty('name')
                 ) {
-                result.unshift(node[META].name);
-                node = node[META].parent;
+                result.unshift(node[metaKey].name);
+                node = node[metaKey].parent;
             }
             return result;
         },
@@ -205,12 +215,12 @@ flock.live = (function (core, utils) {
          */
         closest: function (node, name) {
             if (typeof node === 'object' &&
-                node.hasOwnProperty(META)
+                node.hasOwnProperty(metaKey)
                 ) {
                 while (typeof node === 'object' &&
-                    node[META].name !== name
+                    node[metaKey].name !== name
                     ) {
-                    node = node[META].parent;
+                    node = node[metaKey].parent;
                 }
                 return node;
             } else {
@@ -224,9 +234,9 @@ flock.live = (function (core, utils) {
          */
         parent: function (node) {
             if (typeof node === 'object' &&
-                node.hasOwnProperty(META)
+                node.hasOwnProperty(metaKey)
                 ) {
-                return node[META].parent;
+                return node[metaKey].parent;
             } else {
                 throw "flock.live.parent: " + errors.ERROR_NONTRAVERSABLE;
             }
@@ -238,9 +248,9 @@ flock.live = (function (core, utils) {
          */
         name: function (node) {
             if (typeof node === 'object' &&
-                node.hasOwnProperty(META)
+                node.hasOwnProperty(metaKey)
                 ) {
-                return node[META].name;
+                return node[metaKey].name;
             } else {
                 throw "flock.live.name: " + errors.ERROR_NONTRAVERSABLE;
             }

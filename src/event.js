@@ -30,7 +30,7 @@ flock.event = (function (core, utils, live) {
          * @throws {string}
          */
         subscribe: function (node, eventName, handler) {
-            var meta = node[live.META],
+            var meta = node[live.metaKey()],
                 handlers;
 
             if (typeof meta === 'object') {
@@ -62,7 +62,7 @@ flock.event = (function (core, utils, live) {
          * @throws {string} On untraversable node.
          */
         unsubscribe: function (node, eventName, handler) {
-            var meta = node[live.META],
+            var meta = node[live.metaKey()],
                 handlers,
                 i;
 
@@ -110,7 +110,7 @@ flock.event = (function (core, utils, live) {
         trigger: function (node, eventName, data, target) {
             target = target || node;
 
-            var meta = node[live.META],
+            var meta = node[live.metaKey()],
                 event,
                 handlers,
                 i;

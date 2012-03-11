@@ -26,17 +26,17 @@
 
         event.subscribe(json.hello.world, 'testEvent', testHandler);
         event.subscribe(json.hello, 'otherEvent', testHandler);
-        equal(json.hello.world[live.META].handlers.testEvent[0], testHandler, "Event handler added");
-        equal(json.hello[live.META].handlers.otherEvent[0], testHandler, "Other event handler added");
+        equal(json.hello.world[live.metaKey()].handlers.testEvent[0], testHandler, "Event handler added");
+        equal(json.hello[live.metaKey()].handlers.otherEvent[0], testHandler, "Other event handler added");
 
         event.unsubscribe(json.hello.world, 'testEvent', testHandler);
-        equal(json.hello.world[live.META].handlers.testEvent.length, 0, "Event handler removed");
+        equal(json.hello.world[live.metaKey()].handlers.testEvent.length, 0, "Event handler removed");
 
         event.unsubscribe(json.hello.world, 'testEvent');
-        equal(json.hello.world[live.META].handlers.hasOwnProperty('testEvent'), false, "Event handlers removed for given event");
+        equal(json.hello.world[live.metaKey()].handlers.hasOwnProperty('testEvent'), false, "Event handlers removed for given event");
 
         event.unsubscribe(json.hello.world);
-        equal(json.hello.world[live.META].hasOwnProperty('handlers'), false, "All event handlers removed from node");
+        equal(json.hello.world[live.metaKey()].hasOwnProperty('handlers'), false, "All event handlers removed from node");
     });
 
     test("Triggering", function () {

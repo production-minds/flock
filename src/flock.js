@@ -113,7 +113,7 @@ var flock;
         if (!options.noquery && query) {
             if (!options.nolive && live) {
                 // setting meta key to be ignored by traversal
-                query.ignoredKey(live.META);
+                query.ignoredKey(live.metaKey());
             }
 
             // query method

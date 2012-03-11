@@ -19,14 +19,14 @@
         ok(!live.privates.empty({foo:"bar"}), "Non-empty object is detected to be not empty");
 
         var tmp = {};
-        tmp[live.META] = "foo";
+        tmp[live.metaKey()] = "foo";
         ok(live.privates.empty(tmp), "Object with just one meta key is detected to be empty");
     });
 
     test("Initialization", function () {
-        equal(data.hello[live.META].name, 'hello', "Node name stored in meta node.");
-        equal(data.hello[live.META].self, data.hello, "Node reference stored in meta node.");
-        equal(data.hello[live.META].parent, data, "Parent node reference stored in meta node.");
+        equal(data.hello[live.metaKey()].name, 'hello', "Node name stored in meta node.");
+        equal(data.hello[live.metaKey()].self, data.hello, "Node reference stored in meta node.");
+        equal(data.hello[live.metaKey()].parent, data, "Parent node reference stored in meta node.");
 
         // re-initialization
         data.what = {
@@ -35,16 +35,16 @@
             }
         };
         live.init(data.what);
-        equal(data.what.test[live.META].parent, data.what, "New sub-node initialized");
-        equal(data.what.test.foo[live.META].parent, data.hello, "Re-initialization doesn't affect exising meta nodes");
+        equal(data.what.test[live.metaKey()].parent, data.what, "New sub-node initialized");
+        equal(data.what.test.foo[live.metaKey()].parent, data.hello, "Re-initialization doesn't affect exising meta nodes");
 
         // de-initializing
         live.deinit(data);
-        ok(typeof data[live.META] === 'undefined' &&
-            typeof data.hello[live.META] === 'undefined' &&
-            typeof data.hello.world[live.META] === 'undefined' &&
-            typeof data.what[live.META] === 'undefined' &&
-            typeof data.what.test[live.META] === 'undefined',
+        ok(typeof data[live.metaKey()] === 'undefined' &&
+            typeof data.hello[live.metaKey()] === 'undefined' &&
+            typeof data.hello.world[live.metaKey()] === 'undefined' &&
+            typeof data.what[live.metaKey()] === 'undefined' &&
+            typeof data.what.test[live.metaKey()] === 'undefined',
             "De-initialization removes meta nodes"
         );
 
@@ -69,7 +69,7 @@
 
         equal(tmp, data.hello, "Set returns parent of changed node");
         equal(data.hello.more.foo.bar, 'wut', "Branch added to datastore.");
-        equal(data.hello.more[live.META].name, 'more', "Meta nodes added to branch nodes");
+        equal(data.hello.more[live.metaKey()].name, 'more', "Meta nodes added to branch nodes");
 
         live.set(data, ['hello', 'world', 'center'], "blah");
         equal(data.hello.world.center, 'blah', "Setting ordinal node");
@@ -78,7 +78,7 @@
         ok(live.privates.empty(data.hello.world.foo), "Default value for set is empty object");
 
         raises(function () {
-            live.set(data, ['hello', 'world', live.META], "blah");
+            live.set(data, ['hello', 'world', live.metaKey()], "blah");
         }, "Setting fails on path with META key in it");
     });
 
