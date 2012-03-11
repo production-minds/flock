@@ -161,6 +161,11 @@ flock.query = (function (constants, utils) {
     };
 
     self = {
+        //////////////////////////////
+        // Utilities
+
+        privates: privates,
+
         /**
          * Setter for excluded key. When set, traversal will
          * ignore nodes with the specified key.

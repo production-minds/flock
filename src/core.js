@@ -15,11 +15,6 @@ flock.core = (function (utils) {
 
     self = {
         //////////////////////////////
-        // Exposed
-
-        errors: errors,
-
-        //////////////////////////////
         // Control
 
         /**
