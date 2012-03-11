@@ -9,6 +9,9 @@
                 center: "!!"
             },
             all: "hey"
+        },
+        bybye: {
+            world: {}
         }
     };
 
@@ -103,6 +106,15 @@
         equal(i, 1, "Delegated event fired when triggered on right path");
         event.trigger(json.hello, 'testEvent');
         equal(i, 1, "Delegated event did not fire when triggered on wrong path");
+
+        // path patterns
+        i = 0;
+        event.unsubscribe(json, 'testEvent');
+        event.delegate(json, ['*', 'world'], 'otherEvent', testHandler);
+        event.trigger(json.hello.world, 'otherEvent');
+        equal(i, 1, "Pattern delegated event fired on matching node");
+        event.trigger(json.bybye.world, 'otherEvent');
+        equal(i, 2, "Pattern delegated event fired on other matching node");
     });
 
     test("Setting", function () {
