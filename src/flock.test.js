@@ -67,7 +67,9 @@
             noquery: false
         }, "All flags are false by default");
 
-        var tmp = $({hello: {world: {}}}, {
+        var tmp;
+
+        tmp = $({hello: {world: {}}}, {
             nolive: true
         });
 
@@ -88,6 +90,11 @@
 
         // non-live tets
         ok(tmp.get(['hello', 'world']).empty(), "utils.empty delegated to flock");
+
+        tmp = $({hello: {world: {}}}, {
+            noinit: true
+        });
+        equal(tmp.node().hasOwnProperty($.live.META), false, "Option 'noinit' prevents automatic initialization");
     });
 
     test("Live", function () {

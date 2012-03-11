@@ -25,6 +25,7 @@ var flock;
         node = node || {};
         options = options || {
             nolive: false,
+            noinit: false,
             noevent: false,
             noquery: false
         };
@@ -69,7 +70,9 @@ var flock;
         // live
         if (!options.nolive && live) {
             // initializing
-            live.init(node);
+            if (!options.noinit) {
+                live.init(node);
+            }
 
             // general live methods
             self.init = genMethod(live.init, args, self);
