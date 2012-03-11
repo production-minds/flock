@@ -46,7 +46,7 @@
                 .get(['a'])
                     .node(),
             "One",
-            "Stacked get"
+            "Chained get"
         );
 
         deepEqual(
@@ -56,15 +56,20 @@
                 .get(['c'])
                     .node(),
             "Hello!",
-            "Stacked set & get"
+            "Chained set & get"
         );
+
+        var nonChainable = $({hello: {world: {}}}, {nolive: true, nochaining: true});
+        deepEqual(nonChainable.get('hello'), {world: {}}, "Querying returns bare node on non-chaninng datastore");
     });
 
     test("Options", function () {
         deepEqual(cache.options(), {
             nolive: false,
+            noinit: false,
             noevent: false,
-            noquery: false
+            noquery: false,
+            nochaining: false
         }, "All flags are false by default");
 
         var tmp;
@@ -75,14 +80,18 @@
 
         deepEqual(tmp.options(), {
             nolive: true,
+            noinit: undefined,
             noevent: undefined,
-            noquery: undefined
+            noquery: undefined,
+            nochaining: undefined
         }, "Non-default options set (nolive: true)");
 
         deepEqual(tmp.get('hello.world').options(), {
             nolive: true,
+            noinit: undefined,
             noevent: undefined,
-            noquery: undefined
+            noquery: undefined,
+            nochaining: undefined
         }, "Derived flock object preserves options");
 
         tmp.options().noevent = true;

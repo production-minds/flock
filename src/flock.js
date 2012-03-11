@@ -8,7 +8,7 @@ var flock;
      * Maps a datastore node to a flock object.
      * @param node {object} Datastore node.
      */
-    function nodeMapper(node, options) {
+    function chainedNodeMapper(node, options) {
         return typeof node !== 'undefined' ?
             flock(node, options) :
             flock.empty;
@@ -18,7 +18,12 @@ var flock;
      * Flock constructor
      * @constructor
      * @param [node] {object} Root object for datastore. When omitted, empty object is assumed.
-     * @param [options] {object} Options: nolive, noevent, noquery.
+     * @param [options] {object} Options (tune performance vs. richness):
+     * @param [options.nolive] {boolean} No parent chain traversal.
+     * @param [options.noinit] {boolean} No upfront datastore initialization (when live).
+     * @param [options.noevent] {boolean} No events.
+     * @param [options.noquery] {boolean} No complex queries, only single nodes may be accessed.
+     * @param [options.nochaining] {boolean} No wrapping of querying methods in flock object.
      */
     flock = function (node, options) {
         // creating default arguments
@@ -27,7 +32,8 @@ var flock;
             nolive: false,
             noinit: false,
             noevent: false,
-            noquery: false
+            noquery: false,
+            nochaining: false
         };
 
         // shortcuts
@@ -37,6 +43,7 @@ var flock;
             event = flock.event,
             query = flock.query,
             genMethod = utils.genMethod,
+            nodeMapper = options.nochaining ? undefined : chainedNodeMapper,
             args = [node],
             self = {};
 
@@ -54,8 +61,10 @@ var flock;
         self.options = function () {
             return {
                 nolive: options.nolive,
+                noinit: options.noinit,
                 noevent: options.noevent,
-                noquery: options.noquery
+                noquery: options.noquery,
+                nochaining: options.nochaining
             };
         };
 
