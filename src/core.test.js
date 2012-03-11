@@ -12,7 +12,7 @@
         }
     };
 
-    test("Path normalization", function () {
+    test("Paths", function () {
         raises(function () {
             core.normalizePath('...fds.fd');
         }, "Validation fails on leading dots");
@@ -42,6 +42,11 @@
         ];
         notEqual(core.normalizePath(arrNotation), arrNotation, "Array input returns copy");
         deepEqual(core.normalizePath(arrNotation), arrNotation, "Array copy is identical to original");
+
+        // matching
+        equal(core.matchPath(['hello', 'world'], ['hello', 'world']), true, "Path matches pattern");
+        equal(core.matchPath(['hello'], ['hello', 'world']), false, "Path doesn't match pattern");
+        equal(core.matchPath('hello.world', 'hello.world'), true, "Path (string notation) matches pattern");
     });
 
     test("Getting", function () {

@@ -86,7 +86,7 @@ flock.event = (function (core, utils, live) {
          */
         delegate: function (node, path, eventName, handler) {
             function fullHandler(event, data) {
-                if (live.path(event.target).join('.') === path.join('.')) {
+                if (core.matchPath(live.path(event.target), path)) {
                     // when target path matches passed path
                     handler.apply(this, arguments);
                 }

@@ -48,6 +48,18 @@ flock.core = (function (utils) {
         },
 
         /**
+         * Compares two paths.
+         * @param actual {Array} Actial path.
+         * @param expected {Array} Expected path. May be pattern.
+         * @returns {boolean} Whether actual path matches expected path.
+         */
+        matchPath: function (actual, expected) {
+            actual = self.normalizePath(actual);
+            expected = self.normalizePath(expected);
+            return actual.join('.') === expected.join('.');
+        },
+
+        /**
          * Gets a single value from the given datastore path.
          * @param node {object} Datastore root.
          * @param path {string|Array} Datastore path.
@@ -198,7 +210,6 @@ flock.core = (function (utils) {
 
             return result;
         }
-
     };
 
     // delegating errors
