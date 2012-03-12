@@ -3,7 +3,7 @@
  */
 /*global flock*/
 
-flock.path = (function (utils) {
+flock.path = (function (u_utils) {
     var RE_PATHVALIDATOR = /^([^\.]+\.)*[^\.]+$/,
         RE_PATHSEPARATOR = /\./,
         errors, self;
@@ -55,7 +55,7 @@ flock.path = (function (utils) {
     };
 
     // delegating errors
-    utils.delegate(self, errors);
+    u_utils.delegate(self, errors);
 
     return self;
 }(flock.utils));

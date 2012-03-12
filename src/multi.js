@@ -3,7 +3,7 @@
  */
 /*global flock */
 
-flock.multi = (function (constants, utils) {
+flock.multi = (function (u_constants, u_utils) {
     var RE_PATH_VALIDATOR = /^(\.{3})*([^\.,]+(\.{1,3}|,))*[^\.,]+$/,
         RE_PATH_SKIPPER = /\.{2,}/,
 
@@ -46,24 +46,24 @@ flock.multi = (function (constants, utils) {
                     value = obj[key];
                     if (state.options.undef || typeof value !== 'undefined') {
                         switch (state.options.mode) {
-                        case constants.VALUES:
+                        case u_constants.VALUES:
                             // collecting value from nodes
                             state.result.push(value);
                             break;
-                        case constants.KEYS:
+                        case u_constants.KEYS:
                             // collecting key from node
                             state.result.push(key);
                             break;
-                        case constants.BOTH:
+                        case u_constants.BOTH:
                             // collecting key AND value from node
                             // WARNING: new values with same key overwrite old
                             state.result[key] = value;
                             break;
-                        case constants.DEL:
+                        case u_constants.DEL:
                             // deleting node
                             delete obj[key];
                             break;
-                        case constants.COUNT:
+                        case u_constants.COUNT:
                             // counting node
                             state.result++;
                             break;
@@ -307,7 +307,7 @@ flock.multi = (function (constants, utils) {
             if (typeof options.value === 'undefined' &&
                 typeof options.mode === 'undefined'
                 ) {
-                options.mode = constants.VALUES;
+                options.mode = u_constants.VALUES;
             }
 
             var tpath = typeof path === 'object' ? path.concat([]) : self.normalizePath(path),
@@ -336,7 +336,7 @@ flock.multi = (function (constants, utils) {
     };
 
     // delegating errors
-    utils.delegate(self, errors);
+    u_utils.delegate(self, errors);
 
     return self;
 }(flock.constants,

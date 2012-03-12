@@ -1,5 +1,5 @@
 /*global flock, module, test, ok, equal, deepEqual, raises */
-(function (live, event) {
+(function (u_live, u_event) {
     module("Event");
 
     var json = {
@@ -15,31 +15,31 @@
         }
     };
 
-    live.init(json);
+    u_live.init(json);
 
     test("Subscription", function () {
         function testHandler() { }
 
         raises(function () {
-            event.subscribe(json.hello.world, 'testEvent', "nonFunction");
+            u_event.subscribe(json.hello.world, 'testEvent', "nonFunction");
         }, "Invalid event handler raises error.");
         raises(function () {
-            event.subscribe(json.hello.world.center, 'testEvent', testHandler);
+            u_event.subscribe(json.hello.world.center, 'testEvent', testHandler);
         }, "Invalid datastore node raises error.");
 
-        event.subscribe(json.hello.world, 'testEvent', testHandler);
-        event.subscribe(json.hello, 'otherEvent', testHandler);
-        equal(json.hello.world[live.metaKey()].handlers.testEvent[0], testHandler, "Event handler added");
-        equal(json.hello[live.metaKey()].handlers.otherEvent[0], testHandler, "Other event handler added");
+        u_event.subscribe(json.hello.world, 'testEvent', testHandler);
+        u_event.subscribe(json.hello, 'otherEvent', testHandler);
+        equal(json.hello.world[u_live.metaKey()].handlers.testEvent[0], testHandler, "Event handler added");
+        equal(json.hello[u_live.metaKey()].handlers.otherEvent[0], testHandler, "Other event handler added");
 
-        event.unsubscribe(json.hello.world, 'testEvent', testHandler);
-        equal(json.hello.world[live.metaKey()].handlers.testEvent.length, 0, "Event handler removed");
+        u_event.unsubscribe(json.hello.world, 'testEvent', testHandler);
+        equal(json.hello.world[u_live.metaKey()].handlers.testEvent.length, 0, "Event handler removed");
 
-        event.unsubscribe(json.hello.world, 'testEvent');
-        equal(json.hello.world[live.metaKey()].handlers.hasOwnProperty('testEvent'), false, "Event handlers removed for given event");
+        u_event.unsubscribe(json.hello.world, 'testEvent');
+        equal(json.hello.world[u_live.metaKey()].handlers.hasOwnProperty('testEvent'), false, "Event handlers removed for given event");
 
-        event.unsubscribe(json.hello.world);
-        equal(json.hello.world[live.metaKey()].hasOwnProperty('handlers'), false, "All event handlers removed from node");
+        u_event.unsubscribe(json.hello.world);
+        equal(json.hello.world[u_live.metaKey()].hasOwnProperty('handlers'), false, "All event handlers removed from node");
     });
 
     test("Triggering", function () {
@@ -49,50 +49,50 @@
         function otherHandler() { j++; }
         function stopHandler() { i++; return false; }
 
-        event.subscribe(json.hello.world, 'testEvent', testHandler);
-        event.subscribe(json.hello, 'testEvent', otherHandler);
-        event.subscribe(json.hello.world, 'otherEvent', otherHandler);
-        event.subscribe(json.hello.world, 'argTesterEvent', function (event, data) {
+        u_event.subscribe(json.hello.world, 'testEvent', testHandler);
+        u_event.subscribe(json.hello, 'testEvent', otherHandler);
+        u_event.subscribe(json.hello.world, 'otherEvent', otherHandler);
+        u_event.subscribe(json.hello.world, 'argTesterEvent', function (event, data) {
             equal(event.name, 'argTesterEvent', "Event name passed to handler checks out");
-            deepEqual(live.path(event.target), ['hello', 'world'], "Event target passed to handler checks out");
+            deepEqual(u_live.path(event.target), ['hello', 'world'], "Event target passed to handler checks out");
             equal(data, eventData, "Custom event data passed to handler checks out");
             return false;
         });
 
         // checking arguments passed to event handler
-        event.trigger(json.hello.world, 'argTesterEvent', eventData);
+        u_event.trigger(json.hello.world, 'argTesterEvent', eventData);
 
         i = j = 0;
-        event.trigger(json.hello.world, 'otherEvent');
+        u_event.trigger(json.hello.world, 'otherEvent');
         equal(j, 1, "Event triggered on single subscribed node");
 
         i = j = 0;
-        event.trigger(json.hello.world, 'testEvent');
+        u_event.trigger(json.hello.world, 'testEvent');
         equal(i, 1, "Event triggered on source node (source and parent both have handlers)");
         equal(j, 1, "> Event bubbled to parent");
 
         j = 0;
-        event.unsubscribe(json.hello.world);
-        event.trigger(json.hello.world, 'testEvent');
+        u_event.unsubscribe(json.hello.world);
+        u_event.trigger(json.hello.world, 'testEvent');
         equal(j, 1, "Event bubbled to parent from non-capturing node");
 
         i = j = 0;
-        event.subscribe(json.hello.world, 'testEvent', stopHandler);
-        event.trigger(json.hello.world, 'testEvent');
+        u_event.subscribe(json.hello.world, 'testEvent', stopHandler);
+        u_event.trigger(json.hello.world, 'testEvent');
         equal(i, 1, "Event triggered on source node with handler that returns false");
         equal(j, 0, "> Event didn't bubble bubble to parent");
 
         raises(function () {
-            event.trigger(json.hello.all, 'testEvent');
+            u_event.trigger(json.hello.all, 'testEvent');
         }, "Triggering event on ordinal node raises error");
 
         // one-time events
         i = 0;
-        event.unsubscribe(json.hello.world);
-        event.once(json.hello.world, 'testEvent', testHandler);
-        event.trigger(json.hello.world, 'testEvent');
+        u_event.unsubscribe(json.hello.world);
+        u_event.once(json.hello.world, 'testEvent', testHandler);
+        u_event.trigger(json.hello.world, 'testEvent');
         equal(i, 1, "One-time event triggered handler");
-        event.trigger(json.hello.world, 'testEvent');
+        u_event.trigger(json.hello.world, 'testEvent');
         equal(i, 1, "Handler triggered no more upon one-time event");
     });
 
@@ -101,61 +101,61 @@
         function testHandler() { i++; }
 
         i = 0;
-        event.delegate(json, ['hello', 'world'], 'testEvent', testHandler);
-        event.trigger(json.hello.world, 'testEvent');
+        u_event.delegate(json, ['hello', 'world'], 'testEvent', testHandler);
+        u_event.trigger(json.hello.world, 'testEvent');
         equal(i, 1, "Delegated event fired when triggered on right path");
-        event.trigger(json.hello, 'testEvent');
+        u_event.trigger(json.hello, 'testEvent');
         equal(i, 1, "Delegated event did not fire when triggered on wrong path");
 
         // path patterns
         i = 0;
-        event.unsubscribe(json, 'testEvent');
-        event.delegate(json, ['*', 'world'], 'otherEvent', testHandler);
-        event.trigger(json.hello.world, 'otherEvent');
+        u_event.unsubscribe(json, 'testEvent');
+        u_event.delegate(json, ['*', 'world'], 'otherEvent', testHandler);
+        u_event.trigger(json.hello.world, 'otherEvent');
         equal(i, 1, "Pattern delegated event fired on matching node");
-        event.trigger(json.bybye.world, 'otherEvent');
+        u_event.trigger(json.bybye.world, 'otherEvent');
         equal(i, 2, "Pattern delegated event fired on other matching node");
     });
 
     test("Setting", function () {
         // checking handler arguments
-        event.subscribe(json, 'change', function (event, data) {
+        u_event.subscribe(json, 'change', function (event, data) {
             equal(event.name, 'change', "Event name ok.");
-            deepEqual(live.path(event.target), ['hello', 'world'], "Event target ok");
+            deepEqual(u_live.path(event.target), ['hello', 'world'], "Event target ok");
             deepEqual(data.before, "!!", "Before value ok");
             deepEqual(data.after, "!!!", "After value ok");
             deepEqual(data.name, 'center', "Node name ok");
             equal(data.data, "customData", "Custom data ok");
         });
-        event.set(json, ['hello', 'world', 'center'], "!!!", "customData");
-        event.unsubscribe(json, 'change');
+        u_event.set(json, ['hello', 'world', 'center'], "!!!", "customData");
+        u_event.unsubscribe(json, 'change');
 
         var i, tmp;
         function onChange() { i++; }
         function onAdd() { i += 2; }
-        event.subscribe(json, 'add', onAdd);
-        event.subscribe(json, 'change', onChange);
+        u_event.subscribe(json, 'add', onAdd);
+        u_event.subscribe(json, 'change', onChange);
 
         // testing data update
         i = 0;
-        tmp = event.set(json, ['hello', 'world', 'center'], "blah");
+        tmp = u_event.set(json, ['hello', 'world', 'center'], "blah");
         equal(tmp, json.hello.world, "Set returns parent of changed node");
         equal(i, 1, "Update triggers 'change' event");
 
         i = 0;
-        event.set(json, ['hello', 'world', 'center'], "boo", {foo: "bar"});
+        u_event.set(json, ['hello', 'world', 'center'], "boo", {foo: "bar"});
 
         i = 0;
-        event.set(json, ['hello', 'world', 'center'], "boo", null, false);
+        u_event.set(json, ['hello', 'world', 'center'], "boo", null, false);
         equal(i, 0, "Non-triggering call to event.set()");
 
         // testing data addition
         i = 0;
-        event.set(json, ['hello', 'world', 'whatever'], "blah");
+        u_event.set(json, ['hello', 'world', 'whatever'], "blah");
         equal(i, 2, "Addition triggers 'add' event");
 
-        event.unsubscribe(json, 'add', onAdd);
-        event.unsubscribe(json, 'change', onChange);
+        u_event.unsubscribe(json, 'add', onAdd);
+        u_event.unsubscribe(json, 'change', onChange);
 
 
     });
@@ -164,19 +164,19 @@
         var i, tmp;
         function onRemove() { i++; }
 
-        event.subscribe(json, 'remove', onRemove);
+        u_event.subscribe(json, 'remove', onRemove);
 
         i = 0;
         json.hello.world.center = "a";
-        tmp = event.unset(json, ['hello', 'world', 'center']);
+        tmp = u_event.unset(json, ['hello', 'world', 'center']);
         equal(tmp, json.hello.world, "Unset returns parent of removed node");
         equal(i, 1, "Unsetting triggers 'remove' event");
 
         json.hello.world.center = "a";
-        event.unset(json, ['hello', 'world', 'center'], false);
+        u_event.unset(json, ['hello', 'world', 'center'], false);
         equal(i, 1, "Non-triggering call to event.unset()");
 
-        event.unset(json, ['hello', 'world', 'center']);
+        u_event.unset(json, ['hello', 'world', 'center']);
         equal(i, 1, "Unsetting non-existing path doesn't trigger event");
     });
 }(flock.live,

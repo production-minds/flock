@@ -5,7 +5,7 @@
  */
 /*global flock */
 
-flock.event = (function (core, utils, live) {
+flock.event = (function (u_core, u_utils, u_live) {
     var errors, events, self;
 
     errors = {
@@ -30,7 +30,7 @@ flock.event = (function (core, utils, live) {
          * @throws {string}
          */
         subscribe: function (node, eventName, handler) {
-            var meta = node[live.metaKey()],
+            var meta = node[u_live.metaKey()],
                 handlers;
 
             if (typeof meta === 'object') {
@@ -50,7 +50,7 @@ flock.event = (function (core, utils, live) {
                     throw "flock.event.subscribe: " + errors.ERROR_HANDLERNOTFUNCTION;
                 }
             } else {
-                throw "flock.event.subscribe: " + live.ERROR_NONTRAVERSABLE;
+                throw "flock.event.subscribe: " + u_live.ERROR_NONTRAVERSABLE;
             }
         },
 
@@ -87,7 +87,7 @@ flock.event = (function (core, utils, live) {
             var matchPath = flock.multi ? flock.multi.matchPath : flock.path.match;
 
             function fullHandler(event, data) {
-                if (matchPath(live.path(event.target), path)) {
+                if (matchPath(u_live.path(event.target), path)) {
                     // when target path matches passed path
                     handler.apply(this, arguments);
                 }
@@ -105,7 +105,7 @@ flock.event = (function (core, utils, live) {
          * @throws {string} On untraversable node.
          */
         unsubscribe: function (node, eventName, handler) {
-            var meta = node[live.metaKey()],
+            var meta = node[u_live.metaKey()],
                 handlers,
                 i;
 
@@ -138,7 +138,7 @@ flock.event = (function (core, utils, live) {
                     }
                 }
             } else {
-                throw "flock.event.unsubscribe: " + live.ERROR_NONTRAVERSABLE;
+                throw "flock.event.unsubscribe: " + u_live.ERROR_NONTRAVERSABLE;
             }
         },
 
@@ -153,7 +153,7 @@ flock.event = (function (core, utils, live) {
         trigger: function (node, eventName, data, target) {
             target = target || node;
 
-            var meta = node[live.metaKey()],
+            var meta = node[u_live.metaKey()],
                 event,
                 handlers,
                 i;
@@ -179,7 +179,7 @@ flock.event = (function (core, utils, live) {
                     self.trigger(meta.parent, eventName, data, target);
                 }
             } else {
-                throw "flock.event.trigger: " + live.ERROR_NONTRAVERSABLE;
+                throw "flock.event.trigger: " + u_live.ERROR_NONTRAVERSABLE;
             }
         },
 
@@ -193,15 +193,15 @@ flock.event = (function (core, utils, live) {
          */
         set: function (node, path, value, data, trigger) {
             // storing 'before' node
-            var before = core.get(node, path),
+            var before = u_core.get(node, path),
                 after,
                 parent;
 
             // setting value
-            parent = live.set(node, path, value);
+            parent = u_live.set(node, path, value);
 
             // acquiring 'after' node
-            after = core.get(node, path);
+            after = u_core.get(node, path);
 
             // triggering event
             if (trigger !== false) {
@@ -230,11 +230,11 @@ flock.event = (function (core, utils, live) {
          */
         unset: function (node, path, trigger) {
             // storing 'before' node
-            var before = core.get(node, path),
+            var before = u_core.get(node, path),
                 parent;
 
             if (typeof before !== 'undefined') {
-                parent = core.unset(node, path);
+                parent = u_core.unset(node, path);
 
                 // triggering event
                 if (trigger !== false) {
@@ -253,8 +253,8 @@ flock.event = (function (core, utils, live) {
     };
 
     // delegating errors
-    utils.delegate(self, events);
-    utils.delegate(self, errors);
+    u_utils.delegate(self, events);
+    u_utils.delegate(self, errors);
 
     return self;
 }(flock.core,

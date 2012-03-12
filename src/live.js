@@ -5,7 +5,7 @@
  */
 /*global flock */
 
-flock.live = (function (core, utils) {
+flock.live = (function (u_core, u_utils) {
     var metaKey = '.meta',
         errors, privates, self;
 
@@ -173,7 +173,7 @@ flock.live = (function (core, utils) {
             }
 
             // setting value on path
-            parent = core.set(node, path, value);
+            parent = u_core.set(node, path, value);
 
             // searching for first uninitialized node
             for (i = 0; i < path.length; i++) {
@@ -258,7 +258,7 @@ flock.live = (function (core, utils) {
     };
 
     // delegating errors
-    utils.delegate(self, errors);
+    u_utils.delegate(self, errors);
 
     return self;
 }(flock.core,

@@ -1,5 +1,5 @@
 /*global flock, module, test, ok, equal, deepEqual, raises */
-(function (utils) {
+(function (u_utils) {
     module("Utils");
 
     var data = {
@@ -20,29 +20,29 @@
             undefTest = function () { },
             instanceTest;
 
-        instanceTest = utils.genMethod(staticTest, [5]);
+        instanceTest = u_utils.genMethod(staticTest, [5]);
         equal(instanceTest(4), 9, "Generated method remembers arguments");
 
-        instanceTest = utils.genMethod(undefTest, [5], function() { return "ready"; });
+        instanceTest = u_utils.genMethod(undefTest, [5], function() { return "ready"; });
         equal(instanceTest(4), "ready", "Generated method applies mapper");
 
-        instanceTest = utils.genMethod(staticTest, [5], function(result, custom) { return result + custom; }, 9);
+        instanceTest = u_utils.genMethod(staticTest, [5], function(result, custom) { return result + custom; }, 9);
         equal(instanceTest(4), 18, "Passing custom data to mapper");
 
-        instanceTest = utils.genMethod(undefTest, [5], "foo");
+        instanceTest = u_utils.genMethod(undefTest, [5], "foo");
         equal(instanceTest(4), "foo", "Generated method returns specified (non-function) value");
     });
 
     test("Objects", function () {
-        equal(utils.isEmpty({}), true, "Empty object tested for empty");
-        equal(utils.isEmpty({foo: "bar"}), false, "Non-empty object tested for empty");
+        equal(u_utils.isEmpty({}), true, "Empty object tested for empty");
+        equal(u_utils.isEmpty({foo: "bar"}), false, "Non-empty object tested for empty");
 
-        equal(utils.isSingle({}), false, "Empty object tested for single");
-        equal(utils.isSingle({foo: "bar"}), true, "Single-property object tested for single");
-        equal(utils.isSingle({foo: "bar", what: "eva"}), false, "Multi-property object tested for single");
+        equal(u_utils.isSingle({}), false, "Empty object tested for single");
+        equal(u_utils.isSingle({foo: "bar"}), true, "Single-property object tested for single");
+        equal(u_utils.isSingle({foo: "bar", what: "eva"}), false, "Multi-property object tested for single");
 
-        equal(utils.firstProperty({foo: "bar"}), 'foo', "First property of an object");
-        ok(typeof utils.firstProperty({}) === 'undefined', "First property of an empty object");
+        equal(u_utils.firstProperty({foo: "bar"}), 'foo', "First property of an object");
+        ok(typeof u_utils.firstProperty({}) === 'undefined', "First property of an empty object");
     });
 
     test("Delegation", function () {
@@ -50,23 +50,23 @@
             key, count;
 
         tmp = {};
-        utils.delegateProperty(tmp, data, 'hi');
+        u_utils.delegateProperty(tmp, data, 'hi');
         equal(tmp.hi, data.hi, "Delegating single property");
 
         raises(function () {
-            utils.delegateProperty(tmp, data, 'hi');
+            u_utils.delegateProperty(tmp, data, 'hi');
         }, "Attempting to overwrite existing property fails");
 
-        utils.delegateProperty(tmp, data, 'hi', true);
+        u_utils.delegateProperty(tmp, data, 'hi', true);
         equal(tmp.hi, data.hi, "Overwriting single property in silent mode");
 
         tmp = {};
-        utils.delegate(tmp, data);
+        u_utils.delegate(tmp, data);
         deepEqual(tmp, data, "Delegating all properties");
 
         tmp = {};
         count = 0;
-        utils.delegate(tmp, data.hello, ['world', 'third']);
+        u_utils.delegate(tmp, data.hello, ['world', 'third']);
         for (key in tmp) {
             if (tmp.hasOwnProperty(key)) {
                 count++;
