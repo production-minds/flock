@@ -45,12 +45,12 @@ var flock;
             genMethod = utils.genMethod,
             nodeMapper = options.nochaining ? undefined : chainedNodeMapper,
             args = [node],
-            self = {};
+            ds = {};
 
         //////////////////////////////
         // Getters, setters
 
-        self.node = function () {
+        ds.node = function () {
             return node;
         };
 
@@ -58,7 +58,7 @@ var flock;
          * Returns copy of the options object as to
          * prevent it from being modified.
          */
-        self.options = function () {
+        ds.options = function () {
             return {
                 nolive: options.nolive,
                 noinit: options.noinit,
@@ -72,9 +72,10 @@ var flock;
         // Delegates
 
         // single node methods
-        self.get = genMethod(single.get, args, nodeMapper, options);
-        self.clear = genMethod(single.clear, args, self);
-        self.cleanup = genMethod(single.cleanup, args, self);
+        ds.get = genMethod(single.get, args, nodeMapper, options);
+        ds.clear = genMethod(single.clear, args, ds);
+        ds.cleanup = genMethod(single.cleanup, args, ds);
+        ds.map = genMethod(single.map, args, ds);
 
         // live
         if (!options.nolive && live) {
@@ -84,20 +85,20 @@ var flock;
             }
 
             // general live methods
-            self.init = genMethod(live.init, args, self);
-            self.deinit = genMethod(live.deinit, args, self);
-            self.path = genMethod(live.path, args);
-            self.parent = genMethod(live.parent, args, nodeMapper, options);
-            self.closest = genMethod(live.closest, args, nodeMapper, options);
-            self.name = genMethod(live.name, args);
+            ds.init = genMethod(live.init, args, ds);
+            ds.deinit = genMethod(live.deinit, args, ds);
+            ds.path = genMethod(live.path, args);
+            ds.parent = genMethod(live.parent, args, nodeMapper, options);
+            ds.closest = genMethod(live.closest, args, nodeMapper, options);
+            ds.name = genMethod(live.name, args);
 
             // event - must have live for events
             if (!options.noevent && event) {
-                self.on = genMethod(event.subscribe, args, self);
-                self.once = genMethod(event.once, args, self);
-                self.delegate = genMethod(event.delegate, args, self);
-                self.off = genMethod(event.unsubscribe, args, self);
-                self.trigger = genMethod(event.trigger, args, self);
+                ds.on = genMethod(event.subscribe, args, ds);
+                ds.once = genMethod(event.once, args, ds);
+                ds.delegate = genMethod(event.delegate, args, ds);
+                ds.off = genMethod(event.unsubscribe, args, ds);
+                ds.trigger = genMethod(event.trigger, args, ds);
             }
         }
 
@@ -105,20 +106,20 @@ var flock;
         if (!options.nolive && live) {
             if (!options.noevent && event) {
                 // evented set
-                self.set = genMethod(event.set, args, self);
-                self.unset = genMethod(event.unset, args, self);
+                ds.set = genMethod(event.set, args, ds);
+                ds.unset = genMethod(event.unset, args, ds);
             } else {
                 // live set
-                self.set = genMethod(live.set, args, self);
-                self.unset = genMethod(single.unset, args, self);
+                ds.set = genMethod(live.set, args, ds);
+                ds.unset = genMethod(single.unset, args, ds);
             }
 
-            self.empty = genMethod(live.empty, args);
+            ds.empty = genMethod(live.empty, args);
         } else {
             // core set
-            self.set = genMethod(single.set, args, self);
-            self.unset = genMethod(single.unset, args, self);
-            self.empty = genMethod(utils.isEmpty, args);
+            ds.set = genMethod(single.set, args, ds);
+            ds.unset = genMethod(single.unset, args, ds);
+            ds.empty = genMethod(utils.isEmpty, args);
         }
 
         if (!options.nomulti && multi) {
@@ -128,10 +129,10 @@ var flock;
             }
 
             // query method
-            self.query = genMethod(multi.query, args, nodeMapper, options);
+            ds.query = genMethod(multi.query, args, nodeMapper, options);
         }
 
-        return self;
+        return ds;
     };
 
     /**

@@ -1,7 +1,7 @@
 /**
  * Single Node Functionality
  */
-/*global flock*/
+/*global flock */
 
 flock.single = (function (u_utils, u_path) {
     var errors, self;
@@ -143,7 +143,7 @@ flock.single = (function (u_utils, u_path) {
          * @throws {string} When immediate child nodes are not objects.
          * @example See unit test.
          */
-        transform: function (node) { /*, path1, path2 */
+        map: function (node) {
             var result = {},
                 item, path, last,
                 i;

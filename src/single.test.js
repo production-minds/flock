@@ -125,7 +125,7 @@
                 bar: "world"
             };
 
-        deepEqual(u_single.transform(testDataSource, ['foo'], ['bar']), {
+        deepEqual(u_single.map(testDataSource, ['foo'], ['bar']), {
             hello: {
                 test: "world"
             },
@@ -134,12 +134,12 @@
             }
         }, "First level values turned into two level lookup");
 
-        deepEqual(u_single.transform(testDataSource, ['foo'], ['bar', 'test']), {
+        deepEqual(u_single.map(testDataSource, ['foo'], ['bar', 'test']), {
             hello: "world",
             lorem: "ipsum"
         }, "Second level values turned into one level lookup");
 
-        deepEqual(u_single.transform(testDataSource, ['foo'], ['bar', 'test'], []), {
+        deepEqual(u_single.map(testDataSource, ['foo'], ['bar', 'test'], []), {
             "hello": {
                 "world": {
                     "foo": "hello",
@@ -159,7 +159,7 @@
         }, "Empty path as last node attaches child nodes to the lookup as leaf nodes");
 
         raises(function () {
-            u_single.transform(testDataDest, ['foo'], ['bar']);
+            u_single.map(testDataDest, ['foo'], ['bar']);
         }, "Non-object child nodes raise error");
     });
 }(flock.single));
