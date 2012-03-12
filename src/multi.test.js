@@ -1,5 +1,5 @@
 /*global flock, module, test, ok, equal, notEqual, deepEqual, raises, console */
-(function ($, query, core) {
+(function ($, u_multi, u_core) {
     var data = {
         first: {
             a: {},
@@ -30,115 +30,115 @@
         }
     };
 
-    module("Query");
+    module("Multi");
 
     test("Path normalization", function () {
         var path = 'first.a.bcde.1.55',
 			apath = path.split('.');
-        deepEqual(query.normalizePath(''), [], "Root path");
-        deepEqual(query.normalizePath(path), apath, "String path " + path);
-        deepEqual(query.normalizePath('first.*.bcde...55'), ['first', '*', 'bcde', null, '55'], "Path with wildcards");
+        deepEqual(u_multi.normalizePath(''), [], "Root path");
+        deepEqual(u_multi.normalizePath(path), apath, "String path " + path);
+        deepEqual(u_multi.normalizePath('first.*.bcde...55'), ['first', '*', 'bcde', null, '55'], "Path with wildcards");
         raises(function () {
-            query.normalizePath('first.*.bcde......55');
+            u_multi.normalizePath('first.*.bcde......55');
         }, "Path with erroneous wildcards");
         raises(function () {
-            query.query(data, 'fourth...');
+            u_multi.query(data, 'fourth...');
         }, "Path can't end in dot");
-        deepEqual(query.normalizePath('first.1,2,3.*'), ['first', ['1', '2', '3'], '*'], "Array keys");
+        deepEqual(u_multi.normalizePath('first.1,2,3.*'), ['first', ['1', '2', '3'], '*'], "Array keys");
     });
 
     test("Path matching", function () {
-        equal(query.matchPath('first.a.bcde.1.55', 'first.a.bcde.1.55'), true, "Exact match");
-        equal(query.matchPath('first.a.bcde.1.55', 'first.a.*.1.55'), true, "Wildcard match");
-        equal(query.matchPath('first.a.bcde.1.55', 'first...1.55'), true, "Skipper match");
-        equal(query.matchPath('first.a.bcde.1.55', '...1.55'), true, "Leading skipper match");
-        equal(query.matchPath('first.a.bcde.1.55', 'first.a,b,c,d.bcde.1.55'), true, "Multiple key match");
+        equal(u_multi.matchPath('first.a.bcde.1.55', 'first.a.bcde.1.55'), true, "Exact match");
+        equal(u_multi.matchPath('first.a.bcde.1.55', 'first.a.*.1.55'), true, "Wildcard match");
+        equal(u_multi.matchPath('first.a.bcde.1.55', 'first...1.55'), true, "Skipper match");
+        equal(u_multi.matchPath('first.a.bcde.1.55', '...1.55'), true, "Leading skipper match");
+        equal(u_multi.matchPath('first.a.bcde.1.55', 'first.a,b,c,d.bcde.1.55'), true, "Multiple key match");
 
-        equal(query.matchPath('first.a.bcde.1.55', 'first.a.u.1.55'), false, "Exact mismatch");
-        equal(query.matchPath('first.a.bcde.1.55', 'first.a.*.*.1.55'), false, "Wildcard mismatch");
-        equal(query.matchPath('first.a.bcde.1.55', 'first.a...2.55'), false, "Skipper mismatch");
-        equal(query.matchPath('first.a.bcde.1.55', 'first.b,c,d.bcde.1.55'), false, "Multiple key mismatch");
+        equal(u_multi.matchPath('first.a.bcde.1.55', 'first.a.u.1.55'), false, "Exact mismatch");
+        equal(u_multi.matchPath('first.a.bcde.1.55', 'first.a.*.*.1.55'), false, "Wildcard mismatch");
+        equal(u_multi.matchPath('first.a.bcde.1.55', 'first.a...2.55'), false, "Skipper mismatch");
+        equal(u_multi.matchPath('first.a.bcde.1.55', 'first.b,c,d.bcde.1.55'), false, "Multiple key mismatch");
     });
 
     test("Wildcards", function () {
         // testing single-level wildcards
         deepEqual(
-            query.query(data, 'fourth.*'),
+            u_multi.query(data, 'fourth.*'),
             [{a: "One", b: "Two"}, {a: "Three", b: "Four"}, {a: "Five", b: "Six"}],
             "Collecting nodes from path 'fourth.*'");
         deepEqual(
-            query.query(data, 'fourth.*', {limit: 1}),
+            u_multi.query(data, 'fourth.*', {limit: 1}),
             [{a: "One", b: "Two"}],
             "Retrieving first node from path 'fourth.*'");
         deepEqual(
-            query.query(data, 'fourth.*.a'),
+            u_multi.query(data, 'fourth.*.a'),
             ["One", "Three", "Five"],
             "Collecting nodes from path 'fourth.*.a'");
         deepEqual(
-            query.query(data, 'fourth.2.*'),
+            u_multi.query(data, 'fourth.2.*'),
             ["Three", "Four"],
             "Collecting nodes from path 'fourth.2.*'");
         deepEqual(
-            query.query(data, '*.1'),
+            u_multi.query(data, '*.1'),
             [{}, {a: "One", b: "Two"}],
             "Collecting nodes from path '*.1'");
 
         deepEqual(
-            query.query(data, 'first,second.*', {mode: $.BOTH}),
+            u_multi.query(data, 'first,second.*', {mode: $.BOTH}),
             {a: {}, b: {}, c: {}, d: {}, e: {}, 1: {}, 2: {}, 3: {}},
             "Getting results as lookup");
     });
 
     test("Ignored key", function () {
-        query.ignoredKey('2');
+        u_multi.ignoredKey('2');
         deepEqual(
-            query.query(data, 'fourth.*'),
+            u_multi.query(data, 'fourth.*'),
             [{a: "One", b: "Two"}, {a: "Five", b: "Six"}],
             "Ignoring key '2' along path 'fourth.*'");
 
-        query.ignoredKey();
+        u_multi.ignoredKey();
     });
 
     test("OR relation", function () {
         deepEqual(
-            query.query(data, ['fourth', [1, 3]]),
+            u_multi.query(data, ['fourth', [1, 3]]),
             [{a: "One", b: "Two"}, {a: "Five", b: "Six"}],
             "Collecting specific nodes from path 'fourth.1,3'");
         deepEqual(
-            query.query(data, 'fourth.1,3'),
+            u_multi.query(data, 'fourth.1,3'),
             [{a: "One", b: "Two"}, {a: "Five", b: "Six"}],
             "Collecting specific nodes from path 'fourth.1,3' (passed as string)");
         deepEqual(
-            query.query(data, ['fourth', [1, 3], '*']),
+            u_multi.query(data, ['fourth', [1, 3], '*']),
             ["One", "Two", "Five", "Six"],
             "Collecting specific nodes from path 'fourth.1,3.*'");
         deepEqual(
-            query.query(data, [['first', 'third']]),
+            u_multi.query(data, [['first', 'third']]),
             [{ a: {}, b: {}, c: {}, d: {}, e: {} }, {}],
             "Collecting specific nodes from path 'first,third'");
         deepEqual(
-            query.query(data, 'first,third'),
+            u_multi.query(data, 'first,third'),
             [{ a: {}, b: {}, c: {}, d: {}, e: {} }, {}],
             "Collecting specific nodes from path 'first,third' (passed as string)");
 
         deepEqual(
-            query.query(data, [['thousandth', 'third']]),
+            u_multi.query(data, [['thousandth', 'third']]),
             [{}],
             "Collecting non-existent keys");
         deepEqual(
-            query.query(data, [['thousandth', 'third']], {mode: $.BOTH}),
+            u_multi.query(data, [['thousandth', 'third']], {mode: $.BOTH}),
             {third: {}},
             "Collecting non-existent keys (as lookup)");
         deepEqual(
-            query.query(data, [['thousandth', 'third']], {undef: true}),
+            u_multi.query(data, [['thousandth', 'third']], {undef: true}),
             [undefined, {}],
             "Collecting non-existent keys (undefined values allowed)");
     });
 
     test("Counting", function () {
-        equal(query.query(data, 'first.*', {mode: $.COUNT}), 5, "5 elements on path 'first.*'");
-        equal(query.query(data, 'fourth.*.a', {mode: $.COUNT}), 3, "3 elements on path 'fourth.*.a'");
-        equal(query.query(data, '...a', {mode: $.COUNT}), 4, "4 elements on path '...a'");
+        equal(u_multi.query(data, 'first.*', {mode: $.COUNT}), 5, "5 elements on path 'first.*'");
+        equal(u_multi.query(data, 'fourth.*.a', {mode: $.COUNT}), 3, "3 elements on path 'fourth.*.a'");
+        equal(u_multi.query(data, '...a', {mode: $.COUNT}), 4, "4 elements on path '...a'");
     });
 
     test("Skipping", function () {
@@ -161,22 +161,22 @@
         };
 
         deepEqual(
-            query.query(data, '...1'),
+            u_multi.query(data, '...1'),
             [{}, "hello", "two", "test"],
             "Collecting nodes from path '...1'");
         deepEqual(
-            query.query(data, ['what', '3', 'awe']),
+            u_multi.query(data, ['what', '3', 'awe']),
             ["some"],
             "Collecting nodes from path 'what.3.awe'");
         deepEqual(
-            query.query(data, [null, '3', 'awe']),
+            u_multi.query(data, [null, '3', 'awe']),
             ["some"],
             "Collecting nodes from path '...3.awe'");
 
         // creating loopback
         data.test.b = data.test;
         deepEqual(
-            query.query(data, '...1'),
+            u_multi.query(data, '...1'),
             [{}, "hello", "two", "test"],
             "Loopbacks don't affect result");
     });
@@ -200,8 +200,8 @@
             ]
         };
 
-        equal(query.query(data, ''), data, ".query('') and datastore root point to the same object");
-        deepEqual(query.query(data, ['test', '.']), ['dot'], "Dot as key acts as regular string");
+        equal(u_multi.query(data, ''), data, ".query('') and datastore root point to the same object");
+        deepEqual(u_multi.query(data, ['test', '.']), ['dot'], "Dot as key acts as regular string");
     });
 
     test("Modifying multiple nodes", function () {
@@ -222,7 +222,7 @@
             }
         };
 
-        query.query(data, 'fourth.*.a', {value: {}});
+        u_multi.query(data, 'fourth.*.a', {value: {}});
         deepEqual(data.fourth, {
             1: {
                 a: {},
@@ -238,7 +238,7 @@
             }
         }, "Setting empty object by default");
 
-        query.query(data, 'fourth.*.a', {value: "A"});
+        u_multi.query(data, 'fourth.*.a', {value: "A"});
         deepEqual(data.fourth, {
             1: {
                 a: "A",
@@ -254,7 +254,7 @@
             }
         }, "Setting the value 'A' on several nodes");
 
-        query.query(data, 'fourth.*.b', {value: function (leaf) {
+        u_multi.query(data, 'fourth.*.b', {value: function (leaf) {
             return leaf + "X";
         }});
         deepEqual(data.fourth, {
@@ -272,7 +272,7 @@
             }
         }, "Adding character 'X' to each leaf node on path");
 
-        query.query(data, 'fourth.*.c', {value: "C"});
+        u_multi.query(data, 'fourth.*.c', {value: "C"});
         deepEqual(data.fourth, {
             1: {
                 a: "A",
@@ -295,7 +295,7 @@
     test("Deleting multiple nodes", function () {
         var data = {};
 
-        query.query(data, 'fourth', {value: {
+        u_multi.query(data, 'fourth', {value: {
             1: {
                 a: "One",
                 b: "Two"
@@ -309,7 +309,7 @@
                 b: "Six"
             }
         }});
-        query.query(data, 'fourth.*.a', {mode: $.DEL});
+        u_multi.query(data, 'fourth.*.a', {mode: $.DEL});
         deepEqual(data.fourth, {
             1: {
                 b: "Two"
@@ -328,7 +328,7 @@
 
         // sets string for full text search
         function addWord(name) {
-            core.set(data, name.split(''), {name: name});
+            u_core.set(data, name.split(''), {name: name});
         }
 
         // setting up cache
@@ -341,31 +341,31 @@
         addWord("wedding");
 
         // querying data
-        deepEqual(query.query(data, "w.o...name"), [
+        deepEqual(u_multi.query(data, "w.o...name"), [
             "world",
             "worn",
             "wounded"
         ], "wo...");
-        deepEqual(query.query(data, "h.e.r...name"), [
+        deepEqual(u_multi.query(data, "h.e.r...name"), [
             "hero",
             "hers"
         ], "her...");
-        deepEqual(query.query(data, "w...name"), [
+        deepEqual(u_multi.query(data, "w...name"), [
             "world",
             "worn",
             "wounded",
             "wedding"
         ], "w...");
-        deepEqual(query.query(data, "h...name"), [
+        deepEqual(u_multi.query(data, "h...name"), [
             "hello",
             "hero",
             "hers"
         ], "h...");
-        deepEqual(query.query(data, "w.o.*.n...name"), [
+        deepEqual(u_multi.query(data, "w.o.*.n...name"), [
             "worn",
             "wounded"
         ], "wo*n...");
-        deepEqual(query.query(data, "*.e...name"), [
+        deepEqual(u_multi.query(data, "*.e...name"), [
             "hello",
             "hero",
             "hers",
@@ -373,5 +373,5 @@
         ], "*e...");
     });
 }(flock,
-    flock.query,
+    flock.multi,
     flock.core));

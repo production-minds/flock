@@ -63,7 +63,7 @@
             nolive: false,
             noinit: false,
             noevent: false,
-            noquery: false,
+            nomulti: false,
             nochaining: false
         }, "All flags are false by default");
 
@@ -77,7 +77,7 @@
             nolive: true,
             noinit: undefined,
             noevent: undefined,
-            noquery: undefined,
+            nomulti: undefined,
             nochaining: undefined
         }, "Non-default options set (nolive: true)");
 
@@ -85,7 +85,7 @@
             nolive: true,
             noinit: undefined,
             noevent: undefined,
-            noquery: undefined,
+            nomulti: undefined,
             nochaining: undefined
         }, "Derived flock object preserves options");
 

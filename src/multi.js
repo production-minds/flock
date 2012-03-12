@@ -3,7 +3,7 @@
  */
 /*global flock */
 
-flock.query = (function (constants, utils) {
+flock.multi = (function (constants, utils) {
     var RE_PATH_VALIDATOR = /^(\.{3})*([^\.,]+(\.{1,3}|,))*[^\.,]+$/,
         RE_PATH_SKIPPER = /\.{2,}/,
 
@@ -198,7 +198,7 @@ flock.query = (function (constants, utils) {
             if (typeof path === 'string') {
                 // validating path
                 if (path.length && !RE_PATH_VALIDATOR.test(path)) {
-                    throw "flock.query.normalizePath: " + errors.ERROR_INVALIDPATH;
+                    throw "flock.multi.normalizePath: " + errors.ERROR_INVALIDPATH;
                 }
 
                 var tpath,
@@ -229,7 +229,7 @@ flock.query = (function (constants, utils) {
             } else if (path instanceof Array) {
                 return path.concat([]);
             } else {
-                throw "flock.query.normalizePath: " + errors.ERROR_INVALIDPATH;
+                throw "flock.multi.normalizePath: " + errors.ERROR_INVALIDPATH;
             }
         },
 

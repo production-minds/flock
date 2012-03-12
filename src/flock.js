@@ -22,7 +22,7 @@ var flock;
      * @param [options.nolive] {boolean} No parent chain traversal.
      * @param [options.noinit] {boolean} No upfront datastore initialization (when live).
      * @param [options.noevent] {boolean} No events.
-     * @param [options.noquery] {boolean} No complex queries, only single nodes may be accessed.
+     * @param [options.nomulti] {boolean} No complex queries, only single nodes may be accessed.
      * @param [options.nochaining] {boolean} No wrapping of querying methods in flock object.
      */
     flock = function (node, options) {
@@ -32,7 +32,7 @@ var flock;
             nolive: false,
             noinit: false,
             noevent: false,
-            noquery: false,
+            nomulti: false,
             nochaining: false
         };
 
@@ -41,7 +41,7 @@ var flock;
             core = flock.core,
             live = flock.live,
             event = flock.event,
-            query = flock.query,
+            multi = flock.multi,
             genMethod = utils.genMethod,
             nodeMapper = options.nochaining ? undefined : chainedNodeMapper,
             args = [node],
@@ -63,7 +63,7 @@ var flock;
                 nolive: options.nolive,
                 noinit: options.noinit,
                 noevent: options.noevent,
-                noquery: options.noquery,
+                nomulti: options.nomulti,
                 nochaining: options.nochaining
             };
         };
@@ -121,14 +121,14 @@ var flock;
             self.empty = genMethod(utils.isEmpty, args);
         }
 
-        if (!options.noquery && query) {
+        if (!options.nomulti && multi) {
             if (!options.nolive && live) {
                 // setting meta key to be ignored by traversal
-                query.ignoredKey(live.metaKey());
+                multi.ignoredKey(live.metaKey());
             }
 
             // query method
-            self.query = genMethod(query.query, args, nodeMapper, options);
+            self.query = genMethod(multi.query, args, nodeMapper, options);
         }
 
         return self;
