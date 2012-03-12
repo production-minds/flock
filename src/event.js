@@ -84,10 +84,10 @@ flock.event = (function (u_single, u_utils, u_live) {
          * @param handler {function} Event handler.
          */
         delegate: function (node, path, eventName, handler) {
-            var matchPath = flock.multi ? flock.multi.matchPath : flock.path.match;
+            var match = flock.query ? flock.query.match : flock.path.match;
 
             function fullHandler(event, data) {
-                if (matchPath(u_live.path(event.target), path)) {
+                if (match(u_live.path(event.target), path)) {
                     // when target path matches passed path
                     handler.apply(this, arguments);
                 }

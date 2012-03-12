@@ -19,11 +19,13 @@ cat \
 src/license.js \
 src/flock.js \
 src/utils.js \
-src/core.js \
+src/path.js \
+src/single.js \
 src/live.js \
 src/event.js \
 src/constants.js \
 src/query.js \
+src/multi.js \
 > "build/$NAME.js"
 
 if type yui-compressor >/dev/null 2>&1

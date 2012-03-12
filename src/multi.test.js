@@ -32,34 +32,6 @@
 
     module("Multi");
 
-    test("Path normalization", function () {
-        var path = 'first.a.bcde.1.55',
-			apath = path.split('.');
-        deepEqual(u_multi.normalizePath(''), [], "Root path");
-        deepEqual(u_multi.normalizePath(path), apath, "String path " + path);
-        deepEqual(u_multi.normalizePath('first.*.bcde...55'), ['first', '*', 'bcde', null, '55'], "Path with wildcards");
-        raises(function () {
-            u_multi.normalizePath('first.*.bcde......55');
-        }, "Path with erroneous wildcards");
-        raises(function () {
-            u_multi.query(data, 'fourth...');
-        }, "Path can't end in dot");
-        deepEqual(u_multi.normalizePath('first.1,2,3.*'), ['first', ['1', '2', '3'], '*'], "Array keys");
-    });
-
-    test("Path matching", function () {
-        equal(u_multi.matchPath('first.a.bcde.1.55', 'first.a.bcde.1.55'), true, "Exact match");
-        equal(u_multi.matchPath('first.a.bcde.1.55', 'first.a.*.1.55'), true, "Wildcard match");
-        equal(u_multi.matchPath('first.a.bcde.1.55', 'first...1.55'), true, "Skipper match");
-        equal(u_multi.matchPath('first.a.bcde.1.55', '...1.55'), true, "Leading skipper match");
-        equal(u_multi.matchPath('first.a.bcde.1.55', 'first.a,b,c,d.bcde.1.55'), true, "Multiple key match");
-
-        equal(u_multi.matchPath('first.a.bcde.1.55', 'first.a.u.1.55'), false, "Exact mismatch");
-        equal(u_multi.matchPath('first.a.bcde.1.55', 'first.a.*.*.1.55'), false, "Wildcard mismatch");
-        equal(u_multi.matchPath('first.a.bcde.1.55', 'first.a...2.55'), false, "Skipper mismatch");
-        equal(u_multi.matchPath('first.a.bcde.1.55', 'first.b,c,d.bcde.1.55'), false, "Multiple key mismatch");
-    });
-
     test("Wildcards", function () {
         // testing single-level wildcards
         deepEqual(
