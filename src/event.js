@@ -226,9 +226,10 @@ flock.event = (function (u_single, u_utils, u_live) {
          * Removes a single node from the datastore and triggers an event.
          * @param node {object} Datastore node.
          * @param path {string|Array} Datastore path.
+         * @param [data] {object} Custom data to be passed to event handler.
          * @param [trigger] {boolean} Whether to trigger. Default: true.
          */
-        unset: function (node, path, trigger) {
+        unset: function (node, path, data, trigger) {
             // storing 'before' node
             var before = u_single.get(node, path),
                 parent;
@@ -242,7 +243,9 @@ flock.event = (function (u_single, u_utils, u_live) {
                         parent,
                         events.EVENT_REMOVE,
                         {
-                            before: before
+                            name: path[path.length - 1],
+                            before: before,
+                            data: data
                         }
                     );
                 }

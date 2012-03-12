@@ -173,7 +173,7 @@
         equal(i, 1, "Unsetting triggers 'remove' event");
 
         json.hello.world.center = "a";
-        u_event.unset(json, ['hello', 'world', 'center'], false);
+        u_event.unset(json, ['hello', 'world', 'center'], undefined, false);
         equal(i, 1, "Non-triggering call to event.unset()");
 
         u_event.unset(json, ['hello', 'world', 'center']);
