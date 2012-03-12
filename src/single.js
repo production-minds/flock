@@ -1,9 +1,9 @@
 /**
- * Core Datastore Functionality
+ * Single Node Functionality
  */
 /*global flock*/
 
-flock.core = (function (u_utils, u_path) {
+flock.single = (function (u_utils, u_path) {
     var errors, self;
 
     errors = {
@@ -158,7 +158,7 @@ flock.core = (function (u_utils, u_path) {
                         last = arguments[arguments.length - 1];
                         self.set(result, path, self.get(node, [item].concat(last)));
                     } else {
-                        throw "flock.core.transform: " + errors.ERROR_INVALIDNODE;
+                        throw "flock.single.transform: " + errors.ERROR_INVALIDNODE;
                     }
                 }
             }

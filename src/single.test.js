@@ -1,6 +1,6 @@
 /*global flock, module, test, ok, equal, notEqual, deepEqual, raises */
-(function (u_core) {
-    module("Core");
+(function (u_single) {
+    module("Single");
 
     var data = {
         hi: 'There!',
@@ -13,10 +13,10 @@
     };
 
     test("Getting", function () {
-        equal(u_core.get(data, ['hi']), "There!", "Getting ordinal value");
-        equal(u_core.get(data, ['hello', 'world']), data.hello.world, "Getting datastore node");
-        equal(u_core.get(data, 'hello.world'), data.hello.world, "Getting datastore node w/ path in string notation");
-        ok(typeof u_core.get(data, [
+        equal(u_single.get(data, ['hi']), "There!", "Getting ordinal value");
+        equal(u_single.get(data, ['hello', 'world']), data.hello.world, "Getting datastore node");
+        equal(u_single.get(data, 'hello.world'), data.hello.world, "Getting datastore node w/ path in string notation");
+        ok(typeof u_single.get(data, [
             'hello', 'yall'
         ]) === 'undefined', "Attempting to get from invalid path returns undefined");
     });
@@ -24,14 +24,14 @@
     test("Setting", function () {
         var tmp;
 
-        tmp = u_core.set(data, ['hello', 'world', 'test'], "test");
+        tmp = u_single.set(data, ['hello', 'world', 'test'], "test");
         equal(tmp, data.hello.world, "Set returns parent of changed node");
         equal(data.hello.world.test, "test", "Value set on existing node");
 
-        u_core.set(data, ['hello', 'yall', 'folks'], "test");
+        u_single.set(data, ['hello', 'yall', 'folks'], "test");
         equal(data.hello.yall.folks, "test", "Value set on non-existing path");
 
-        u_core.set(data, ['hello', 'yall', 'folks']);
+        u_single.set(data, ['hello', 'yall', 'folks']);
         deepEqual(data.hello.yall.folks, {}, "Default value for set is empty object");
     });
 
@@ -48,7 +48,7 @@
             },
             tmp;
 
-        tmp = u_core.unset(data, ['hello', 'world', 'center']);
+        tmp = u_single.unset(data, ['hello', 'world', 'center']);
         equal(tmp, data.hello.world, "Unset returns parent of removed node");
         deepEqual(data, {
             hi: 'There!',
@@ -59,7 +59,7 @@
             }
         }, "Single ordinal node removed");
 
-        u_core.unset(data, ['hello', 'all']);
+        u_single.unset(data, ['hello', 'all']);
         deepEqual(data, {
             hi: 'There!',
             hello: {
@@ -68,7 +68,7 @@
             }
         }, "Single node removed");
 
-        u_core.clear(data);
+        u_single.clear(data);
         deepEqual(data, {}, "Clearing entire datastores");
     });
 
@@ -83,7 +83,7 @@
             }
         };
 
-        u_core.cleanup(data, ['hi']);
+        u_single.cleanup(data, ['hi']);
         deepEqual(data, {
             hello: {
                 world: {
@@ -93,14 +93,14 @@
             }
         }, "Single node removed");
 
-        u_core.cleanup(data, ['hello', 'world', 'center']);
+        u_single.cleanup(data, ['hello', 'world', 'center']);
         deepEqual(data, {
             hello: {
                 all: "hey"
             }
         }, "Node removed with all empty ancestors");
 
-        u_core.cleanup(data, ['hello', 'all']);
+        u_single.cleanup(data, ['hello', 'all']);
         deepEqual(data, {}, "Remaining nodes removed with all empty ancestors");
     });
 
@@ -125,7 +125,7 @@
                 bar: "world"
             };
 
-        deepEqual(u_core.transform(testDataSource, ['foo'], ['bar']), {
+        deepEqual(u_single.transform(testDataSource, ['foo'], ['bar']), {
             hello: {
                 test: "world"
             },
@@ -134,12 +134,12 @@
             }
         }, "First level values turned into two level lookup");
 
-        deepEqual(u_core.transform(testDataSource, ['foo'], ['bar', 'test']), {
+        deepEqual(u_single.transform(testDataSource, ['foo'], ['bar', 'test']), {
             hello: "world",
             lorem: "ipsum"
         }, "Second level values turned into one level lookup");
 
-        deepEqual(u_core.transform(testDataSource, ['foo'], ['bar', 'test'], []), {
+        deepEqual(u_single.transform(testDataSource, ['foo'], ['bar', 'test'], []), {
             "hello": {
                 "world": {
                     "foo": "hello",
@@ -159,7 +159,7 @@
         }, "Empty path as last node attaches child nodes to the lookup as leaf nodes");
 
         raises(function () {
-            u_core.transform(testDataDest, ['foo'], ['bar']);
+            u_single.transform(testDataDest, ['foo'], ['bar']);
         }, "Non-object child nodes raise error");
     });
-}(flock.core));
+}(flock.single));

@@ -38,7 +38,7 @@ var flock;
 
         // shortcuts
         var utils = flock.utils,
-            core = flock.core,
+            single = flock.single,
             live = flock.live,
             event = flock.event,
             multi = flock.multi,
@@ -71,10 +71,10 @@ var flock;
         //////////////////////////////
         // Delegates
 
-        // core
-        self.get = genMethod(core.get, args, nodeMapper, options);
-        self.clear = genMethod(core.clear, args, self);
-        self.cleanup = genMethod(core.cleanup, args, self);
+        // single node methods
+        self.get = genMethod(single.get, args, nodeMapper, options);
+        self.clear = genMethod(single.clear, args, self);
+        self.cleanup = genMethod(single.cleanup, args, self);
 
         // live
         if (!options.nolive && live) {
@@ -110,14 +110,14 @@ var flock;
             } else {
                 // live set
                 self.set = genMethod(live.set, args, self);
-                self.unset = genMethod(core.unset, args, self);
+                self.unset = genMethod(single.unset, args, self);
             }
 
             self.empty = genMethod(live.empty, args);
         } else {
             // core set
-            self.set = genMethod(core.set, args, self);
-            self.unset = genMethod(core.unset, args, self);
+            self.set = genMethod(single.set, args, self);
+            self.unset = genMethod(single.unset, args, self);
             self.empty = genMethod(utils.isEmpty, args);
         }
 

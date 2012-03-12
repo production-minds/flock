@@ -5,7 +5,7 @@
  */
 /*global flock */
 
-flock.event = (function (u_core, u_utils, u_live) {
+flock.event = (function (u_single, u_utils, u_live) {
     var errors, events, self;
 
     errors = {
@@ -193,7 +193,7 @@ flock.event = (function (u_core, u_utils, u_live) {
          */
         set: function (node, path, value, data, trigger) {
             // storing 'before' node
-            var before = u_core.get(node, path),
+            var before = u_single.get(node, path),
                 after,
                 parent;
 
@@ -201,7 +201,7 @@ flock.event = (function (u_core, u_utils, u_live) {
             parent = u_live.set(node, path, value);
 
             // acquiring 'after' node
-            after = u_core.get(node, path);
+            after = u_single.get(node, path);
 
             // triggering event
             if (trigger !== false) {
@@ -230,11 +230,11 @@ flock.event = (function (u_core, u_utils, u_live) {
          */
         unset: function (node, path, trigger) {
             // storing 'before' node
-            var before = u_core.get(node, path),
+            var before = u_single.get(node, path),
                 parent;
 
             if (typeof before !== 'undefined') {
-                parent = u_core.unset(node, path);
+                parent = u_single.unset(node, path);
 
                 // triggering event
                 if (trigger !== false) {
@@ -257,6 +257,6 @@ flock.event = (function (u_core, u_utils, u_live) {
     u_utils.delegate(self, errors);
 
     return self;
-}(flock.core,
+}(flock.single,
     flock.utils,
     flock.live));

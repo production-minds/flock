@@ -1,5 +1,5 @@
 /*global flock, module, test, ok, equal, notEqual, deepEqual, raises, console */
-(function ($, u_multi, u_core) {
+(function ($, u_multi, u_single) {
     var data = {
         first: {
             a: {},
@@ -328,7 +328,7 @@
 
         // sets string for full text search
         function addWord(name) {
-            u_core.set(data, name.split(''), {name: name});
+            u_single.set(data, name.split(''), {name: name});
         }
 
         // setting up cache
@@ -374,4 +374,4 @@
     });
 }(flock,
     flock.multi,
-    flock.core));
+    flock.single));

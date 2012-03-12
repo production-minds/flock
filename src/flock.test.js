@@ -32,7 +32,7 @@
 
     module("Flock");
 
-    test("Core", function () {
+    test("Single", function () {
         deepEqual(cache.get(['fourth', '1', 'a']).node(), "One", "Simple get");
 
         deepEqual(
