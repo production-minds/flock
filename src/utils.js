@@ -34,12 +34,16 @@ flock.utils = (function () {
         /**
          * Tests an object for having no (own) properties.
          * @param object {object} Test object.
+         * @param [ignored] {string} Ignored key.
+         * @returns {boolean}
          */
-        isEmpty: function (object) {
+        isEmpty: function (object, ignored) {
             var result = true,
                 key;
             for (key in object) {
-                if (object.hasOwnProperty(key)) {
+                if (object.hasOwnProperty(key) &&
+                    key !== ignored
+                    ) {
                     result = false;
                     break;
                 }
@@ -50,13 +54,17 @@ flock.utils = (function () {
         /**
          * Tests object for having exactly 1 (own) property
          * @param object {object} Test object.
+         * @param [ignored] {string} Ignored key.
+         * @returns {boolean}
          */
-        isSingle: function (object) {
+        isSingle: function (object, ignored) {
             var result = false,
                 key,
                 count = 0;
             for (key in object) {
-                if (object.hasOwnProperty(key)) {
+                if (object.hasOwnProperty(key) &&
+                    key !== ignored
+                    ) {
                     result = ++count === 1;
                     if (count > 1) {
                         break;

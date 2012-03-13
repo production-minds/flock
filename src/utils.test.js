@@ -36,10 +36,12 @@
     test("Objects", function () {
         equal(u_utils.isEmpty({}), true, "Empty object tested for empty");
         equal(u_utils.isEmpty({foo: "bar"}), false, "Non-empty object tested for empty");
+        equal(u_utils.isEmpty({foo: "bar"}, 'foo'), true, "Non-empty object with ignored key tested for empty");
 
         equal(u_utils.isSingle({}), false, "Empty object tested for single");
         equal(u_utils.isSingle({foo: "bar"}), true, "Single-property object tested for single");
         equal(u_utils.isSingle({foo: "bar", what: "eva"}), false, "Multi-property object tested for single");
+        equal(u_utils.isSingle({foo: "bar", what: "eva"}, 'foo'), true, "Multi-property object with ignored key tested for single");
 
         equal(u_utils.firstProperty({foo: "bar"}), 'foo', "First property of an object");
         ok(typeof u_utils.firstProperty({}) === 'undefined', "First property of an empty object");
