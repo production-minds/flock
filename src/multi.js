@@ -3,9 +3,8 @@
  */
 /*global flock */
 
-flock.multi = (function (u_constants, u_utils, u_query) {
-    var ignoredKey,
-        errors, privates, self;
+flock.multi = (function (u_constants, u_utils, u_single, u_query) {
+    var errors, privates, self;
 
     errors = {
         ERROR_INVALIDPATH: "Invalid path."
@@ -24,12 +23,13 @@ flock.multi = (function (u_constants, u_utils, u_query) {
          * @this {object} Traversal state object.
          */
          node: function (key, i, obj, depth) {
-            if (key === ignoredKey) {
+            var ignoredKey = u_single.ignoredKey(),
+                value,
+                state = this;
+
+            if (ignoredKey && key === ignoredKey) {
                 return false;
             }
-
-            var value,
-                state = this;
 
             if (i < state.last) {
                 // current node has children, burrowing one level deeper
@@ -164,22 +164,6 @@ flock.multi = (function (u_constants, u_utils, u_query) {
         privates: privates,
 
         //////////////////////////////
-        // Getters, setters
-
-        /**
-         * Setter for excluded key. When set, traversal will
-         * ignore nodes with the specified key.
-         * @param [value] {string} Key to be ignored. When ommitted, clears ignored key.
-         */
-        ignoredKey: function (value) {
-            if (typeof value === 'string' ||
-                typeof value === 'undefined'
-                ) {
-                ignoredKey = value;
-            }
-        },
-
-        //////////////////////////////
         // Control
 
         /**
@@ -236,4 +220,5 @@ flock.multi = (function (u_constants, u_utils, u_query) {
     return self;
 }(flock.constants,
     flock.utils,
+    flock.single,
     flock.query));

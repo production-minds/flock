@@ -4,13 +4,31 @@
 /*global flock */
 
 flock.single = (function (u_utils, u_path) {
-    var errors, self;
+    var ignoredKey,
+        errors, self;
 
     errors = {
         ERROR_INVALIDNODE: "Invalid node."
     };
 
     self = {
+        //////////////////////////////
+        //////////////////////////////
+        // Getters, setters
+
+        /**
+         * Setter for excluded key. When set, traversal will
+         * ignore nodes with the specified key.
+         * @param [value] {string} Key to be ignored. When ommitted, clears ignored key.
+         */
+        ignoredKey: function (value) {
+            if (typeof value === 'string') {
+                ignoredKey = value;
+            } else {
+                return ignoredKey;
+            }
+        },
+
         //////////////////////////////
         // Control
 

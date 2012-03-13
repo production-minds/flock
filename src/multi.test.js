@@ -62,13 +62,13 @@
     });
 
     test("Ignored key", function () {
-        u_multi.ignoredKey('2');
+        var tmp = u_single.ignoredKey();
+        u_single.ignoredKey('2');
         deepEqual(
             u_multi.query(data, 'fourth.*'),
             [{a: "One", b: "Two"}, {a: "Five", b: "Six"}],
             "Ignoring key '2' along path 'fourth.*'");
-
-        u_multi.ignoredKey();
+        u_single.ignoredKey(tmp);
     });
 
     test("OR relation", function () {

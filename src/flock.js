@@ -125,7 +125,7 @@ var flock;
         if (!options.nomulti && multi) {
             if (!options.nolive && live) {
                 // setting meta key to be ignored by traversal
-                multi.ignoredKey(live.metaKey());
+                single.ignoredKey(live.metaKey());
             }
 
             // query method
