@@ -44,6 +44,9 @@ if [ -f build/tmp.js ]
 then
     cat src/license.js build/tmp.js > "build/$NAMEMIN.js"
     rm build/tmp.js
+
+    echo Gzipping.
+    gzip --stdout "build/$NAMEMIN.js" > "build/$NAMEMIN.js.gz"
 fi
 
 echo Done.
