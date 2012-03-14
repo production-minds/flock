@@ -101,7 +101,7 @@
         function testHandler() { i++; }
 
         i = 0;
-        u_event.delegate(json, ['hello', 'world'], 'testEvent', testHandler);
+        u_event.delegate(json, 'testEvent', ['hello', 'world'], testHandler);
         u_event.trigger(json.hello.world, 'testEvent');
         equal(i, 1, "Delegated event fired when triggered on right path");
         u_event.trigger(json.hello, 'testEvent');
@@ -110,7 +110,7 @@
         // path patterns
         i = 0;
         u_event.unsubscribe(json, 'testEvent');
-        u_event.delegate(json, ['*', 'world'], 'otherEvent', testHandler);
+        u_event.delegate(json, 'otherEvent', ['*', 'world'], testHandler);
         u_event.trigger(json.hello.world, 'otherEvent');
         equal(i, 1, "Pattern delegated event fired on matching node");
         u_event.trigger(json.bybye.world, 'otherEvent');

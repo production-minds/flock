@@ -79,11 +79,11 @@ flock.event = (function (u_single, u_utils, u_live) {
          * but handler is not called unless argument 'path' matches the path
          * of the event target.
          * @param node {object} Datastore node.
-         * @param path {Array} Relative path to receiving node,
          * @param eventName {string} Name of event to subscribe to.
+         * @param path {Array} Relative path to receiving node,
          * @param handler {function} Event handler.
          */
-        delegate: function (node, path, eventName, handler) {
+        delegate: function (node, eventName, path, handler) {
             var match = flock.query ? flock.query.match : flock.path.match;
 
             function fullHandler(event, data) {
