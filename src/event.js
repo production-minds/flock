@@ -146,12 +146,15 @@ flock.event = (function (u_single, u_utils, u_live) {
          * Triggers event on specified datastore path.
          * @param node {object} Datastore node.
          * @param eventName {string} Name of event to subscribe to.
-         * @param [data] {object} Custom data to be passed to event handlers.
-         * @param [target] {object} Custom target node.
+         * @param [options] {object} Options.
+         * @param [options.data] {object} Custom data to be passed to event handlers.
+         * @param [options.target] {object} Custom target node.
          * @throws {string} On untraversable node.
          */
-        trigger: function (node, eventName, data, target) {
-            target = target || node;
+        trigger: function (node, eventName, options) {
+            // default options
+            options = options || {};
+            options.target = options.target || node;
 
             var meta = node[u_live.metaKey()],
                 event,
@@ -165,9 +168,9 @@ flock.event = (function (u_single, u_utils, u_live) {
                     for (i = 0; i < handlers.length; i++) {
                         event = {
                             name: eventName,
-                            target: target
+                            target: options.target
                         };
-                        if (handlers[i](event, data) === false) {
+                        if (handlers[i](event, options.data) === false) {
                             // if handler returns false (not falsey), bubbling stops
                             return;
                         }
@@ -176,7 +179,7 @@ flock.event = (function (u_single, u_utils, u_live) {
 
                 // bubbling event up the datastore tree
                 if (typeof meta.parent === 'object') {
-                    self.trigger(meta.parent, eventName, data, target);
+                    self.trigger(meta.parent, eventName, options);
                 }
             } else {
                 throw "flock.event.trigger: " + u_live.ERROR_NONTRAVERSABLE;
@@ -188,10 +191,13 @@ flock.event = (function (u_single, u_utils, u_live) {
          * @param node {object} Datastore node.
          * @param path {string|Array} Datastore path.
          * @param value {object} Value to set on path
-         * @param [data] {object} Custom data to be passed to event handler.
-         * @param [trigger] {boolean} Whether to trigger. Default: true.
+         * @param [options] {object} Options.
+         * @param [options.data] {object} Custom data to be passed to event handler.
+         * @param [options.trigger] {boolean} Whether to trigger. Default: true.
          */
-        set: function (node, path, value, data, trigger) {
+        set: function (node, path, value, options) {
+            options = options || {};
+
             // storing 'before' node
             var before = u_single.get(node, path),
                 after,
@@ -204,17 +210,19 @@ flock.event = (function (u_single, u_utils, u_live) {
             after = u_single.get(node, path);
 
             // triggering event
-            if (trigger !== false) {
+            if (options.trigger !== false) {
                 self.trigger(
                     parent,
                     typeof before === 'undefined' ?
                         events.EVENT_ADD :
                         events.EVENT_CHANGE,
                     {
-                        before: before,
-                        after: after,
-                        name: path[path.length - 1],
-                        data: data
+                        data: {
+                            before: before,
+                            after: after,
+                            name: path[path.length - 1],
+                            data: options.data
+                        }
                     }
                 );
             }
@@ -226,10 +234,13 @@ flock.event = (function (u_single, u_utils, u_live) {
          * Removes a single node from the datastore and triggers an event.
          * @param node {object} Datastore node.
          * @param path {string|Array} Datastore path.
-         * @param [data] {object} Custom data to be passed to event handler.
-         * @param [trigger] {boolean} Whether to trigger. Default: true.
+         * @param [options] {object} Options.
+         * @param [options.data] {object} Custom data to be passed to event handler.
+         * @param [options.trigger] {boolean} Whether to trigger. Default: true.
          */
-        unset: function (node, path, data, trigger) {
+        unset: function (node, path, options) {
+            options = options || {};
+
             // storing 'before' node
             var before = u_single.get(node, path),
                 removed;
@@ -238,14 +249,14 @@ flock.event = (function (u_single, u_utils, u_live) {
                 removed = u_single.unset(node, path);
 
                 // triggering event
-                if (trigger !== false) {
+                if (options.trigger !== false) {
                     self.trigger(
                         removed.parent,
                         events.EVENT_REMOVE,
                         {
                             name: removed.name,
                             before: before,
-                            data: data
+                            data: options.data
                         }
                     );
                 }
@@ -259,11 +270,14 @@ flock.event = (function (u_single, u_utils, u_live) {
          * until the first non-empty ancestor node. Then triggers an event.
          * @param node {object} Datastore node.
          * @param path {string|Array} Datastore path.
-         * @param [data] {object} Custom data to be passed to event handler.
-         * @param [trigger] {boolean} Whether to trigger. Default: true.
+         * @param [options] {object} Options.
+         * @param [options.data] {object} Custom data to be passed to event handler.
+         * @param [options.trigger] {boolean} Whether to trigger. Default: true.
          * @returns {object|boolean} Parent of removed node.
          */
-        cleanup: function (node, path, data, trigger) {
+        cleanup: function (node, path, options) {
+            options = options || {};
+
             // storing 'before' node
             var before = u_single.get(node, path),
                 removed;
@@ -272,14 +286,14 @@ flock.event = (function (u_single, u_utils, u_live) {
                 removed = u_single.cleanup(node, path);
 
                 // triggering event
-                if (trigger !== false) {
+                if (options.trigger !== false) {
                     self.trigger(
                         removed.parent,
                         events.EVENT_REMOVE,
                         {
                             name: removed.name,
                             before: before,
-                            data: data
+                            data: options.data
                         }
                     );
                 }

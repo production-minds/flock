@@ -60,7 +60,7 @@
         });
 
         // checking arguments passed to event handler
-        u_event.trigger(json.hello.world, 'argTesterEvent', eventData);
+        u_event.trigger(json.hello.world, 'argTesterEvent', {data: eventData});
 
         i = j = 0;
         u_event.trigger(json.hello.world, 'otherEvent');
@@ -127,7 +127,7 @@
             deepEqual(data.name, 'center', "Node name ok");
             equal(data.data, "customData", "Custom data ok");
         });
-        u_event.set(json, ['hello', 'world', 'center'], "!!!", "customData");
+        u_event.set(json, ['hello', 'world', 'center'], "!!!", {data: "customData"});
         u_event.unsubscribe(json, 'change');
 
         var i, tmp;
@@ -138,15 +138,15 @@
 
         // testing data update
         i = 0;
-        tmp = u_event.set(json, ['hello', 'world', 'center'], "blah");
+        tmp = u_event.set(json, ['hello', 'world', 'center'], {data: "blah"});
         equal(tmp, json.hello.world, "Set returns parent of changed node");
         equal(i, 1, "Update triggers 'change' event");
 
         i = 0;
-        u_event.set(json, ['hello', 'world', 'center'], "boo", {foo: "bar"});
+        u_event.set(json, ['hello', 'world', 'center'], "boo", {data: {foo: "bar"}});
 
         i = 0;
-        u_event.set(json, ['hello', 'world', 'center'], "boo", null, false);
+        u_event.set(json, ['hello', 'world', 'center'], "boo", {trigger: false});
         equal(i, 0, "Non-triggering call to event.set()");
 
         // testing data addition
@@ -156,8 +156,6 @@
 
         u_event.unsubscribe(json, 'add', onAdd);
         u_event.unsubscribe(json, 'change', onChange);
-
-
     });
 
     test("Unsetting", function () {
@@ -173,7 +171,7 @@
         equal(i, 1, "Unsetting triggers 'remove' event");
 
         json.hello.world.center = "a";
-        u_event.unset(json, ['hello', 'world', 'center'], undefined, false);
+        u_event.unset(json, ['hello', 'world', 'center'], {trigger: false});
         equal(i, 1, "Non-triggering call to event.unset()");
 
         u_event.unset(json, ['hello', 'world', 'center']);
