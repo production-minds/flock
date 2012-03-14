@@ -6,13 +6,38 @@
 flock.path = (function (u_utils) {
     var RE_PATHVALIDATOR = /^([^\.]+\.)*[^\.]+$/,
         RE_PATHSEPARATOR = /\./,
+        ignoredKey,
         errors, self;
 
     errors = {
-        ERROR_INVALIDPATH: "Invalid path."
+        ERROR_INVALIDPATH: "Invalid path.",
+        ERROR_FORBIDDENKEY: "Forbidden key."
     };
 
     self = {
+        //////////////////////////////
+        // Getters, setters
+
+        /**
+         * Setter for excluded key. When set, traversal will
+         * ignore nodes with the specified key.
+         * @param [value] {string} Key to be ignored. When ommitted, clears ignored key.
+         */
+        ignoredKey: function (value) {
+            if (typeof value === 'string') {
+                ignoredKey = value;
+            } else {
+                return ignoredKey;
+            }
+        },
+
+        /**
+         * Clears ignored key.
+         */
+        clearIgnoredKey: function () {
+            ignoredKey = undefined;
+        },
+
         //////////////////////////////
         // Control
 
@@ -23,7 +48,9 @@ flock.path = (function (u_utils) {
          * @throws {string} On invalid path.
          */
         normalize: function (path) {
-            var result;
+            var result,
+                i;
+
             if (typeof path === 'string') {
                 // validating string path
                 if (path.match(RE_PATHVALIDATOR)) {
@@ -38,6 +65,16 @@ flock.path = (function (u_utils) {
             } else {
                 throw "flock.path.normalize: " + errors.ERROR_INVALIDPATH;
             }
+
+            // checking path for ignored node
+            if (typeof ignoredKey === 'string') {
+                for (i = 0; i < result.length; i++) {
+                    if (result[i] === ignoredKey) {
+                        throw "flock.path.normalize: " + errors.ERROR_FORBIDDENKEY;
+                    }
+                }
+            }
+
             return result;
         },
 

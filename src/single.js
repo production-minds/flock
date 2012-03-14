@@ -4,31 +4,13 @@
 /*global flock */
 
 flock.single = (function (u_utils, u_path) {
-    var ignoredKey,
-        errors, self;
+    var errors, self;
 
     errors = {
         ERROR_INVALIDNODE: "Invalid node."
     };
 
     self = {
-        //////////////////////////////
-        //////////////////////////////
-        // Getters, setters
-
-        /**
-         * Setter for excluded key. When set, traversal will
-         * ignore nodes with the specified key.
-         * @param [value] {string} Key to be ignored. When ommitted, clears ignored key.
-         */
-        ignoredKey: function (value) {
-            if (typeof value === 'string') {
-                ignoredKey = value;
-            } else {
-                return ignoredKey;
-            }
-        },
-
         //////////////////////////////
         // Control
 
@@ -132,7 +114,7 @@ flock.single = (function (u_utils, u_path) {
             while (tpath.length) {
                 key = tpath.shift();
                 if (node.hasOwnProperty(key)) {
-                    if (!u_utils.isSingle(node)) {
+                    if (!u_utils.isSingle(node, u_path.ignoredKey())) {
                         lastMulti = {
                             node: node,
                             name: key

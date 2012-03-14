@@ -1,5 +1,5 @@
 /*global flock, module, test, ok, equal, notEqual, deepEqual, raises */
-(function (u_single) {
+(function (u_single, u_path) {
     module("Single");
 
     var data = {
@@ -29,10 +29,17 @@
         equal(data.hello.world.test, "test", "Value set on existing node");
 
         u_single.set(data, ['hello', 'yall', 'folks'], "test");
-        equal(data.hello.yall.folks, "test", "Value set on non-existing path");
+        equal(u_single.get(data, 'hello.yall.folks'), "test", "Value set on non-existing path");
 
         u_single.set(data, ['hello', 'yall', 'folks']);
-        deepEqual(data.hello.yall.folks, {}, "Default value for set is empty object");
+        deepEqual(u_single.get(data, 'hello.yall.folks'), {}, "Default value for set is empty object");
+        
+        tmp = u_path.ignoredKey();
+        u_path.ignoredKey("yall");
+        raises(function () {
+            u_single.set(data, ['hello', 'yall', 'folks']);
+        }, "Ignored key in path throws error");
+        u_path.ignoredKey(tmp);
     });
 
     test("Unsetting", function () {
@@ -162,4 +169,5 @@
             u_single.map(testDataDest, ['foo'], ['bar']);
         }, "Non-object child nodes raise error");
     });
-}(flock.single));
+}(flock.single,
+    flock.path));

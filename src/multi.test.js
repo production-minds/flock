@@ -1,5 +1,5 @@
 /*global flock, module, test, ok, equal, notEqual, deepEqual, raises, console */
-(function ($, u_multi, u_single) {
+(function ($, u_multi, u_path, u_single) {
     var data = {
         first: {
             a: {},
@@ -62,13 +62,13 @@
     });
 
     test("Ignored key", function () {
-        var tmp = u_single.ignoredKey();
-        u_single.ignoredKey('2');
+        var tmp = u_path.ignoredKey();
+        u_path.ignoredKey('2');
         deepEqual(
             u_multi.query(data, 'fourth.*'),
             [{a: "One", b: "Two"}, {a: "Five", b: "Six"}],
             "Ignoring key '2' along path 'fourth.*'");
-        u_single.ignoredKey(tmp);
+        u_path.ignoredKey(tmp);
     });
 
     test("OR relation", function () {
@@ -346,4 +346,5 @@
     });
 }(flock,
     flock.multi,
+    flock.path,
     flock.single));

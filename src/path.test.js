@@ -2,6 +2,17 @@
 (function (u_path) {
     module("Path");
 
+    test("Ignored key", function () {
+        var tmp = u_path.ignoredKey();
+        u_path.ignoredKey('foo');
+        equal(u_path.ignoredKey(), 'foo', "Ignored key set");
+        u_path.clearIgnoredKey();
+        equal(typeof u_path.ignoredKey(), 'undefined', "Ignored key cleared");
+
+        // restoring original state
+        u_path.ignoredKey(tmp);
+    });
+
     test("Normalization", function () {
         raises(function () {
             u_path.normalize('...fds.fd');

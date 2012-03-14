@@ -3,7 +3,7 @@
  */
 /*global flock */
 
-flock.multi = (function (u_constants, u_utils, u_single, u_query) {
+flock.multi = (function (u_constants, u_utils, u_path, u_query) {
     var errors, privates, self;
 
     errors = {
@@ -23,7 +23,7 @@ flock.multi = (function (u_constants, u_utils, u_single, u_query) {
          * @this {object} Traversal state object.
          */
          node: function (key, i, obj, depth) {
-            var ignoredKey = u_single.ignoredKey(),
+            var ignoredKey = u_path.ignoredKey(),
                 value,
                 state = this;
 
@@ -220,5 +220,5 @@ flock.multi = (function (u_constants, u_utils, u_single, u_query) {
     return self;
 }(flock.constants,
     flock.utils,
-    flock.single,
+    flock.path,
     flock.query));

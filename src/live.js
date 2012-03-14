@@ -10,8 +10,7 @@ flock.live = (function (u_single, u_utils) {
         errors, privates, self;
 
     errors = {
-        ERROR_NONTRAVERSABLE: "Non-traversable datastore node.",
-        ERROR_FORBIDDENKEY: "Forbidden key."
+        ERROR_NONTRAVERSABLE: "Non-traversable datastore node."
     };
 
     privates = {
@@ -164,13 +163,6 @@ flock.live = (function (u_single, u_utils) {
 
             var parent,
                 i, key;
-
-            // checking path for forbidden node
-            for (i = 0; i < path.length; i++) {
-                if (path[i] === metaKey) {
-                    throw "flock.live.set: " + errors.ERROR_FORBIDDENKEY;
-                }
-            }
 
             // setting value on path
             parent = u_single.set(node, path, value);
