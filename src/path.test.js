@@ -27,6 +27,12 @@
         }, "Validation fails on invalid argument type");
 
         deepEqual(
+            u_path.normalize(''),
+            [],
+            "Trivial path"
+        );
+
+        deepEqual(
             u_path.normalize('first.second.thi rd'),
             [
                 'first',

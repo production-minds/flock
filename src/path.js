@@ -53,7 +53,10 @@ flock.path = (function (u_utils) {
 
             if (typeof path === 'string') {
                 // validating string path
-                if (path.match(RE_PATHVALIDATOR)) {
+                if (path.length === 0) {
+                    // trivial path
+                    result = [];
+                } else if (path.match(RE_PATHVALIDATOR)) {
                     // generating array notation by splitting string
                     result = path.split(RE_PATHSEPARATOR);
                 } else {
