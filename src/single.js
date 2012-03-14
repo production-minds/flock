@@ -136,12 +136,15 @@ flock.single = (function (u_utils, u_path) {
          * @example See unit test.
          */
         map: function (node) {
-            var result = {},
+            var ignoredKey = u_path.ignoredKey(),
+                result = {},
                 item, path, last,
                 i;
 
             for (item in node) {
-                if (node.hasOwnProperty(item)) {
+                if (node.hasOwnProperty(item) &&
+                    item !== ignoredKey
+                    ) {
                     if (typeof node[item] === 'object') {
                         path = [];
                         for (i = 1; i < arguments.length - 1; i++) {
@@ -150,7 +153,7 @@ flock.single = (function (u_utils, u_path) {
                         last = arguments[arguments.length - 1];
                         self.set(result, path, self.get(node, [item].concat(last)));
                     } else {
-                        throw "flock.single.transform: " + errors.ERROR_INVALIDNODE;
+                        throw "flock.single.map: " + errors.ERROR_INVALIDNODE;
                     }
                 }
             }
