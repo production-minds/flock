@@ -81,19 +81,26 @@
 
     test("Cleanup", function () {
         var data = {
-            hi: 'There!',
-            hello: {
-                world: {
-                    center: "!!"
-                },
-                all: "hey"
-            }
-        };
+                hi: 'There!',
+                hello: {
+                    world: {
+                        ignored: {},
+                        center: "!!"
+                    },
+                    all: "hey"
+                }
+            },
+            tmp;
+
+        // setting global ignored key
+        tmp = u_path.ignoredKey();
+        u_path.ignoredKey('ignored');
 
         u_single.cleanup(data, ['hi']);
         deepEqual(data, {
             hello: {
                 world: {
+                    ignored: {},
                     center: "!!"
                 },
                 all: "hey"
@@ -109,6 +116,9 @@
 
         u_single.cleanup(data, ['hello', 'all']);
         deepEqual(data, {}, "Remaining nodes removed with all empty ancestors");
+
+        // restoring global ignored key
+        u_path.ignoredKey(tmp);
     });
 
     test("Transform", function () {
