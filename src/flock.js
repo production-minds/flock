@@ -74,7 +74,7 @@ var flock;
 
         // single node methods
         ds.get = genMethod(u_single.get, args, nodeMapper, options);
-        ds.map = genMethod(u_single.map, args, ds);
+        ds.map = genMethod(u_single.map, args, nodeMapper, options);
 
         // live
         if (!options.nolive && u_live) {

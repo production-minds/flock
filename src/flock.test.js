@@ -169,4 +169,21 @@
             "Stacked querying and getting"
         );
     });
+
+    test("Mapping", function () {
+        var ds = flock({
+                employees: {
+                    emp1: {fname: "John", lname: "Smith", department: "IT"},
+                    emp2: {fname: "John", lname: "Green", department: "HR"},
+                    emp3: {fname: "Matt", lname: "Smith", department: "IT"}
+                }
+            }),
+            tmp;
+
+        tmp = ds
+            .get('employees')
+            .map(['department'], ['lname'], ['fname'], []);
+
+        ok(tmp.get('HR.Green.John'));
+    });
 }(flock));
