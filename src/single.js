@@ -64,22 +64,6 @@ flock.single = (function (u_utils, u_path) {
         },
 
         /**
-         * Clears node. Deletes all child nodes.
-         * @param node {object} Datastore node.
-         */
-        clear: function (node) {
-            var ignoredKey = u_path.ignoredKey(),
-                key;
-            for (key in node) {
-                if (node.hasOwnProperty(key) &&
-                    key !== ignoredKey
-                    ) {
-                    delete node[key];
-                }
-            }
-        },
-
-        /**
          * Removes a single node from the datastore.
          * @param node {object} Datastore node.
          * @param path {string|Array} Datastore path.

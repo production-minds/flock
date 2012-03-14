@@ -76,34 +76,6 @@
         }, "Single node removed");
     });
 
-    test("Clearing", function () {
-        var
-            data = {
-                ignored: {},
-                hi: 'There!',
-                hello: {
-                    world: {
-                        center: "!!"
-                    },
-                    all: "hey"
-                }
-            },
-            tmp;
-
-        u_single.clear(data.hello);
-        deepEqual(data.hello, {}, "Clearing datastore node");
-
-        // setting global ignored key
-        tmp = u_path.ignoredKey();
-        u_path.ignoredKey('ignored');
-
-        u_single.clear(data);
-        deepEqual(data, {ignored: {}}, "Clearing datastore root with ignored key");
-
-        // restirong global ignored key
-        u_path.ignoredKey(tmp);
-    });
-
     test("Cleanup", function () {
         var data = {
                 hi: 'There!',
