@@ -138,8 +138,14 @@ flock.single = (function (u_utils, u_path) {
         map: function (node) {
             var ignoredKey = u_path.ignoredKey(),
                 result = {},
+                paths = [],
                 item, path, last,
                 i;
+
+            // normalizing passed paths
+            for (i = 1; i < arguments.length; i++) {
+                paths.push(u_path.normalize(arguments[i]));
+            }
 
             for (item in node) {
                 if (node.hasOwnProperty(item) &&
@@ -147,10 +153,10 @@ flock.single = (function (u_utils, u_path) {
                     ) {
                     if (typeof node[item] === 'object') {
                         path = [];
-                        for (i = 1; i < arguments.length - 1; i++) {
-                            path.push(self.get(node, [item].concat(arguments[i])));
+                        for (i = 0; i < paths.length - 1; i++) {
+                            path.push(self.get(node, [item].concat(paths[i])));
                         }
-                        last = arguments[arguments.length - 1];
+                        last = paths[paths.length - 1];
                         self.set(result, path, self.get(node, [item].concat(last)));
                     } else {
                         throw "flock.single.map: " + errors.ERROR_INVALIDNODE;
