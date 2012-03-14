@@ -68,9 +68,12 @@ flock.single = (function (u_utils, u_path) {
          * @param node {object} Datastore node.
          */
         clear: function (node) {
-            var key;
+            var ignoredKey = u_path.ignoredKey(),
+                key;
             for (key in node) {
-                if (node.hasOwnProperty(key)) {
+                if (node.hasOwnProperty(key) &&
+                    key !== ignoredKey
+                    ) {
                     delete node[key];
                 }
             }
