@@ -184,6 +184,12 @@
             .get('employees')
             .map(['department'], ['lname'], ['fname'], []);
 
-        ok(tmp.get('HR.Green.John'));
+        ok(tmp.get('HR.Green.John'), "Query result mapped to lookup");
+
+        tmp = ds
+            .get('employees')
+            .map('department', 'fname', 'lname', '');
+
+        ok(tmp.get('HR.John.Green'), "Passing pats in string notation");
     });
 }(flock));
