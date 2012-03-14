@@ -128,7 +128,7 @@ flock.single = (function (u_utils, u_path) {
         /**
          * Transforms node structure by taking descendant values as keys in the output.
          * @param node {object} Source node. Object with uniform child objects.
-         * Additional parameters specify the paths (in array notation) from whence
+         * Additional parameters specify the paths (in array or string notation) from whence
          * to take the transformed node's keys.
          * Empty array as last path will put the original child node as leaf node.
          * @returns {object} Transformed node.
