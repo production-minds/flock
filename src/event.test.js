@@ -169,7 +169,7 @@
         i = 0;
         json.hello.world.center = "a";
         tmp = u_event.unset(json, ['hello', 'world', 'center']);
-        equal(tmp, json.hello.world, "Unset returns parent of removed node");
+        equal(tmp.parent, json.hello.world, "Unset returns parent of removed node");
         equal(i, 1, "Unsetting triggers 'remove' event");
 
         json.hello.world.center = "a";

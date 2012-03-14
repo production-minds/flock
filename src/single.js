@@ -83,7 +83,7 @@ flock.single = (function (u_utils, u_path) {
          * Removes a single node from the datastore.
          * @param node {object} Datastore node.
          * @param path {string|Array} Datastore path.
-         * @returns {object} Parent of the removed node.
+         * @returns {object} Object with name and parent of removed node.
          */
         unset: function (node, path) {
             var tpath = u_path.normalize(path),
@@ -97,7 +97,10 @@ flock.single = (function (u_utils, u_path) {
                 delete parent[name];
             }
 
-            return parent;
+            return {
+                parent: parent,
+                name: name
+            };
         },
 
         /**
@@ -105,12 +108,13 @@ flock.single = (function (u_utils, u_path) {
          * until the first non-empty ancestor node.
          * @param node {object} Datastore node.
          * @param path {string|Array} Datastore path.
+         * @returns {object|boolean} Object with name and parent of removed node.
          */
         cleanup: function (node, path) {
             var tpath = u_path.normalize(path),
                 key,
                 lastMulti = {
-                    node: node,
+                    parent: node,
                     name: u_utils.firstProperty(node)
                 };
 
@@ -119,21 +123,22 @@ flock.single = (function (u_utils, u_path) {
                 if (node.hasOwnProperty(key)) {
                     if (!u_utils.isSingle(node, u_path.ignoredKey())) {
                         lastMulti = {
-                            node: node,
+                            parent: node,
                             name: key
                         };
                     }
                     node = node[key];
                 } else {
                     // invalid path, nothing to unset
-                    return;
+                    return false;
                 }
             }
 
             // cutting back to last multi-property node
-            if (lastMulti) {
-                delete lastMulti.node[lastMulti.name];
-            }
+            delete lastMulti.parent[lastMulti.name];
+
+            // returning with affected node
+            return lastMulti;
         },
 
         /**

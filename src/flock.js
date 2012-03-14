@@ -75,7 +75,6 @@ var flock;
         // single node methods
         ds.get = genMethod(u_single.get, args, nodeMapper, options);
         ds.clear = genMethod(u_single.clear, args, ds);
-        ds.cleanup = genMethod(u_single.cleanup, args, ds);
         ds.map = genMethod(u_single.map, args, ds);
 
         // live
@@ -109,10 +108,12 @@ var flock;
                 // evented set
                 ds.set = genMethod(u_event.set, args, ds);
                 ds.unset = genMethod(u_event.unset, args, ds);
+                ds.cleanup = genMethod(u_event.cleanup, args, ds);
             } else {
                 // live set
                 ds.set = genMethod(u_live.set, args, ds);
                 ds.unset = genMethod(u_single.unset, args, ds);
+                ds.cleanup = genMethod(u_single.cleanup, args, ds);
             }
 
             ds.empty = genMethod(u_live.empty, args);

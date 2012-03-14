@@ -232,18 +232,18 @@ flock.event = (function (u_single, u_utils, u_live) {
         unset: function (node, path, data, trigger) {
             // storing 'before' node
             var before = u_single.get(node, path),
-                parent;
+                removed;
 
             if (typeof before !== 'undefined') {
-                parent = u_single.unset(node, path);
+                removed = u_single.unset(node, path);
 
                 // triggering event
                 if (trigger !== false) {
                     self.trigger(
-                        parent,
+                        removed.parent,
                         events.EVENT_REMOVE,
                         {
-                            name: path[path.length - 1],
+                            name: removed.name,
                             before: before,
                             data: data
                         }
@@ -251,7 +251,41 @@ flock.event = (function (u_single, u_utils, u_live) {
                 }
             }
 
-            return parent;
+            return removed;
+        },
+
+        /**
+         * Removes a node from the datastore. Cleans up empty parent nodes
+         * until the first non-empty ancestor node. Then triggers an event.
+         * @param node {object} Datastore node.
+         * @param path {string|Array} Datastore path.
+         * @param [data] {object} Custom data to be passed to event handler.
+         * @param [trigger] {boolean} Whether to trigger. Default: true.
+         * @returns {object|boolean} Parent of removed node.
+         */
+        cleanup: function (node, path, data, trigger) {
+            // storing 'before' node
+            var before = u_single.get(node, path),
+                removed;
+
+            if (typeof before !== 'undefined') {
+                removed = u_single.cleanup(node, path);
+
+                // triggering event
+                if (trigger !== false) {
+                    self.trigger(
+                        removed.parent,
+                        events.EVENT_REMOVE,
+                        {
+                            name: removed.name,
+                            before: before,
+                            data: data
+                        }
+                    );
+                }
+            }
+
+            return removed;
         }
     };
 

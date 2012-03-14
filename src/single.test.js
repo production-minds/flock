@@ -56,7 +56,7 @@
             tmp;
 
         tmp = u_single.unset(data, ['hello', 'world', 'center']);
-        equal(tmp, data.hello.world, "Unset returns parent of removed node");
+        deepEqual(tmp, {parent: data.hello.world, name: 'center'}, "Unset returns name and parent of removed node");
         deepEqual(data, {
             hi: 'There!',
             hello: {
@@ -115,13 +115,17 @@
                     all: "hey"
                 }
             },
-            tmp;
+            tmp,
+            removed;
 
-        // setting global ignored key
-        tmp = u_path.ignoredKey();
-        u_path.ignoredKey('ignored');
+        removed = u_single.cleanup(data, ['blaaaaah']);
 
-        u_single.cleanup(data, ['hi']);
+        equal(removed, false, "Attempting to clean up invalid path returns false");
+
+        removed = u_single.cleanup(data, ['hi']);
+
+        equal(removed.parent, data, "Cleanup returns parent of removed node");
+
         deepEqual(data, {
             hello: {
                 world: {
@@ -132,7 +136,14 @@
             }
         }, "Single node removed");
 
-        u_single.cleanup(data, ['hello', 'world', 'center']);
+        // setting global ignored key
+        tmp = u_path.ignoredKey();
+        u_path.ignoredKey('ignored');
+
+        removed = u_single.cleanup(data, ['hello', 'world', 'center']);
+
+        deepEqual(removed, {parent: data.hello, name: 'world'}, "Cleanup returns name and parent of removed node");
+
         deepEqual(data, {
             hello: {
                 all: "hey"
