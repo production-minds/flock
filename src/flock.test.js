@@ -33,13 +33,12 @@
     module("Flock");
 
     test("Single", function () {
-        deepEqual(cache.get(['fourth', '1', 'a']).node(), "One", "Simple get");
+        deepEqual(cache.get(['fourth', '1', 'a']), "One", "Simple get");
 
         deepEqual(
             cache
                 .get(['fourth', '1'])
-                .get(['a'])
-                    .node(),
+                .get(['a']),
             "One",
             "Chained get"
         );
@@ -48,11 +47,12 @@
             cache
                 .get(['fourth', '1'])
                 .set(['c'], "Hello!")
-                .get(['c'])
-                    .node(),
+                .get(['c']),
             "Hello!",
             "Chained set & get"
         );
+
+        ok(typeof cache.get(['nonexisting', '1', 'a']) === 'undefined', "Empty result set returns undefined");
 
         var nonChainable = $({hello: {world: {}}}, {nolive: true, nochaining: true});
         deepEqual(nonChainable.get('hello'), {world: {}}, "Querying returns bare node on non-chaninng datastore");

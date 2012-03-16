@@ -9,9 +9,9 @@ var flock;
      * @param node {object} Datastore node.
      */
     function chainedNodeMapper(node, options) {
-        return typeof node !== 'undefined' ?
+        return typeof node === 'object' ?
             flock(node, options) :
-            flock.empty;
+            node;
     }
 
     /**
@@ -134,13 +134,5 @@ var flock;
         }
 
         return ds;
-    };
-
-    /**
-     * Empty flock object.
-     * Node method returns undefined.
-     */
-    flock.empty = {
-        node: function () {}
     };
 }());
