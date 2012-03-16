@@ -181,6 +181,7 @@ flock.multi = (function (u_constants, u_utils, u_path, u_query) {
          */
         query: function (node, path, options) {
             options = options || {};
+            path = u_query.normalize(path);
 
             // setting defaults
             if (typeof options.value === 'undefined' &&
@@ -189,18 +190,17 @@ flock.multi = (function (u_constants, u_utils, u_path, u_query) {
                 options.mode = u_constants.VALUES;
             }
 
-            var tpath = typeof path === 'object' ? path.concat([]) : u_query.normalize(path),
-                state;
+            var state;
 
             // default case
-            if (!tpath.length) {
+            if (!path.length) {
                 return node;
             }
 
             state = {
                 options: options,
-                path: tpath,
-                last: tpath.length - 1,
+                path: path,
+                last: path.length - 1,
                 limit: options.limit || 0,
                 loopback: options.loopback || false,
                 result : {2: {}, 4: 0}[options.mode] || [],

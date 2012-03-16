@@ -24,6 +24,10 @@
     });
 
     test("Initialization", function () {
+        var tmp = {};
+        u_live.init(tmp);
+        ok(tmp.hasOwnProperty(u_live.metaKey()), "Initializing empty datastore");
+
         equal(data.hello[u_live.metaKey()].name, 'hello', "Node name stored in meta node.");
         equal(data.hello[u_live.metaKey()].self, data.hello, "Node reference stored in meta node.");
         equal(data.hello[u_live.metaKey()].parent, data, "Parent node reference stored in meta node.");
@@ -80,6 +84,8 @@
         raises(function () {
             u_live.set(data, ['hello', 'world', u_live.metaKey()], "blah");
         }, "Setting fails on path with META key in it");
+
+        ok(u_live.set({}, 'hello'), "Setting default value on empty object");
     });
 
     test("Traversal", function () {

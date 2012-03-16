@@ -5,7 +5,7 @@
  */
 /*global flock */
 
-flock.event = (function (u_single, u_utils, u_live) {
+flock.event = (function (u_single, u_path, u_utils, u_live) {
     var errors, events, self;
 
     errors = {
@@ -197,6 +197,7 @@ flock.event = (function (u_single, u_utils, u_live) {
          */
         set: function (node, path, value, options) {
             options = options || {};
+            path = u_path.normalize(path);
 
             // storing 'before' node
             var before = u_single.get(node, path),
@@ -309,5 +310,6 @@ flock.event = (function (u_single, u_utils, u_live) {
 
     return self;
 }(flock.single,
+    flock.path,
     flock.utils,
     flock.live));

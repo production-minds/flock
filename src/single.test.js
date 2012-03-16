@@ -40,6 +40,8 @@
             u_single.set(data, ['hello', 'yall', 'folks']);
         }, "Ignored key in path throws error");
         u_path.ignoredKey(tmp);
+
+        deepEqual(u_single.set({}, 'hello'), {hello: {}}, "Setting default value on empty object");
     });
 
     test("Unsetting", function () {

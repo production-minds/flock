@@ -5,7 +5,7 @@
  */
 /*global flock */
 
-flock.live = (function (u_single, u_utils) {
+flock.live = (function (u_single, u_path, u_utils) {
     var metaKey = '.meta',
         errors, privates, self;
 
@@ -160,6 +160,7 @@ flock.live = (function (u_single, u_utils) {
          */
         set: function (node, path, value) {
             value = value || {};
+            path = u_path.normalize(path);
 
             var parent,
                 i, key;
@@ -254,4 +255,5 @@ flock.live = (function (u_single, u_utils) {
 
     return self;
 }(flock.single,
+    flock.path,
     flock.utils));

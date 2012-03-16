@@ -20,11 +20,12 @@ flock.single = (function (u_utils, u_path) {
          * @param path {string|Array} Datastore path.
          */
         get: function (node, path) {
-            var key,
-                tpath = u_path.normalize(path);
+            path = u_path.normalize(path);
 
-            while (tpath.length) {
-                key = tpath.shift();
+            var key;
+
+            while (path.length) {
+                key = path.shift();
                 if (node.hasOwnProperty(key)) {
                     node = node[key];
                 } else {
@@ -44,13 +45,13 @@ flock.single = (function (u_utils, u_path) {
          */
         set: function (node, path, value) {
             value = value || {};
+            path = u_path.normalize(path);
 
             var key,
-                tpath = u_path.normalize(path),
-                name = tpath.pop();
+                name = path.pop();
 
-            while (tpath.length) {
-                key = tpath.shift();
+            while (path.length) {
+                key = path.shift();
                 if (!node.hasOwnProperty(key)) {
                     node[key] = {};
                 }
@@ -95,15 +96,16 @@ flock.single = (function (u_utils, u_path) {
          * @returns {object|boolean} Object with name and parent of removed node.
          */
         cleanup: function (node, path) {
-            var tpath = u_path.normalize(path),
-                key,
+            path = u_path.normalize(path);
+
+            var key,
                 lastMulti = {
                     parent: node,
                     name: u_utils.firstProperty(node)
                 };
 
-            while (tpath.length) {
-                key = tpath.shift();
+            while (path.length) {
+                key = path.shift();
                 if (node.hasOwnProperty(key)) {
                     if (!u_utils.isSingle(node, u_path.ignoredKey())) {
                         lastMulti = {
