@@ -20,20 +20,22 @@ flock.single = (function (u_utils, u_path) {
          * @param path {string|Array} Datastore path.
          */
         get: function (node, path) {
-            path = u_path.normalize(path);
+            if (typeof node === 'object' && node !== null) {
+                path = u_path.normalize(path);
 
-            var key;
+                var key;
 
-            while (path.length) {
-                key = path.shift();
-                if (node.hasOwnProperty(key)) {
-                    node = node[key];
-                } else {
-                    return;
+                while (path.length) {
+                    key = path.shift();
+                    if (node.hasOwnProperty(key)) {
+                        node = node[key];
+                    } else {
+                        return;
+                    }
                 }
-            }
 
-            return node;
+                return node;
+            }
         },
 
         /**

@@ -19,6 +19,13 @@
         ok(typeof u_single.get(data, [
             'hello', 'yall'
         ]) === 'undefined', "Attempting to get from invalid path returns undefined");
+
+        // edge cases
+        equal(typeof u_single.get(null, ['foo']), 'undefined', "Null is an invalid node");
+        equal(typeof u_single.get(4, ['foo']), 'undefined', "Number is an invalid node");
+        equal(typeof u_single.get("hello", ['foo']), 'undefined', "String is an invalid node");
+        equal(typeof u_single.get(true, ['foo']), 'undefined', "Boolean is an invalid node");
+        equal(typeof u_single.get(undefined, ['foo']), 'undefined', "Undefined is an invalid node");
     });
 
     test("Setting", function () {
