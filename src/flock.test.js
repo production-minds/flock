@@ -37,13 +37,22 @@
         deepEqual(cache.keys(), ['first', 'second', 'third', 'fourth'], "Key extraction (with ignored .meta key)");
     });
 
+    test("Creation", function () {
+        equal($(5).node(), 5, "Flock based on ordinal (number)");
+        equal($("hello").node(), "hello", "Flock based on ordinal (string)");
+        equal($(true).node(), true, "Flock based on ordinal (boolean)");
+        equal($(null).node(), null, "Flock based on null");
+        equal(typeof $(undefined).node(), 'undefined', "Flock based on undefined");
+    });
+
     test("Single", function () {
-        deepEqual(cache.get(['fourth', '1', 'a']), "One", "Simple get");
+        deepEqual(cache.get(['fourth', '1', 'a']).node(), "One", "Simple get");
 
         deepEqual(
             cache
                 .get(['fourth', '1'])
-                .get(['a']),
+                .get(['a'])
+                    .node(),
             "One",
             "Chained get"
         );
@@ -52,12 +61,13 @@
             cache
                 .get(['fourth', '1'])
                 .set(['c'], "Hello!")
-                .get(['c']),
+                .get(['c'])
+                    .node(),
             "Hello!",
             "Chained set & get"
         );
 
-        ok(typeof cache.get(['nonexisting', '1', 'a']) === 'undefined', "Empty result set returns undefined");
+        ok(typeof cache.get(['nonexisting', '1', 'a']).node() === 'undefined', "Empty result set returns undefined");
 
         var nonChainable = $({hello: {world: {}}}, {nolive: true, nochaining: true});
         deepEqual(nonChainable.get('hello'), {world: {}}, "Querying returns bare node on non-chaninng datastore");

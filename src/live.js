@@ -27,10 +27,15 @@ flock.live = (function (u_single, u_path, u_utils) {
                 result = false;
 
             // taking node from parent when no node is explicitly provided
-            node = node || parent[name];
+            if (typeof node === 'undefined' &&
+                typeof parent === 'object' &&
+                typeof name === 'string'
+                ) {
+                node = node || parent[name];
+            }
 
-            if (typeof node === 'object') {
-                // when node is actually an object
+            if (typeof node === 'object' && node !== null) {
+                // when node is actually an object and not null
                 if (!node.hasOwnProperty(metaKey)) {
                     // adding meta node when missing
                     node[metaKey] = {};

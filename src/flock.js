@@ -5,16 +5,6 @@ var flock;
 
 (function () {
     /**
-     * Maps a datastore node to a flock object.
-     * @param node {object} Datastore node.
-     */
-    function chainedNodeMapper(node, options) {
-        return typeof node === 'object' ?
-            flock(node, options) :
-            node;
-    }
-
-    /**
      * Flock constructor
      * @constructor
      * @param [node] {object} Root object for datastore. When omitted, empty object is assumed.
@@ -27,7 +17,6 @@ var flock;
      */
     flock = function (node, options) {
         // creating default arguments
-        node = node || {};
         options = options || {
             nolive: false,
             noinit: false,
@@ -44,7 +33,7 @@ var flock;
             u_event = flock.event,
             u_multi = flock.multi,
             genMethod = u_utils.genMethod,
-            nodeMapper = options.nochaining ? undefined : chainedNodeMapper,
+            nodeMapper = options.nochaining ? undefined : flock,
             nodeArgs = [node],
             liveArgs = [node, u_live.metaKey()],
             ds = {};
