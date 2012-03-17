@@ -23,24 +23,39 @@ flock.live = (function (u_single, u_path, u_utils) {
          * @returns {boolean} Whether addition of meta node was successful.
          */
         addMeta: function (parent, name, node) {
-            var meta;
+            var meta,
+                result = false;
 
             // taking node from parent when no node is explicitly provided
             node = node || parent[name];
 
-            if (!node.hasOwnProperty(metaKey)) {
-                // adding meta node
-                meta = node[metaKey] = {};
-                meta.self = node;
-                if (typeof parent === 'object' &&
-                    typeof name === 'string') {
+            if (typeof node === 'object') {
+                // when node is actually an object
+                if (!node.hasOwnProperty(metaKey)) {
+                    // adding meta node when missing
+                    node[metaKey] = {};
+                    result = true;
+                }
+
+                meta = node[metaKey];
+
+                if (!meta.hasOwnProperty('self')) {
+                    meta.self = node;
+                    result = true;
+                }
+
+                if (!meta.hasOwnProperty('parent') &&
+                    !meta.hasOwnProperty('name') &&
+                    typeof parent === 'object' &&
+                    typeof name === 'string'
+                    ) {
                     meta.parent = parent;
                     meta.name = name;
+                    result = true;
                 }
-                return true;
-            } else {
-                return false;
             }
+
+            return result;
         },
 
         /**
@@ -171,14 +186,19 @@ flock.live = (function (u_single, u_path, u_utils) {
             // searching for first uninitialized node
             for (i = 0; i < path.length; i++) {
                 key = path[i];
-                if (!node[key].hasOwnProperty(metaKey)) {
+                if (!node[key].hasOwnProperty(metaKey) ||
+                    !node[key][metaKey].hasOwnProperty('parent')
+                    ) {
                     break;
                 }
                 node = node[key];
             }
 
-            // initializing
-            self.init(node[key], node, key);
+            if (i < path.length) {
+                // when uninitialized node was found
+                // initializing
+                self.init(node[key], node, key);
+            }
 
             return parent;
         },

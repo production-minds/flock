@@ -86,6 +86,12 @@
         }, "Setting fails on path with META key in it");
 
         ok(u_live.set({}, 'hello'), "Setting default value on empty object");
+
+        tmp = {test: {hello: {}}};
+        u_live.init(tmp);
+        u_live.set(data, 'hello.more', tmp);
+        u_live.set(data, 'hello.more', tmp);
+        equal(data.hello.more.test[u_live.metaKey()].parent, data.hello.more, "Parent reference of root node is added on first assignment");
     });
 
     test("Traversal", function () {
