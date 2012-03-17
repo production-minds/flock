@@ -75,11 +75,37 @@ flock.utils = (function () {
         },
 
         /**
+         * Tests object for null.
+         * @param object {object} Test object.
+         */
+        isNull: function (object) {
+            return object === null;
+        },
+
+        /**
+         * Tests object for undefined.
+         * @param object {object} Test object.
+         */
+        isUndefined: function (object) {
+            return typeof object === 'undefined';
+        },
+
+        /**
+         * Tests object for ordinal.
+         * @param object {object} Test object.
+         */
+        isOrdinal: function (object) {
+            return typeof object === 'string' ||
+                typeof object === 'number' ||
+                typeof object === 'boolean';
+        },
+
+        /**
          * Retrieves the first available property of an object.
          * @param object {object} Test object.
          * @param [ignoredKey] {string} Ignored key.
          */
-        firstProperty: function (object, ignoredKey) {
+        firstKey: function (object, ignoredKey) {
             var key;
             for (key in object) {
                 if (object.hasOwnProperty(key) &&

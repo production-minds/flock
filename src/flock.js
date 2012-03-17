@@ -66,6 +66,12 @@ var flock;
         ds.keys = genMethod(u_utils.keys, liveArgs);
         ds.values = genMethod(u_utils.values, liveArgs);
 
+        // tester functions
+        ds.isEmpty = genMethod(u_utils.isEmpty, liveArgs);
+        ds.isNull = genMethod(u_utils.isNull, liveArgs);
+        ds.isUndefined = genMethod(u_utils.isUndefined, liveArgs);
+        ds.isOrdinal = genMethod(u_utils.isOrdinal, liveArgs);
+
         // single node methods
         ds.get = genMethod(u_single.get, nodeArgs, nodeMapper, options);
         ds.map = genMethod(u_single.map, nodeArgs, nodeMapper, options);
@@ -108,13 +114,10 @@ var flock;
                 ds.unset = genMethod(u_single.unset, nodeArgs, ds);
                 ds.cleanup = genMethod(u_single.cleanup, nodeArgs, ds);
             }
-
-            ds.empty = genMethod(u_live.empty, nodeArgs);
         } else {
             // core set
             ds.set = genMethod(u_single.set, nodeArgs, ds);
             ds.unset = genMethod(u_single.unset, nodeArgs, ds);
-            ds.empty = genMethod(u_utils.isEmpty, nodeArgs);
         }
 
         if (!options.nomulti && u_multi) {

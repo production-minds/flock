@@ -103,7 +103,7 @@ flock.single = (function (u_utils, u_path) {
             var key,
                 lastMulti = {
                     parent: node,
-                    name: u_utils.firstProperty(node)
+                    name: u_utils.firstKey(node)
                 };
 
             while (path.length) {

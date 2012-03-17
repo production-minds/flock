@@ -1,5 +1,5 @@
 /*global flock, module, test, ok, equal, deepEqual, raises */
-(function (u_live) {
+(function (u_live, u_utils) {
     module("Live");
 
     var data = {
@@ -13,15 +13,6 @@
     };
 
     u_live.init(data);
-
-    test("Utilities", function () {
-        ok(u_live.privates.empty({}), "Empty object is detected to be empty");
-        ok(!u_live.privates.empty({foo:"bar"}), "Non-empty object is detected to be not empty");
-
-        var tmp = {};
-        tmp[u_live.metaKey()] = "foo";
-        ok(u_live.privates.empty(tmp), "Object with just one meta key is detected to be empty");
-    });
 
     test("Initialization", function () {
         var tmp = {};
@@ -79,7 +70,7 @@
         equal(data.hello.world.center, 'blah', "Setting ordinal node");
 
         u_live.set(data, ['hello', 'world', 'foo']);
-        ok(u_live.privates.empty(data.hello.world.foo), "Default value for set is empty object");
+        ok(u_utils.isEmpty(data.hello.world.foo, u_live.metaKey()), "Default value for set is empty object");
 
         raises(function () {
             u_live.set(data, ['hello', 'world', u_live.metaKey()], "blah");
@@ -106,4 +97,5 @@
             u_live.name(data.hello.world.center);
         }, "Meta getter throws error on ordinal (leaf) node");
     });
-}(flock.live));
+}(flock.live,
+    flock.utils));

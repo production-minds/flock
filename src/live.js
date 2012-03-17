@@ -75,23 +75,6 @@ flock.live = (function (u_single, u_path, u_utils) {
             } else {
                 return false;
             }
-        },
-
-        /**
-         * Determines whether a node is empty. Doesn't count meta node.
-         * @param node {object} Datastore node.
-         * @returns {boolean}
-         */
-        empty: function (node) {
-            var key;
-            for (key in node) {
-                if (node.hasOwnProperty(key) &&
-                    key !== metaKey
-                    ) {
-                    return false;
-                }
-            }
-            return true;
         }
     };
 

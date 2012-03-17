@@ -43,9 +43,19 @@
         equal(u_utils.isSingle({foo: "bar", what: "eva"}), false, "Multi-property object tested for single");
         equal(u_utils.isSingle({foo: "bar", what: "eva"}, 'foo'), true, "Multi-property object with ignored key tested for single");
 
-        equal(u_utils.firstProperty({foo: "bar"}), 'foo', "First property of an object");
-        ok(typeof u_utils.firstProperty({}) === 'undefined', "First property of an empty object");
-        ok(typeof u_utils.firstProperty({foo: "bar"}, 'foo') === 'undefined', "First property of an object with ignored key");
+        equal(u_utils.isNull(0), false, "Number is not null");
+        equal(u_utils.isNull(null), true, "Null is null");
+        equal(u_utils.isUndefined(0), false, "Number is not undefined");
+        equal(u_utils.isUndefined(undefined), true, "Undefined is not undefined");
+        equal(u_utils.isOrdinal(null), false, "Null is not ordinal");
+        equal(u_utils.isOrdinal(undefined), false, "Undefined is not ordinal");
+        equal(u_utils.isOrdinal(0), true, "Number is ordinal");
+        equal(u_utils.isOrdinal("hello"), true, "String is ordinal");
+        equal(u_utils.isOrdinal(true), true, "Boolean is ordinal");
+
+        equal(u_utils.firstKey({foo: "bar"}), 'foo', "First property of an object");
+        ok(typeof u_utils.firstKey({}) === 'undefined', "First property of an empty object");
+        ok(typeof u_utils.firstKey({foo: "bar"}, 'foo') === 'undefined', "First property of an object with ignored key");
 
         deepEqual(u_utils.keys({foo: "bar", hello: "world"}), ['foo', 'hello'], "Key extraction");
         deepEqual(u_utils.keys({foo: "bar", hello: "world"}, 'hello'), ['foo'], "Key extraction with ignored key");

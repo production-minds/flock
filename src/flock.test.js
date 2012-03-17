@@ -108,7 +108,7 @@
         ok(typeof tmp.options().noevent === 'undefined', "Options cannot be modified through property");
 
         // non-live tets
-        ok(tmp.get(['hello', 'world']).empty(), "utils.empty delegated to flock");
+        ok(tmp.get(['hello', 'world']).isEmpty(), "utils.empty delegated to flock");
 
         tmp = $({hello: {world: {}}}, {
             noinit: true
