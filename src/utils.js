@@ -34,15 +34,15 @@ flock.utils = (function () {
         /**
          * Tests an object for having no (own) properties.
          * @param object {object} Test object.
-         * @param [ignored] {string} Ignored key.
+         * @param [ignoredKey] {string} Ignored key.
          * @returns {boolean}
          */
-        isEmpty: function (object, ignored) {
+        isEmpty: function (object, ignoredKey) {
             var result = true,
                 key;
             for (key in object) {
                 if (object.hasOwnProperty(key) &&
-                    key !== ignored
+                    key !== ignoredKey
                     ) {
                     result = false;
                     break;
@@ -54,16 +54,16 @@ flock.utils = (function () {
         /**
          * Tests object for having exactly 1 (own) property
          * @param object {object} Test object.
-         * @param [ignored] {string} Ignored key.
+         * @param [ignoredKey] {string} Ignored key.
          * @returns {boolean}
          */
-        isSingle: function (object, ignored) {
+        isSingle: function (object, ignoredKey) {
             var result = false,
                 key,
                 count = 0;
             for (key in object) {
                 if (object.hasOwnProperty(key) &&
-                    key !== ignored
+                    key !== ignoredKey
                     ) {
                     result = ++count === 1;
                     if (count > 1) {
@@ -77,14 +77,53 @@ flock.utils = (function () {
         /**
          * Retrieves the first available property of an object.
          * @param object {object} Test object.
+         * @param [ignoredKey] {string} Ignored key.
          */
-        firstProperty: function (object) {
+        firstProperty: function (object, ignoredKey) {
             var key;
             for (key in object) {
-                if (object.hasOwnProperty(key)) {
+                if (object.hasOwnProperty(key) &&
+                    key !== ignoredKey
+                    ) {
                     return key;
                 }
             }
+        },
+
+        /**
+         * Extracts an object's key.
+         * @param object {object} Test object.
+         * @param [ignoredKey] {string} Ignored key.
+         */
+        keys: function (object, ignoredKey) {
+            var key,
+                result = [];
+            for (key in object) {
+                if (object.hasOwnProperty(key) &&
+                    key !== ignoredKey
+                    ) {
+                    result.push(key);
+                }
+            }
+            return result;
+        },
+
+        /**
+         * Extracts an object's values.
+         * @param object {object} Test object.
+         * @param [ignoredKey] {string} Ignored key.
+         */
+        values: function (object, ignoredKey) {
+            var key,
+                result = [];
+            for (key in object) {
+                if (object.hasOwnProperty(key) &&
+                    key !== ignoredKey
+                    ) {
+                    result.push(object[key]);
+                }
+            }
+            return result;
         },
 
         /**

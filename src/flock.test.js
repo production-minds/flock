@@ -32,6 +32,11 @@
 
     module("Flock");
 
+    test("Utils", function () {
+        ok(cache.node().hasOwnProperty($.live.metaKey()), "Cache root has ignored key");
+        deepEqual(cache.keys(), ['first', 'second', 'third', 'fourth'], "Key extraction (with ignored .meta key)");
+    });
+
     test("Single", function () {
         deepEqual(cache.get(['fourth', '1', 'a']), "One", "Simple get");
 

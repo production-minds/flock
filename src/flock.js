@@ -45,7 +45,8 @@ var flock;
             u_multi = flock.multi,
             genMethod = u_utils.genMethod,
             nodeMapper = options.nochaining ? undefined : chainedNodeMapper,
-            args = [node],
+            nodeArgs = [node],
+            liveArgs = [node, u_live.metaKey()],
             ds = {};
 
         //////////////////////////////
@@ -72,9 +73,13 @@ var flock;
         //////////////////////////////
         // Delegates
 
+        // utils
+        ds.keys = genMethod(u_utils.keys, liveArgs);
+        ds.values = genMethod(u_utils.values, liveArgs);
+
         // single node methods
-        ds.get = genMethod(u_single.get, args, nodeMapper, options);
-        ds.map = genMethod(u_single.map, args, nodeMapper, options);
+        ds.get = genMethod(u_single.get, nodeArgs, nodeMapper, options);
+        ds.map = genMethod(u_single.map, nodeArgs, nodeMapper, options);
 
         // live
         if (!options.nolive && u_live) {
@@ -84,20 +89,20 @@ var flock;
             }
 
             // general live methods
-            ds.init = genMethod(u_live.init, args, ds);
-            ds.deinit = genMethod(u_live.deinit, args, ds);
-            ds.path = genMethod(u_live.path, args);
-            ds.parent = genMethod(u_live.parent, args, nodeMapper, options);
-            ds.closest = genMethod(u_live.closest, args, nodeMapper, options);
-            ds.name = genMethod(u_live.name, args);
+            ds.init = genMethod(u_live.init, nodeArgs, ds);
+            ds.deinit = genMethod(u_live.deinit, nodeArgs, ds);
+            ds.path = genMethod(u_live.path, nodeArgs);
+            ds.parent = genMethod(u_live.parent, nodeArgs, nodeMapper, options);
+            ds.closest = genMethod(u_live.closest, nodeArgs, nodeMapper, options);
+            ds.name = genMethod(u_live.name, nodeArgs);
 
             // event - must have live for events
             if (!options.noevent && u_event) {
-                ds.on = genMethod(u_event.subscribe, args, ds);
-                ds.once = genMethod(u_event.once, args, ds);
-                ds.delegate = genMethod(u_event.delegate, args, ds);
-                ds.off = genMethod(u_event.unsubscribe, args, ds);
-                ds.trigger = genMethod(u_event.trigger, args, ds);
+                ds.on = genMethod(u_event.subscribe, nodeArgs, ds);
+                ds.once = genMethod(u_event.once, nodeArgs, ds);
+                ds.delegate = genMethod(u_event.delegate, nodeArgs, ds);
+                ds.off = genMethod(u_event.unsubscribe, nodeArgs, ds);
+                ds.trigger = genMethod(u_event.trigger, nodeArgs, ds);
             }
         }
 
@@ -105,22 +110,22 @@ var flock;
         if (!options.nolive && u_live) {
             if (!options.noevent && u_event) {
                 // evented set
-                ds.set = genMethod(u_event.set, args, ds);
-                ds.unset = genMethod(u_event.unset, args, ds);
-                ds.cleanup = genMethod(u_event.cleanup, args, ds);
+                ds.set = genMethod(u_event.set, nodeArgs, ds);
+                ds.unset = genMethod(u_event.unset, nodeArgs, ds);
+                ds.cleanup = genMethod(u_event.cleanup, nodeArgs, ds);
             } else {
                 // live set
-                ds.set = genMethod(u_live.set, args, ds);
-                ds.unset = genMethod(u_single.unset, args, ds);
-                ds.cleanup = genMethod(u_single.cleanup, args, ds);
+                ds.set = genMethod(u_live.set, nodeArgs, ds);
+                ds.unset = genMethod(u_single.unset, nodeArgs, ds);
+                ds.cleanup = genMethod(u_single.cleanup, nodeArgs, ds);
             }
 
-            ds.empty = genMethod(u_live.empty, args);
+            ds.empty = genMethod(u_live.empty, nodeArgs);
         } else {
             // core set
-            ds.set = genMethod(u_single.set, args, ds);
-            ds.unset = genMethod(u_single.unset, args, ds);
-            ds.empty = genMethod(u_utils.isEmpty, args);
+            ds.set = genMethod(u_single.set, nodeArgs, ds);
+            ds.unset = genMethod(u_single.unset, nodeArgs, ds);
+            ds.empty = genMethod(u_utils.isEmpty, nodeArgs);
         }
 
         if (!options.nomulti && u_multi) {
@@ -130,7 +135,7 @@ var flock;
             }
 
             // query method
-            ds.query = genMethod(u_multi.query, args, nodeMapper, options);
+            ds.query = genMethod(u_multi.query, nodeArgs, nodeMapper, options);
         }
 
         return ds;

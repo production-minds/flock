@@ -45,6 +45,12 @@
 
         equal(u_utils.firstProperty({foo: "bar"}), 'foo', "First property of an object");
         ok(typeof u_utils.firstProperty({}) === 'undefined', "First property of an empty object");
+        ok(typeof u_utils.firstProperty({foo: "bar"}, 'foo') === 'undefined', "First property of an object with ignored key");
+
+        deepEqual(u_utils.keys({foo: "bar", hello: "world"}), ['foo', 'hello'], "Key extraction");
+        deepEqual(u_utils.keys({foo: "bar", hello: "world"}, 'hello'), ['foo'], "Key extraction with ignored key");
+        deepEqual(u_utils.values({foo: "bar", hello: "world"}), ['bar', 'world'], "Value extraction");
+        deepEqual(u_utils.values({foo: "bar", hello: "world"}, 'hello'), ['bar'], "Value extraction with ignored key");
     });
 
     test("Delegation", function () {
