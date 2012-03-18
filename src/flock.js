@@ -73,6 +73,10 @@ var flock;
         ds.isOrdinal = genMethod(u_utils.isOrdinal, nodeArgs);
         ds.isNode = genMethod(u_utils.isNode, nodeArgs);
 
+        // math functions
+        ds.inc = genMethod(u_utils.inc, nodeArgs);
+        ds.dec = genMethod(u_utils.dec, nodeArgs);
+
         // single node methods
         ds.get = genMethod(u_single.get, nodeArgs, nodeMapper, options);
         ds.map = genMethod(u_single.map, nodeArgs, nodeMapper, options);

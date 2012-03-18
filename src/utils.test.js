@@ -74,6 +74,18 @@
         deepEqual(u_utils.values({foo: "bar", hello: "world"}, 'hello'), ['bar'], "Value extraction with ignored key");
     });
 
+    test("Math", function () {
+        var tmp = {foo: 5};
+        u_utils.inc(tmp, 'foo');
+        equal(tmp.foo, 6, "Default increment is 1");
+        u_utils.inc(tmp, 'foo', 4);
+        equal(tmp.foo, 10, "Custom increment");
+        u_utils.dec(tmp, 'foo');
+        equal(tmp.foo, 9, "Default decrement is 1");
+        u_utils.dec(tmp, 'foo', 4);
+        equal(tmp.foo, 5, "Custom decrement");
+    });
+
     test("Delegation", function () {
         var tmp,
             key, count;
