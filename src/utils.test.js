@@ -34,6 +34,11 @@
     });
 
     test("Objects", function () {
+        equal(u_utils.isEmpty(), true, "Undefined tested for empty");
+        equal(u_utils.isEmpty(null), true, "Null tested for empty");
+        equal(u_utils.isEmpty(0), true, "Number tested for empty");
+        equal(u_utils.isEmpty("hello"), false, "String fails for empty");
+
         equal(u_utils.isEmpty({}), true, "Empty object tested for empty");
         equal(u_utils.isEmpty({foo: "bar"}), false, "Non-empty object tested for empty");
         equal(u_utils.isEmpty({foo: "bar"}, 'foo'), true, "Non-empty object with ignored key tested for empty");
@@ -52,6 +57,12 @@
         equal(u_utils.isOrdinal(0), true, "Number is ordinal");
         equal(u_utils.isOrdinal("hello"), true, "String is ordinal");
         equal(u_utils.isOrdinal(true), true, "Boolean is ordinal");
+
+        equal(u_utils.isNode(0), false, "Number is not node");
+        equal(u_utils.isNode("hello"), false, "String is not node");
+        equal(u_utils.isNode(null), false, "Null is not node");
+        equal(u_utils.isNode(undefined), false, "Undefined is not node");
+        equal(u_utils.isNode({}), true, "Object is node");
 
         equal(u_utils.firstKey({foo: "bar"}), 'foo', "First property of an object");
         ok(typeof u_utils.firstKey({}) === 'undefined', "First property of an empty object");

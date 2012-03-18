@@ -101,6 +101,14 @@ flock.utils = (function () {
         },
 
         /**
+         * Tests object for non-null object.
+         * @param object {object} Test object.
+         */
+        isNode: function (object) {
+            return typeof object === 'object' && object !== null;
+        },
+
+        /**
          * Retrieves the first available property of an object.
          * @param object {object} Test object.
          * @param [ignoredKey] {string} Ignored key.

@@ -68,9 +68,10 @@ var flock;
 
         // tester functions
         ds.isEmpty = genMethod(u_utils.isEmpty, liveArgs);
-        ds.isNull = genMethod(u_utils.isNull, liveArgs);
-        ds.isUndefined = genMethod(u_utils.isUndefined, liveArgs);
-        ds.isOrdinal = genMethod(u_utils.isOrdinal, liveArgs);
+        ds.isNull = genMethod(u_utils.isNull, nodeArgs);
+        ds.isUndefined = genMethod(u_utils.isUndefined, nodeArgs);
+        ds.isOrdinal = genMethod(u_utils.isOrdinal, nodeArgs);
+        ds.isNode = genMethod(u_utils.isNode, nodeArgs);
 
         // single node methods
         ds.get = genMethod(u_single.get, nodeArgs, nodeMapper, options);
