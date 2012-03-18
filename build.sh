@@ -15,6 +15,15 @@ then
     mkdir build
 fi
 
+for f in "build/$NAME"*
+do
+    if [ -e $f ]
+    then
+        echo Removing "$f".
+        rm $f
+    fi
+done
+
 cat \
 src/license.js \
 src/flock.js \
