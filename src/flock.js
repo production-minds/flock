@@ -4,6 +4,14 @@
 var flock;
 
 (function () {
+    var DEFAULT_OPTIONS = {
+        nolive: false,
+        noinit: false,
+        noevent: false,
+        nomulti: false,
+        nochaining: false
+    };
+
     /**
      * Flock constructor
      * @constructor
@@ -17,13 +25,7 @@ var flock;
      */
     flock = function (node, options) {
         // creating default arguments
-        options = options || {
-            nolive: false,
-            noinit: false,
-            noevent: false,
-            nomulti: false,
-            nochaining: false
-        };
+        options = options || DEFAULT_OPTIONS;
 
         // shortcuts
         var u_utils = flock.utils,
@@ -136,5 +138,20 @@ var flock;
         }
 
         return ds;
+    };
+
+    /**
+     * Sets default options.
+     * @param value {object} Options object.
+     */
+    flock.defaultOptions = function (value) {
+        var key;
+        for (key in value) {
+            if (value.hasOwnProperty(key) &&
+                DEFAULT_OPTIONS.hasOwnProperty(key)
+                ) {
+                DEFAULT_OPTIONS[key] = value[key];
+            }
+        }
     };
 }());
