@@ -96,6 +96,24 @@
         equal(i, 1, "Handler triggered no more upon one-time event");
     });
 
+    test("Math", function () {
+        var data = {
+            foo: {
+                bar: 3
+            }
+        };
+
+        u_live.init(data);
+
+        function onChange (event, data) {
+            equal(data.before, 3, "Before value 3");
+            equal(data.after, 5, "After value 5");
+        }
+
+        u_event.subscribe(data.foo, 'change', onChange);
+        u_event.add(data.foo, 'bar', 2);
+    });
+
     test("Delegation", function () {
         var i;
         function testHandler() { i++; }

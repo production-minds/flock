@@ -75,10 +75,6 @@ var flock;
         ds.isOrdinal = genMethod(u_utils.isOrdinal, nodeArgs);
         ds.isNode = genMethod(u_utils.isNode, nodeArgs);
 
-        // math functions
-        ds.inc = genMethod(u_utils.inc, nodeArgs);
-        ds.dec = genMethod(u_utils.dec, nodeArgs);
-
         // single node methods
         ds.get = genMethod(u_single.get, nodeArgs, nodeMapper, options);
         ds.map = genMethod(u_single.map, nodeArgs, nodeMapper, options);
@@ -125,6 +121,9 @@ var flock;
             // core set
             ds.set = genMethod(u_single.set, nodeArgs, ds);
             ds.unset = genMethod(u_single.unset, nodeArgs, ds);
+
+            // math functions
+            ds.add = genMethod(u_single.add, nodeArgs);
         }
 
         if (!options.nomulti && u_multi) {

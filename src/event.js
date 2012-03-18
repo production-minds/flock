@@ -301,6 +301,41 @@ flock.event = (function (u_single, u_path, u_utils, u_live) {
             }
 
             return removed;
+        },
+
+        /**
+         * Increments value on the object's key.
+         * Triggers 'change' event.
+         * @param node {object} Owner object.
+         * @param key {string} Key representing numeric value.
+         * @param [value] {number} Value to add. Default: 1.
+         * @param [options] {object} Options.
+         * @param [options.data] {object} Custom data to be passed to event handler.
+         * @param [options.trigger] {boolean} Whether to trigger. Default: true.
+         */
+        add: function (node, key, value, options) {
+            options = options || {};
+
+            var before = node[key],
+                parent = u_single.add(node, key, value),
+                after = node[key];
+
+            if (typeof parent === 'object' &&
+                options.trigger !== false
+                ) {
+                self.trigger(
+                    parent,
+                    events.EVENT_CHANGE,
+                    {
+                        data: {
+                            before: before,
+                            after: after,
+                            name: key,
+                            data: options.data
+                        }
+                    }
+                );
+            }
         }
     };
 

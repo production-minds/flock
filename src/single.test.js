@@ -51,6 +51,14 @@
         deepEqual(u_single.set({}, 'hello'), {hello: {}}, "Setting default value on empty object");
     });
 
+    test("Math", function () {
+        var tmp = {foo: 5};
+        u_single.add(tmp, 'foo');
+        equal(tmp.foo, 6, "Default increment is 1");
+        u_single.add(tmp, 'foo', 4);
+        equal(tmp.foo, 10, "Custom increment");
+    });
+
     test("Unsetting", function () {
         var
             data = {

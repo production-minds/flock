@@ -67,6 +67,21 @@ flock.single = (function (u_utils, u_path) {
         },
 
         /**
+         * Increments value on the object's key.
+         * @param node {object} Owner object.
+         * @param key {string} Key representing numeric value.
+         * @param [value] {number} Optional value to add to key.
+         */
+        add: function (node, key, value) {
+            if (node.hasOwnProperty(key) &&
+                typeof node[key] === 'number'
+                ){
+                node[key] += value || 1;
+                return node;
+            }
+        },
+
+        /**
          * Removes a single node from the datastore.
          * @param node {object} Datastore node.
          * @param path {string|Array} Datastore path.

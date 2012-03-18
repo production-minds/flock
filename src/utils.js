@@ -109,26 +109,6 @@ flock.utils = (function () {
         },
 
         /**
-         * Increments value on the object's key.
-         * @param object {object} Owner object.
-         * @param key {string} Key representing numeric value.
-         * @param [value] {number} Optional value to add to key.
-         */
-        inc: function (object, key, value) {
-            object[key] += value || 1;
-        },
-
-        /**
-         * Increments value on the object's key.
-         * @param object {object} Owner object.
-         * @param key {string} Key representing numeric value.
-         * @param [value] {number} Optional value to subtract from key.
-         */
-        dec: function (object, key, value) {
-            object[key] -= value || 1;
-        },
-
-        /**
          * Retrieves the first available property of an object.
          * @param object {object} Test object.
          * @param [ignoredKey] {string} Ignored key.
