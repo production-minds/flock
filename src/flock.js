@@ -121,6 +121,7 @@ var flock;
             // core set
             ds.set = genMethod(u_single.set, nodeArgs, ds);
             ds.unset = genMethod(u_single.unset, nodeArgs, ds);
+            ds.cleanup = genMethod(u_single.cleanup, nodeArgs, ds);
 
             // math functions
             ds.add = genMethod(u_single.add, nodeArgs);
