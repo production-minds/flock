@@ -40,7 +40,7 @@
 
         u_single.set(data, ['hello', 'yall', 'folks']);
         deepEqual(u_single.get(data, 'hello.yall.folks'), {}, "Default value for set is empty object");
-        
+
         tmp = u_path.ignoredKey();
         u_path.ignoredKey("yall");
         raises(function () {
@@ -94,7 +94,8 @@
     });
 
     test("Cleanup", function () {
-        var data = {
+        var
+            data = {
                 hi: 'There!',
                 hello: {
                     world: {
@@ -147,7 +148,8 @@
     });
 
     test("Mapping", function () {
-        var testDataSource = {
+        var
+            testDataSource = {
                 a: {
                     foo: "hello",
                     bar: {

@@ -75,7 +75,7 @@ flock.single = (function (u_utils, u_path) {
         add: function (node, key, value) {
             if (node.hasOwnProperty(key) &&
                 typeof node[key] === 'number'
-                ){
+                ) {
                 node[key] += value || 1;
                 return node;
             }
