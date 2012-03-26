@@ -5,119 +5,126 @@
  */
 /*global flock */
 
-flock.event = (function (u_single, u_path, u_utils, u_live) {
-    var errors, events, self;
-
-    errors = {
-        ERROR_HANDLERNOTFUNCTION: "Handler is not a function."
-    };
-
-    events = {
+flock.event = (function ($single, $path) {
+    var events = {
         EVENT_CHANGE: 'change',
         EVENT_ADD: 'add',
         EVENT_REMOVE: 'remove'
     };
 
-    self = {
-        //////////////////////////////
-        // Control
+    return function () {
+        var root = this.root(),
+            lookup = {},
+            self;
 
-        /**
-         * Subscribes to datastore event.
-         * @param node {object} Datastore node.
-         * @param eventName {string} Name of event to subscribe to.
-         * @param handler {function} Event handler.
-         * @throws {string}
-         */
-        subscribe: function (node, eventName, handler) {
-            var meta = node[u_live.metaKey()],
-                handlers;
+        self = {
+            //////////////////////////////
+            // Getters
 
-            if (typeof meta === 'object') {
-                if (typeof handler === 'function') {
-                    // making sure handler containers exists
-                    if (!meta.hasOwnProperty('handlers')) {
-                        meta.handlers = {};
-                    }
-                    handlers = meta.handlers;
-                    if (!handlers.hasOwnProperty(eventName)) {
-                        handlers[eventName] = [];
-                    }
-
-                    // adding handler to event
-                    handlers[eventName].push(handler);
+            /**
+             * Looks up event handler.
+             * @param path {string} Datastore path.
+             * @param eventName {string} Name of event.
+             * @returns {object|function[]|function} Collection of event handlers.
+             */
+            lookup: function (path, eventName) {
+                if (typeof eventName === 'string') {
+                    return lookup[path][eventName];
+                } else if (typeof path === 'string') {
+                    return lookup[path];
                 } else {
-                    throw "flock.event.subscribe: " + errors.ERROR_HANDLERNOTFUNCTION;
+                    return lookup;
                 }
-            } else {
-                throw "flock.event.subscribe: " + u_live.ERROR_NONTRAVERSABLE;
-            }
-        },
+            },
 
-        /**
-         * Subscribes to datastore event, unsubscribes after first time
-         * being triggered.
-         * @param node {object} Datastore node.
-         * @param eventName {string} Name of event to subscribe to.
-         * @param handler {function} Event handler.
-         */
-        once: function (node, eventName, handler) {
-            function fullHandler() {
-                // calling actual handler
-                handler.apply(this, arguments);
+            //////////////////////////////
+            // Control
 
-                // unsubscribing from event immediately
-                self.unsubscribe(node, eventName, fullHandler);
-            }
+            /**
+             * Subscribes to datastore event.
+             * @param path {string|string[]} Datastore path.
+             * @param eventName {string} Name of event to subscribe to.
+             * @param handler {function} Event handler.
+             */
+            subscribe: function (path, eventName, handler) {
+                // serializing path when necessary
+                path = path instanceof Array ?
+                    path.join('.') :
+                    path;
 
-            // subscribing modified handler instead of actual one
-            self.subscribe(node, eventName, fullHandler);
-        },
+                // obtaining reference to handler collection
+                var events = lookup[path] = lookup[path] || {},
+                    handlers = events[eventName] = events[eventName] || [];
 
-        /**
-         * Delegates event to a specified path. Event is captured on the node,
-         * but handler is not called unless argument 'path' matches the path
-         * of the event target.
-         * @param node {object} Datastore node.
-         * @param eventName {string} Name of event to subscribe to.
-         * @param path {Array} Relative path to receiving node,
-         * @param handler {function} Event handler.
-         */
-        delegate: function (node, eventName, path, handler) {
-            var match = flock.query ? flock.query.match : flock.path.match;
+                // adding handler to collection
+                handlers.push(handler);
+            },
 
-            function fullHandler(event, data) {
-                if (match(u_live.path(event.target), path)) {
-                    // when target path matches passed path
+            /**
+             * Subscribes to datastore event, unsubscribes after first time
+             * being triggered.
+             * @param path {string|string[]} Datastore path.
+             * @param eventName {string} Name of event to subscribe to.
+             * @param handler {function} Event handler.
+             */
+            once: function (path, eventName, handler) {
+                function fullHandler() {
+                    // calling actual handler
                     handler.apply(this, arguments);
+
+                    // unsubscribing from event immediately
+                    self.unsubscribe.call(lookup, path, eventName, fullHandler);
                 }
-            }
 
-            // subscribing modified handler instead of actual one
-            self.subscribe(node, eventName, fullHandler);
-        },
+                // subscribing modified handler instead of actual one
+                self.subscribe.call(lookup, path, eventName, fullHandler);
+            },
 
-        /**
-         * Unsubscribes from datastore event.
-         * @param node {object} Datastore node.
-         * @param [eventName] {string} Name of event to subscribe to.
-         * @param [handler] {function} Event handler.
-         * @throws {string} On untraversable node.
-         */
-        unsubscribe: function (node, eventName, handler) {
-            var meta = node[u_live.metaKey()],
-                handlers,
-                i;
+            /**
+             * Delegates event to a specified path. Event is captured on the node,
+             * but handler is not called unless argument 'path' matches the path
+             * of the event target.
+             * @param path {string|string[]} Datastore path capturing event.
+             * @param eventName {string} Name of event to subscribe to.
+             * @param pPath {string[]} Datastore path processing event.
+             * @param handler {function} Event handler.
+             */
+            delegate: function (path, eventName, pPath, handler) {
+                var match = flock.query ? flock.query.match : flock.path.match;
 
-            if (typeof meta === 'object') {
-                handlers = meta.handlers;
+                function fullHandler(event, data) {
+                    if (match(event.target, pPath)) {
+                        // when target path matches passed path
+                        return handler.apply(this, arguments);
+                    }
+                    return undefined;
+                }
+
+                // subscribing modified handler instead of actual one
+                self.subscribe.call(lookup, path, eventName, fullHandler);
+            },
+
+            /**
+             * Unsubscribes from datastore event.
+             * @param path {string|string[]} Datastore path.
+             * @param [eventName] {string} Name of event to subscribe to.
+             * @param [handler] {function} Event handler.
+             */
+            unsubscribe: function (path, eventName, handler) {
+                // serializing path when necessary
+                path = path instanceof Array ?
+                    path.join('.') :
+                    path;
+
+                // obtaining handlers for all event on current path
+                var handlers = lookup[path],
+                    i;
+
                 if (typeof handlers === 'object') {
                     if (typeof handler === 'function') {
                         // removing specified handler from among handlers
-                        if (typeof handlers === 'object' &&
-                            typeof eventName === 'string'
-                            ) {
-                            handlers = handlers[eventName];
+                        handlers = handlers[eventName];
+                        if (typeof handlers === 'object') {
                             for (i = 0; i < handlers.length; i++) {
                                 if (handlers[i] === handler) {
                                     handlers.splice(i, 1);
@@ -127,44 +134,51 @@ flock.event = (function (u_single, u_path, u_utils, u_live) {
                         }
                     } else if (typeof eventName === 'string') {
                         // removing all handlers for a specific event
-                        if (typeof handlers === 'object' &&
-                            handlers.hasOwnProperty(eventName)
-                            ) {
-                            delete handlers[eventName];
-                        }
+                        delete handlers[eventName];
                     } else {
                         // removing all handlers altogether
-                        delete meta.handlers;
+                        delete lookup[path];
                     }
                 }
-            } else {
-                throw "flock.event.unsubscribe: " + u_live.ERROR_NONTRAVERSABLE;
-            }
-        },
+            },
 
-        /**
-         * Triggers event on specified datastore path.
-         * @param node {object} Datastore node.
-         * @param eventName {string} Name of event to subscribe to.
-         * @param [options] {object} Options.
-         * @param [options.data] {object} Custom data to be passed to event handlers.
-         * @param [options.target] {object} Custom target node.
-         * @throws {string} On untraversable node.
-         */
-        trigger: function (node, eventName, options) {
-            // default options
-            options = options || {};
-            options.target = options.target || node;
+            /**
+             * Triggers event on specified datastore path.
+             * @param path {string|string[]} Datastore path.
+             * @param eventName {string} Name of event to subscribe to.
+             * @param [options] {object} Options.
+             * @param [options.data] {object} Custom data to be passed to event handlers.
+             * @param [options.target] {string} Custom target path to be passed along event.
+             */
+            trigger: function (path, eventName, options) {
+                var
+                    // string representation of path
+                    spath = path instanceof Array ?
+                        path.join('.') :
+                        path,
 
-            var meta = node[u_live.metaKey()],
-                event,
-                handlers,
-                i;
+                    // array representation of path
+                    apath = typeof path === 'string' ?
+                        path.split('.') :
+                        path instanceof Array ?
+                            path.concat([]) :
+                            path,
 
-            if (typeof meta === 'object') {
-                handlers = (meta.handlers || {})[eventName];
-                if (typeof handlers === 'object') {
+                    // handler lookups
+                    events = lookup[spath],
+                    handlers,
+
+                    event, i;
+
+                // default target is the trigger path
+                options = options || {};
+                options.target = options.target || spath;
+
+                if (typeof events === 'object' &&
+                    events[eventName] instanceof Array
+                    ) {
                     // calling handlers for event
+                    handlers = events[eventName];
                     for (i = 0; i < handlers.length; i++) {
                         event = {
                             name: eventName,
@@ -178,173 +192,120 @@ flock.event = (function (u_single, u_path, u_utils, u_live) {
                 }
 
                 // bubbling event up the datastore tree
-                if (typeof meta.parent === 'object') {
-                    self.trigger(meta.parent, eventName, options);
+                if (apath.length > 0 && spath !== '') {
+                    apath.pop();
+                    spath = apath.join('.');
+                    self.trigger(spath, eventName, options);
                 }
-            } else {
-                throw "flock.event.trigger: " + u_live.ERROR_NONTRAVERSABLE;
-            }
-        },
+            },
 
-        /**
-         * Sets a singe value on the given datastore path and triggers an event.
-         * @param node {object} Datastore node.
-         * @param path {string|Array} Datastore path.
-         * @param value {object} Value to set on path
-         * @param [options] {object} Options.
-         * @param [options.data] {object} Custom data to be passed to event handler.
-         * @param [options.trigger] {boolean} Whether to trigger. Default: true.
-         */
-        set: function (node, path, value, options) {
-            options = options || {};
-            path = u_path.normalize(path);
+            /**
+             * Sets a singe value on the given datastore path and triggers an event.
+             * @param path {string|Array} Datastore path.
+             * @param value {object} Value to set on path
+             * @param [options] {object} Options.
+             * @param [options.data] {object} Custom data to be passed to event handler.
+             * @param [options.trigger] {boolean} Whether to trigger. Default: true.
+             */
+            set: function (path, value, options) {
+                options = options || {};
+                path = $path.normalize(path);
 
-            // storing 'before' node
-            var before = u_single.get(node, path),
-                after,
-                parent;
+                // storing 'before' node
+                var before = $single.get(root, path),
+                    after;
 
-            // setting value
-            parent = u_live.set(node, path, value);
+                // setting value
+                $single.set(root, path, value);
 
-            // acquiring 'after' node
-            after = u_single.get(node, path);
-
-            // triggering event
-            if (options.trigger !== false) {
-                self.trigger(
-                    parent,
-                    typeof before === 'undefined' ?
-                        events.EVENT_ADD :
-                        events.EVENT_CHANGE,
-                    {
-                        data: {
-                            before: before,
-                            after: after,
-                            name: path[path.length - 1],
-                            data: options.data
-                        }
-                    }
-                );
-            }
-
-            return parent;
-        },
-
-        /**
-         * Removes a single node from the datastore and triggers an event.
-         * @param node {object} Datastore node.
-         * @param path {string|Array} Datastore path.
-         * @param [options] {object} Options.
-         * @param [options.data] {object} Custom data to be passed to event handler.
-         * @param [options.trigger] {boolean} Whether to trigger. Default: true.
-         */
-        unset: function (node, path, options) {
-            options = options || {};
-
-            // storing 'before' node
-            var before = u_single.get(node, path),
-                removed;
-
-            if (typeof before !== 'undefined') {
-                removed = u_single.unset(node, path);
+                // acquiring 'after' node
+                after = $single.get(root, path);
 
                 // triggering event
                 if (options.trigger !== false) {
                     self.trigger(
-                        removed.parent,
-                        events.EVENT_REMOVE,
+                        path,
+                        typeof before === 'undefined' ?
+                            events.EVENT_ADD :
+                            events.EVENT_CHANGE,
                         {
-                            name: removed.name,
-                            before: before,
-                            data: options.data
+                            data: {
+                                before: before,
+                                after: after,
+                                name: path[path.length - 1],
+                                data: options.data
+                            }
                         }
                     );
                 }
-            }
+            },
 
-            return removed;
-        },
+            /**
+             * Removes a single node from the datastore and triggers an event.
+             * @param path {string|Array} Datastore path.
+             * @param [options] {object} Options.
+             * @param [options.data] {object} Custom data to be passed to event handler.
+             * @param [options.trigger] {boolean} Whether to trigger. Default: true.
+             */
+            unset: function (path, options) {
+                options = options || {};
 
-        /**
-         * Removes a node from the datastore. Cleans up empty parent nodes
-         * until the first non-empty ancestor node. Then triggers an event.
-         * @param node {object} Datastore node.
-         * @param path {string|Array} Datastore path.
-         * @param [options] {object} Options.
-         * @param [options.data] {object} Custom data to be passed to event handler.
-         * @param [options.trigger] {boolean} Whether to trigger. Default: true.
-         * @returns {object|boolean} Parent of removed node.
-         */
-        cleanup: function (node, path, options) {
-            options = options || {};
+                // storing 'before' node
+                var before = $single.get(root, path);
 
-            // storing 'before' node
-            var before = u_single.get(node, path),
-                removed;
+                if (typeof before !== 'undefined') {
+                    $single.unset(root, path);
 
-            if (typeof before !== 'undefined') {
-                removed = u_single.cleanup(node, path);
-
-                // triggering event
-                if (options.trigger !== false) {
-                    self.trigger(
-                        removed.parent,
-                        events.EVENT_REMOVE,
-                        {
-                            name: removed.name,
-                            before: before,
-                            data: options.data
-                        }
-                    );
-                }
-            }
-
-            return removed;
-        },
-
-        /**
-         * Increments value on the object's key.
-         * Triggers 'change' event.
-         * @param node {object} Owner object.
-         * @param key {string} Key representing numeric value.
-         * @param [value] {number} Value to add. Default: 1.
-         * @param [options] {object} Options.
-         * @param [options.data] {object} Custom data to be passed to event handler.
-         * @param [options.trigger] {boolean} Whether to trigger. Default: true.
-         */
-        add: function (node, key, value, options) {
-            options = options || {};
-
-            var before = node[key],
-                parent = u_single.add(node, key, value),
-                after = node[key];
-
-            if (typeof parent === 'object' &&
-                options.trigger !== false
-                ) {
-                self.trigger(
-                    parent,
-                    events.EVENT_CHANGE,
-                    {
-                        data: {
-                            before: before,
-                            after: after,
-                            name: key,
-                            data: options.data
-                        }
+                    // triggering event
+                    if (options.trigger !== false) {
+                        self.trigger(
+                            path,
+                            events.EVENT_REMOVE,
+                            {
+                                before: before,
+                                data: options.data
+                            }
+                        );
                     }
-                );
+                }
+            },
+
+            /**
+             * Removes a node from the datastore. Cleans up empty parent nodes
+             * until the first non-empty ancestor node. Then triggers an event.
+             * @param path {string|Array} Datastore path.
+             * @param [options] {object} Options.
+             * @param [options.data] {object} Custom data to be passed to event handler.
+             * @param [options.trigger] {boolean} Whether to trigger. Default: true.
+             * TODO: event should fire on topmost removed node
+             */
+            cleanup: function (path, options) {
+                options = options || {};
+
+                // storing 'before' node
+                var before = $single.get(root, path);
+
+                if (typeof before !== 'undefined') {
+                    $single.cleanup(root, path);
+
+                    // triggering event
+                    if (options.trigger !== false) {
+                        self.trigger(
+                            path,
+                            events.EVENT_REMOVE,
+                            {
+                                before: before,
+                                data: options.data
+                            }
+                        );
+                    }
+                }
             }
-        }
+        };
+
+        return self;
     };
-
-    // delegating errors
-    u_utils.delegate(self, events);
-    u_utils.delegate(self, errors);
-
-    return self;
-}(flock.single,
-    flock.path,
-    flock.utils,
-    flock.live));
+}(
+    flock.single,
+    flock.path
+));
