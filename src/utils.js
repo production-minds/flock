@@ -34,16 +34,13 @@ flock.utils = (function () {
         /**
          * Tests an object for having no (own) properties.
          * @param object {object} Test object.
-         * @param [ignoredKey] {string} Ignored key.
          * @returns {boolean}
          */
-        isEmpty: function (object, ignoredKey) {
+        isEmpty: function (object) {
             var result = true,
                 key;
             for (key in object) {
-                if (object.hasOwnProperty(key) &&
-                    key !== ignoredKey
-                    ) {
+                if (object.hasOwnProperty(key)) {
                     result = false;
                     break;
                 }
@@ -54,17 +51,14 @@ flock.utils = (function () {
         /**
          * Tests object for having exactly 1 (own) property
          * @param object {object} Test object.
-         * @param [ignoredKey] {string} Ignored key.
          * @returns {boolean}
          */
-        isSingle: function (object, ignoredKey) {
+        isSingle: function (object) {
             var result = false,
                 key,
                 count = 0;
             for (key in object) {
-                if (object.hasOwnProperty(key) &&
-                    key !== ignoredKey
-                    ) {
+                if (object.hasOwnProperty(key)) {
                     result = ++count === 1;
                     if (count > 1) {
                         break;
@@ -111,14 +105,11 @@ flock.utils = (function () {
         /**
          * Retrieves the first available property of an object.
          * @param object {object} Test object.
-         * @param [ignoredKey] {string} Ignored key.
          */
-        firstKey: function (object, ignoredKey) {
+        firstKey: function (object) {
             var key;
             for (key in object) {
-                if (object.hasOwnProperty(key) &&
-                    key !== ignoredKey
-                    ) {
+                if (object.hasOwnProperty(key)) {
                     return key;
                 }
             }
@@ -127,15 +118,12 @@ flock.utils = (function () {
         /**
          * Extracts an object's key.
          * @param object {object} Test object.
-         * @param [ignoredKey] {string} Ignored key.
          */
-        keys: function (object, ignoredKey) {
+        keys: function (object) {
             var key,
                 result = [];
             for (key in object) {
-                if (object.hasOwnProperty(key) &&
-                    key !== ignoredKey
-                    ) {
+                if (object.hasOwnProperty(key)) {
                     result.push(key);
                 }
             }
@@ -145,15 +133,12 @@ flock.utils = (function () {
         /**
          * Extracts an object's values.
          * @param object {object} Test object.
-         * @param [ignoredKey] {string} Ignored key.
          */
-        values: function (object, ignoredKey) {
+        values: function (object) {
             var key,
                 result = [];
             for (key in object) {
-                if (object.hasOwnProperty(key) &&
-                    key !== ignoredKey
-                    ) {
+                if (object.hasOwnProperty(key)) {
                     result.push(object[key]);
                 }
             }

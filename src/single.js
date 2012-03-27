@@ -3,14 +3,8 @@
  */
 /*global flock */
 
-flock.single = (function (u_utils, u_path) {
-    var errors, self;
-
-    errors = {
-        ERROR_INVALIDNODE: "Invalid node."
-    };
-
-    self = {
+flock.single = (function ($utils, $path) {
+    var self = {
         //////////////////////////////
         // Control
 
@@ -21,7 +15,7 @@ flock.single = (function (u_utils, u_path) {
          */
         get: function (node, path) {
             if (typeof node === 'object' && node !== null) {
-                path = u_path.normalize(path);
+                path = $path.normalize(path);
 
                 var key;
 
@@ -47,7 +41,7 @@ flock.single = (function (u_utils, u_path) {
          */
         set: function (node, path, value) {
             value = value || {};
-            path = u_path.normalize(path);
+            path = $path.normalize(path);
 
             var key,
                 name = path.pop();
@@ -88,7 +82,7 @@ flock.single = (function (u_utils, u_path) {
          * @returns {object} Object with name and parent of removed node.
          */
         unset: function (node, path) {
-            var tpath = u_path.normalize(path),
+            var tpath = $path.normalize(path),
                 name = tpath.pop(),
                 parent = self.get(node, tpath);
 
@@ -113,18 +107,18 @@ flock.single = (function (u_utils, u_path) {
          * @returns {object|boolean} Object with name and parent of removed node.
          */
         cleanup: function (node, path) {
-            path = u_path.normalize(path);
+            path = $path.normalize(path);
 
             var key,
                 lastMulti = {
                     parent: node,
-                    name: u_utils.firstKey(node)
+                    name: $utils.firstKey(node)
                 };
 
             while (path.length) {
                 key = path.shift();
                 if (node.hasOwnProperty(key)) {
-                    if (!u_utils.isSingle(node, u_path.ignoredKey())) {
+                    if (!$utils.isSingle(node)) {
                         lastMulti = {
                             parent: node,
                             name: key
@@ -155,21 +149,18 @@ flock.single = (function (u_utils, u_path) {
          * @example See unit test.
          */
         map: function (node) {
-            var ignoredKey = u_path.ignoredKey(),
-                result = {},
+            var result = {},
                 paths = [],
                 item, path, last,
                 i;
 
             // normalizing passed paths
             for (i = 1; i < arguments.length; i++) {
-                paths.push(u_path.normalize(arguments[i]));
+                paths.push($path.normalize(arguments[i]));
             }
 
             for (item in node) {
-                if (node.hasOwnProperty(item) &&
-                    item !== ignoredKey
-                    ) {
+                if (node.hasOwnProperty(item)) {
                     if (typeof node[item] === 'object') {
                         path = [];
                         for (i = 0; i < paths.length - 1; i++) {
@@ -177,8 +168,6 @@ flock.single = (function (u_utils, u_path) {
                         }
                         last = paths[paths.length - 1];
                         self.set(result, path, self.get(node, [item].concat(last)));
-                    } else {
-                        throw "flock.single.map: " + errors.ERROR_INVALIDNODE;
                     }
                 }
             }
@@ -186,9 +175,6 @@ flock.single = (function (u_utils, u_path) {
             return result;
         }
     };
-
-    // delegating errors
-    u_utils.delegate(self, errors);
 
     return self;
 }(flock.utils,

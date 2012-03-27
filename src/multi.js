@@ -3,7 +3,7 @@
  */
 /*global flock */
 
-flock.multi = (function (u_constants, u_utils, u_path, u_query) {
+flock.multi = (function ($constants, $utils, $path, $query) {
     var errors, privates, self;
 
     errors = {
@@ -23,13 +23,8 @@ flock.multi = (function (u_constants, u_utils, u_path, u_query) {
          * @this {object} Traversal state object.
          */
          node: function (key, i, obj, depth) {
-            var ignoredKey = u_path.ignoredKey(),
-                value,
+            var value,
                 state = this;
-
-            if (ignoredKey && key === ignoredKey) {
-                return false;
-            }
 
             if (i < state.last) {
                 // current node has children, burrowing one level deeper
@@ -43,24 +38,24 @@ flock.multi = (function (u_constants, u_utils, u_path, u_query) {
                     value = obj[key];
                     if (state.options.undef || typeof value !== 'undefined') {
                         switch (state.options.mode) {
-                        case u_constants.VALUES:
+                        case $constants.VALUES:
                             // collecting value from nodes
                             state.result.push(value);
                             break;
-                        case u_constants.KEYS:
+                        case $constants.KEYS:
                             // collecting key from node
                             state.result.push(key);
                             break;
-                        case u_constants.BOTH:
+                        case $constants.BOTH:
                             // collecting key AND value from node
                             // WARNING: new values with same key overwrite old
                             state.result[key] = value;
                             break;
-                        case u_constants.DEL:
+                        case $constants.DEL:
                             // deleting node
                             delete obj[key];
                             break;
-                        case u_constants.COUNT:
+                        case $constants.COUNT:
                             // counting node
                             state.result++;
                             break;
@@ -181,13 +176,13 @@ flock.multi = (function (u_constants, u_utils, u_path, u_query) {
          */
         query: function (node, path, options) {
             options = options || {};
-            path = u_query.normalize(path);
+            path = $query.normalize(path);
 
             // setting defaults
             if (typeof options.value === 'undefined' &&
                 typeof options.mode === 'undefined'
                 ) {
-                options.mode = u_constants.VALUES;
+                options.mode = $constants.VALUES;
             }
 
             var state;
@@ -215,7 +210,7 @@ flock.multi = (function (u_constants, u_utils, u_path, u_query) {
     };
 
     // delegating errors
-    u_utils.delegate(self, errors);
+    $utils.delegate(self, errors);
 
     return self;
 }(flock.constants,

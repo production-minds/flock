@@ -41,12 +41,10 @@
 
         equal(u_utils.isEmpty({}), true, "Empty object tested for empty");
         equal(u_utils.isEmpty({foo: "bar"}), false, "Non-empty object tested for empty");
-        equal(u_utils.isEmpty({foo: "bar"}, 'foo'), true, "Non-empty object with ignored key tested for empty");
 
         equal(u_utils.isSingle({}), false, "Empty object tested for single");
         equal(u_utils.isSingle({foo: "bar"}), true, "Single-property object tested for single");
         equal(u_utils.isSingle({foo: "bar", what: "eva"}), false, "Multi-property object tested for single");
-        equal(u_utils.isSingle({foo: "bar", what: "eva"}, 'foo'), true, "Multi-property object with ignored key tested for single");
 
         equal(u_utils.isNull(0), false, "Number is not null");
         equal(u_utils.isNull(null), true, "Null is null");
@@ -66,12 +64,9 @@
 
         equal(u_utils.firstKey({foo: "bar"}), 'foo', "First property of an object");
         ok(typeof u_utils.firstKey({}) === 'undefined', "First property of an empty object");
-        ok(typeof u_utils.firstKey({foo: "bar"}, 'foo') === 'undefined', "First property of an object with ignored key");
 
         deepEqual(u_utils.keys({foo: "bar", hello: "world"}), ['foo', 'hello'], "Key extraction");
-        deepEqual(u_utils.keys({foo: "bar", hello: "world"}, 'hello'), ['foo'], "Key extraction with ignored key");
         deepEqual(u_utils.values({foo: "bar", hello: "world"}), ['bar', 'world'], "Value extraction");
-        deepEqual(u_utils.values({foo: "bar", hello: "world"}, 'hello'), ['bar'], "Value extraction with ignored key");
     });
 
     test("Delegation", function () {
