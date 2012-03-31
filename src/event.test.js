@@ -16,25 +16,25 @@
             }
         },
 
-        // handler lookup buffer
-        event = $event.call({root: function () {return root;}});
+        // mock datastore object
+        mock = {root: function () {return root;}};
 
     test("Subscription", function () {
         function testHandler() { }
 
-        event.subscribe('hello.world', 'testEvent', testHandler);
-        event.subscribe('hello', 'otherEvent', testHandler);
-        equal(event.lookup()['hello.world']['testEvent'][0], testHandler, "Event handler added");
-        equal(event.lookup()['hello']['otherEvent'][0], testHandler, "Other event handler added");
+        $event.subscribe.call(mock, 'hello.world', 'testEvent', testHandler);
+        $event.subscribe.call(mock, 'hello', 'otherEvent', testHandler);
+        equal(mock.lookup['hello.world']['testEvent'][0], testHandler, "Event handler added");
+        equal(mock.lookup['hello']['otherEvent'][0], testHandler, "Other event handler added");
 
-        event.unsubscribe('hello.world', 'testEvent', testHandler);
-        equal(event.lookup()['hello.world']['testEvent'].length, 0, "Event handler removed");
+        $event.unsubscribe.call(mock, 'hello.world', 'testEvent', testHandler);
+        equal(mock.lookup['hello.world']['testEvent'].length, 0, "Event handler removed");
 
-        event.unsubscribe('hello.world', 'testEvent');
-        equal(event.lookup()['hello.world'].hasOwnProperty('testEvent'), false, "Event handlers removed for given event");
+        $event.unsubscribe.call(mock, 'hello.world', 'testEvent');
+        equal(mock.lookup['hello.world'].hasOwnProperty('testEvent'), false, "Event handlers removed for given event");
 
-        event.unsubscribe('hello.world');
-        equal(event.lookup().hasOwnProperty('hello.world'), false, "All event handlers removed from node");
+        $event.unsubscribe.call(mock, 'hello.world');
+        equal(mock.lookup.hasOwnProperty('hello.world'), false, "All event handlers removed from node");
     });
 
     test("Triggering", function () {
@@ -52,11 +52,11 @@
             return false;
         }
 
-        event.subscribe('hello.world', 'testEvent', testHandler);
-        event.subscribe('hello', 'testEvent', otherHandler);
-        event.subscribe('', 'testEvent', topHandler);
-        event.subscribe('hello.world', 'otherEvent', otherHandler);
-        event.subscribe('hello.world', 'argTesterEvent', function (event, data) {
+        $event.subscribe.call(mock, 'hello.world', 'testEvent', testHandler);
+        $event.subscribe.call(mock, 'hello', 'testEvent', otherHandler);
+        $event.subscribe.call(mock, '', 'testEvent', topHandler);
+        $event.subscribe.call(mock, 'hello.world', 'otherEvent', otherHandler);
+        $event.subscribe.call(mock, 'hello.world', 'argTesterEvent', function (event, data) {
             equal(event.name, 'argTesterEvent', "Event name passed to handler checks out");
             deepEqual(event.target, 'hello.world', "Event target passed to handler checks out");
             equal(data, eventData, "Custom event data passed to handler checks out");
@@ -64,36 +64,36 @@
         });
 
         // checking arguments passed to event handler
-        event.trigger('hello.world', 'argTesterEvent', {data: eventData});
+        $event.trigger.call(mock, 'hello.world', 'argTesterEvent', {data: eventData});
 
         i = j = 0;
-        event.trigger('hello.world', 'otherEvent');
+        $event.trigger.call(mock, 'hello.world', 'otherEvent');
         equal(j, 1, "Event triggered on single subscribed node");
 
         i = j = k = 0;
-        event.trigger('hello.world', 'testEvent');
+        $event.trigger.call(mock, 'hello.world', 'testEvent');
         equal(i, 1, "Event triggered on source node (source and parent both have handlers)");
         equal(j, 1, "> Event bubbled to parent");
         equal(k, 1, "> Event bubbled to root");
 
         j = 0;
-        event.unsubscribe('hello.world');
-        event.trigger('hello.world', 'testEvent');
+        $event.unsubscribe.call(mock, 'hello.world');
+        $event.trigger.call(mock, 'hello.world', 'testEvent');
         equal(j, 1, "Event bubbled to parent from non-capturing node");
 
         i = j = 0;
-        event.subscribe('hello.world', 'testEvent', stopHandler);
-        event.trigger('hello.world', 'testEvent');
+        $event.subscribe.call(mock, 'hello.world', 'testEvent', stopHandler);
+        $event.trigger.call(mock, 'hello.world', 'testEvent');
         equal(i, 1, "Event triggered on source node with handler that returns false");
         equal(j, 0, "> Event didn't bubble bubble to parent");
 
         // one-time events
         i = 0;
-        event.unsubscribe('hello.world');
-        event.once('hello.world', 'testEvent', testHandler);
-        event.trigger('hello.world', 'testEvent');
+        $event.unsubscribe.call(mock, 'hello.world');
+        $event.once.call(mock, 'hello.world', 'testEvent', testHandler);
+        $event.trigger.call(mock, 'hello.world', 'testEvent');
         equal(i, 1, "One-time event triggered handler");
-        event.trigger('hello.world', 'testEvent');
+        $event.trigger.call(mock, 'hello.world', 'testEvent');
         equal(i, 1, "Handler triggered no more upon one-time event");
     });
 
@@ -103,26 +103,26 @@
         function testHandler() { i++; }
 
         i = 0;
-        event.delegate('', 'testEvent', ['hello', 'world'], testHandler);
-        event.trigger('hello.world', 'testEvent');
+        $event.delegate.call(mock, '', 'testEvent', ['hello', 'world'], testHandler);
+        $event.trigger.call(mock, 'hello.world', 'testEvent');
 
         equal(i, 1, "Delegated event fired when triggered on right path");
-        event.trigger('hello', 'testEvent');
+        $event.trigger.call(mock, 'hello', 'testEvent');
         equal(i, 1, "Delegated event did not fire when triggered on wrong path");
 
         // path patterns
         i = 0;
-        event.unsubscribe('', 'testEvent');
-        event.delegate('', 'otherEvent', ['*', 'world'], testHandler);
-        event.trigger('hello.world', 'otherEvent');
+        $event.unsubscribe.call(mock, '', 'testEvent');
+        $event.delegate.call(mock, '', 'otherEvent', ['*', 'world'], testHandler);
+        $event.trigger.call(mock, 'hello.world', 'otherEvent');
         equal(i, 1, "Pattern delegated event fired on matching node");
-        event.trigger('bybye.world', 'otherEvent');
+        $event.trigger.call(mock, 'bybye.world', 'otherEvent');
         equal(i, 2, "Pattern delegated event fired on other matching node");
     });
 
     test("Setting", function () {
         // checking handler arguments
-        event.subscribe('', 'change', function (event, data) {
+        $event.subscribe.call(mock, '', 'change', function (event, data) {
             equal(event.name, 'change', "Event name ok.");
             deepEqual(event.target, 'hello.world.center', "Event target ok");
             deepEqual(data.before, "!!", "Before value ok");
@@ -130,8 +130,8 @@
             deepEqual(data.name, 'center', "Node name ok");
             equal(data.data, "customData", "Custom data ok");
         });
-        event.set(['hello', 'world', 'center'], "!!!", {data: "customData"});
-        event.unsubscribe('', 'change');
+        $event.set.call(mock, ['hello', 'world', 'center'], "!!!", {data: "customData"});
+        $event.unsubscribe.call(mock, '', 'change');
 
         var i;
 
@@ -139,28 +139,28 @@
 
         function onAdd() { i += 2; }
 
-        event.subscribe('', 'add', onAdd);
-        event.subscribe('', 'change', onChange);
+        $event.subscribe.call(mock, '', 'add', onAdd);
+        $event.subscribe.call(mock, '', 'change', onChange);
 
         // testing data update
         i = 0;
-        event.set(['hello', 'world', 'center'], {data: "blah"});
+        $event.set.call(mock, ['hello', 'world', 'center'], {data: "blah"});
         equal(i, 1, "Update triggers 'change' event");
 
         i = 0;
-        event.set(['hello', 'world', 'center'], "boo", {data: {foo: "bar"}});
+        $event.set.call(mock, ['hello', 'world', 'center'], "boo", {data: {foo: "bar"}});
 
         i = 0;
-        event.set(['hello', 'world', 'center'], "boo", {trigger: false});
-        equal(i, 0, "Non-triggering call to event.set()");
+        $event.set.call(mock, ['hello', 'world', 'center'], "boo", {trigger: false});
+        equal(i, 0, "Non-triggering call to $event.set.call(mock, )");
 
         // testing data addition
         i = 0;
-        event.set(['hello', 'world', 'whatever'], "blah");
+        $event.set.call(mock, ['hello', 'world', 'whatever'], "blah");
         equal(i, 2, "Addition triggers 'add' event");
 
-        event.unsubscribe('', 'add', onAdd);
-        event.unsubscribe('', 'change', onChange);
+        $event.unsubscribe.call(mock, '', 'add', onAdd);
+        $event.unsubscribe.call(mock, '', 'change', onChange);
     });
 
     test("Unsetting", function () {
@@ -168,18 +168,18 @@
 
         function onRemove() { i++; }
 
-        event.subscribe('', 'remove', onRemove);
+        $event.subscribe.call(mock, '', 'remove', onRemove);
 
         i = 0;
         root.hello.world.center = "a";
-        event.unset(['hello', 'world', 'center']);
+        $event.unset.call(mock, ['hello', 'world', 'center']);
         equal(i, 1, "Unsetting triggers 'remove' event");
 
         root.hello.world.center = "a";
-        event.unset(['hello', 'world', 'center'], {trigger: false});
-        equal(i, 1, "Non-triggering call to event.unset()");
+        $event.unset.call(mock, ['hello', 'world', 'center'], {trigger: false});
+        equal(i, 1, "Non-triggering call to $event.unset.call(mock, )");
 
-        event.unset(['hello', 'world', 'center']);
+        $event.unset.call(mock, ['hello', 'world', 'center']);
         equal(i, 1, "Unsetting non-existing path doesn't trigger event");
     });
 }(flock.event));
