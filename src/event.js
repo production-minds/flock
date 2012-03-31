@@ -7,6 +7,7 @@
 
 flock.event = (function ($single, $path) {
     var
+        // regular event types
         events = {
             EVENT_CHANGE: 'change',
             EVENT_ADD: 'add',
@@ -17,31 +18,11 @@ flock.event = (function ($single, $path) {
 
     self = {
         //////////////////////////////
-        // Getters
-
-        /**
-         * Looks up event handler.
-         * @param path {string} Datastore path.
-         * @param eventName {string} Name of event.
-         * @returns {object|function[]|function} Collection of event handlers.
-         */
-        lookup: function (path, eventName) {
-            var lookup = this.lookup = this.lookup || {};
-
-            if (typeof eventName === 'string') {
-                return lookup[path][eventName];
-            } else if (typeof path === 'string') {
-                return lookup[path];
-            } else {
-                return lookup;
-            }
-        },
-
-        //////////////////////////////
         // Control
 
         /**
          * Subscribes to datastore event.
+         * @this {flock} Flock object instance.
          * @param path {string|string[]} Datastore path.
          * @param eventName {string} Name of event to subscribe to.
          * @param handler {function} Event handler.
@@ -53,17 +34,20 @@ flock.event = (function ($single, $path) {
                 path;
 
             // obtaining reference to handler collection
-            var lookup = this.lookup = this.lookup || {},
+            var lookup = this.eventLookup = this.eventLookup || {},
                 events = lookup[path] = lookup[path] || {},
                 handlers = events[eventName] = events[eventName] || [];
 
             // adding handler to collection
             handlers.push(handler);
+
+            return this;
         },
 
         /**
          * Subscribes to datastore event, unsubscribes after first time
          * being triggered.
+         * @this {flock} Flock object instance.
          * @param path {string|string[]} Datastore path.
          * @param eventName {string} Name of event to subscribe to.
          * @param handler {function} Event handler.
@@ -81,12 +65,15 @@ flock.event = (function ($single, $path) {
 
             // subscribing modified handler instead of actual one
             self.subscribe.call(that, path, eventName, fullHandler);
+
+            return this;
         },
 
         /**
          * Delegates event to a specified path. Event is captured on the node,
          * but handler is not called unless argument 'path' matches the path
          * of the event target.
+         * @this {flock} Flock object instance.
          * @param path {string|string[]} Datastore path capturing event.
          * @param eventName {string} Name of event to subscribe to.
          * @param pPath {string[]} Datastore path processing event.
@@ -105,10 +92,13 @@ flock.event = (function ($single, $path) {
 
             // subscribing modified handler instead of actual one
             self.subscribe.call(this, path, eventName, fullHandler);
+
+            return this;
         },
 
         /**
          * Unsubscribes from datastore event.
+         * @this {flock} Flock object instance.
          * @param path {string|string[]} Datastore path.
          * @param [eventName] {string} Name of event to subscribe to.
          * @param [handler] {function} Event handler.
@@ -120,7 +110,7 @@ flock.event = (function ($single, $path) {
                 path;
 
             // obtaining handlers for all event on current path
-            var lookup = this.lookup = this.lookup || {},
+            var lookup = this.eventLookup = this.eventLookup || {},
                 handlers = lookup[path],
                 i;
 
@@ -144,10 +134,13 @@ flock.event = (function ($single, $path) {
                     delete lookup[path];
                 }
             }
+
+            return this;
         },
 
         /**
          * Triggers event on specified datastore path.
+         * @this {flock} Flock object instance.
          * @param path {string|string[]} Datastore path.
          * @param eventName {string} Name of event to subscribe to.
          * @param [options] {object} Options.
@@ -155,7 +148,7 @@ flock.event = (function ($single, $path) {
          * @param [options.target] {string} Custom target path to be passed along event.
          */
         trigger: function (path, eventName, options) {
-            this.lookup = this.lookup || {};
+            this.eventLookup = this.eventLookup || {};
 
             var
                 // string representation of path
@@ -171,7 +164,7 @@ flock.event = (function ($single, $path) {
                         path,
 
                 // handler lookups
-                events = this.lookup[spath],
+                events = this.eventLookup[spath],
                 handlers,
 
                 event, i;
@@ -203,10 +196,13 @@ flock.event = (function ($single, $path) {
                 spath = apath.join('.');
                 self.trigger.call(this, spath, eventName, options);
             }
+
+            return this;
         },
 
         /**
          * Sets a singe value on the given datastore path and triggers an event.
+         * @this {flock} Flock object instance.
          * @param path {string|Array} Datastore path.
          * @param value {object} Value to set on path
          * @param [options] {object} Options.
@@ -246,10 +242,13 @@ flock.event = (function ($single, $path) {
                     }
                 );
             }
+
+            return this;
         },
 
         /**
          * Removes a single node from the datastore and triggers an event.
+         * @this {flock} Flock object instance.
          * @param path {string|Array} Datastore path.
          * @param [options] {object} Options.
          * @param [options.data] {object} Custom data to be passed to event handler.
@@ -278,11 +277,14 @@ flock.event = (function ($single, $path) {
                     );
                 }
             }
+
+            return this;
         },
 
         /**
          * Removes a node from the datastore. Cleans up empty parent nodes
          * until the first non-empty ancestor node. Then triggers an event.
+         * @this {flock} Flock object instance.
          * @param path {string|Array} Datastore path.
          * @param [options] {object} Options.
          * @param [options.data] {object} Custom data to be passed to event handler.
@@ -312,6 +314,8 @@ flock.event = (function ($single, $path) {
                     );
                 }
             }
+
+            return this;
         }
     };
 

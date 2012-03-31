@@ -24,17 +24,17 @@
 
         $event.subscribe.call(mock, 'hello.world', 'testEvent', testHandler);
         $event.subscribe.call(mock, 'hello', 'otherEvent', testHandler);
-        equal(mock.lookup['hello.world']['testEvent'][0], testHandler, "Event handler added");
-        equal(mock.lookup['hello']['otherEvent'][0], testHandler, "Other event handler added");
+        equal(mock.eventLookup['hello.world']['testEvent'][0], testHandler, "Event handler added");
+        equal(mock.eventLookup['hello']['otherEvent'][0], testHandler, "Other event handler added");
 
         $event.unsubscribe.call(mock, 'hello.world', 'testEvent', testHandler);
-        equal(mock.lookup['hello.world']['testEvent'].length, 0, "Event handler removed");
+        equal(mock.eventLookup['hello.world']['testEvent'].length, 0, "Event handler removed");
 
         $event.unsubscribe.call(mock, 'hello.world', 'testEvent');
-        equal(mock.lookup['hello.world'].hasOwnProperty('testEvent'), false, "Event handlers removed for given event");
+        equal(mock.eventLookup['hello.world'].hasOwnProperty('testEvent'), false, "Event handlers removed for given event");
 
         $event.unsubscribe.call(mock, 'hello.world');
-        equal(mock.lookup.hasOwnProperty('hello.world'), false, "All event handlers removed from node");
+        equal(mock.eventLookup.hasOwnProperty('hello.world'), false, "All event handlers removed from node");
     });
 
     test("Triggering", function () {
