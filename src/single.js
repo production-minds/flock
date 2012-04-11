@@ -10,81 +10,86 @@ flock.single = (function ($utils, $path) {
 
         /**
          * Gets a single value from the given datastore path.
-         * @param node {object} Datastore root.
-         * @param path {string|Array} Datastore path.
+         * @this {object} Source node.
+         * @param path {string|string[]} Datastore path.
          */
-        get: function (node, path) {
-            if (typeof node === 'object' && node !== null) {
-                path = $path.normalize(path);
+        get: function (path) {
+            var root = this,
+                key;
 
-                var key;
+            path = $path.normalize(path);
 
-                while (path.length) {
-                    key = path.shift();
-                    if (node.hasOwnProperty(key)) {
-                        node = node[key];
-                    } else {
-                        return;
-                    }
+            while (path.length) {
+                key = path.shift();
+                if (root.hasOwnProperty(key)) {
+                    root = root[key];
+                } else {
+                    return;
                 }
-
-                return node;
             }
+
+            return root;
         },
 
         /**
          * Sets a singe value on the given datastore path.
-         * @param node {object} Datastore node.
-         * @param path {string|Array} Datastore path.
+         * @this {object} Source node.
+         * @param path {string|string[]} Datastore path.
          * @param [value] {object} Value to set on path
          * @returns {object} Parent of the changed node.
          */
-        set: function (node, path, value) {
+        set: function (path, value) {
             value = value || {};
-            path = $path.normalize(path);
 
-            var key,
-                name = path.pop();
+            var root = this,
+                tpath = $path.normalize(path),
+                name = tpath.pop(),
+                key;
 
-            while (path.length) {
-                key = path.shift();
-                if (!node.hasOwnProperty(key)) {
-                    node[key] = {};
+            while (tpath.length) {
+                key = tpath.shift();
+                if (!root.hasOwnProperty(key)) {
+                    root[key] = {};
                 }
-                node = node[key];
+                root = root[key];
             }
 
             // setting value as leaf node
-            node[name] = value;
+            root[name] = value;
 
-            return node;
+            return this;
         },
 
         /**
          * Increments value on the object's key.
-         * @param node {object} Owner object.
-         * @param key {string} Key representing numeric value.
+         * @this {object} Source node.
+         * @param path {string|string[]} Datastore path.
          * @param [value] {number} Optional value to add to key.
          */
-        add: function (node, key, value) {
-            if (node.hasOwnProperty(key) &&
-                typeof node[key] === 'number'
+        add: function (path, value) {
+            var tpath = $path.normalize(path),
+                key = tpath.pop(),
+                parent = self.get.call(this, tpath);
+
+            if (parent.hasOwnProperty(key) &&
+                typeof parent[key] === 'number'
                 ) {
-                node[key] += value || 1;
-                return node;
+                parent[key] += value || 1;
             }
+
+            return this;
         },
 
         /**
          * Removes a single node from the datastore.
-         * @param node {object} Datastore node.
-         * @param path {string|Array} Datastore path.
+         * @this {object} Source node.
+         * @param path {string|string[]} Datastore path.
          * @returns {object} Object with name and parent of removed node.
          */
-        unset: function (node, path) {
+        unset: function (path) {
             var tpath = $path.normalize(path),
                 name = tpath.pop(),
-                parent = self.get(node, tpath);
+                parent = self.get.call(this, tpath);
 
             if (typeof parent === 'object' &&
                 parent.hasOwnProperty(name)
@@ -93,38 +98,36 @@ flock.single = (function ($utils, $path) {
                 delete parent[name];
             }
 
-            return {
-                parent: parent,
-                name: name
-            };
+            return this;
         },
 
         /**
          * Removes a node from the datastore. Cleans up empty parent nodes
          * until the first non-empty ancestor node.
-         * @param node {object} Datastore node.
-         * @param path {string|Array} Datastore path.
+         * @this {object} Source node.
+         * @param path {string|string[]} Datastore path.
+         * @param result {object} Buffer holding output data.
          * @returns {object|boolean} Object with name and parent of removed node.
          */
-        cleanup: function (node, path) {
-            path = $path.normalize(path);
-
-            var key,
+        cleanup: function (path, result) {
+            var tpath = $path.normalize(path),
+                root = this,
                 lastMulti = {
-                    parent: node,
-                    name: $utils.firstKey(node)
-                };
+                    parent: root,
+                    name: $utils.firstKey(root)
+                },
+                key;
 
-            while (path.length) {
-                key = path.shift();
-                if (node.hasOwnProperty(key)) {
-                    if (!$utils.isSingle(node)) {
+            while (tpath.length) {
+                key = tpath.shift();
+                if (root.hasOwnProperty(key)) {
+                    if (!$utils.isSingle(root)) {
                         lastMulti = {
-                            parent: node,
+                            parent: root,
                             name: key
                         };
                     }
-                    node = node[key];
+                    root = root[key];
                 } else {
                     // invalid path, nothing to unset
                     return false;
@@ -134,13 +137,17 @@ flock.single = (function ($utils, $path) {
             // cutting back to last multi-property node
             delete lastMulti.parent[lastMulti.name];
 
-            // returning with affected node
-            return lastMulti;
+            if (typeof result === 'object') {
+                result.parent = lastMulti.parent;
+                result.name = lastMulti.name;
+            }
+
+            return this;
         },
 
         /**
          * Transforms node structure by taking descendant values as keys in the output.
-         * @param node {object} Source node. Object with uniform child objects.
+         * @this {object} Source node. Object with uniform child objects.
          * Additional parameters specify the paths (in array or string notation) from whence
          * to take the transformed node's keys.
          * Empty array as last path will put the original child node as leaf node.
@@ -148,14 +155,15 @@ flock.single = (function ($utils, $path) {
          * @throws {string} When immediate child nodes are not objects.
          * @example See unit test.
          */
-        map: function (node) {
-            var result = {},
+        map: function () {
+            var node = this,
+                result = {},
                 paths = [],
                 item, path, last,
                 i;
 
-            // normalizing passed paths
-            for (i = 1; i < arguments.length; i++) {
+            // normalizing paths
+            for (i = 0; i < arguments.length; i++) {
                 paths.push($path.normalize(arguments[i]));
             }
 
@@ -164,10 +172,10 @@ flock.single = (function ($utils, $path) {
                     if (typeof node[item] === 'object') {
                         path = [];
                         for (i = 0; i < paths.length - 1; i++) {
-                            path.push(self.get(node, [item].concat(paths[i])));
+                            path.push(self.get.call(node, [item].concat(paths[i])));
                         }
                         last = paths[paths.length - 1];
-                        self.set(result, path, self.get(node, [item].concat(last)));
+                        self.set.call(result, path, self.get.call(node, [item].concat(last)));
                     }
                 }
             }
