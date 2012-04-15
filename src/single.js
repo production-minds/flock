@@ -91,12 +91,8 @@ flock.single = (function ($utils, $path) {
                 name = tpath.pop(),
                 parent = self.get.call(this, tpath);
 
-            if (typeof parent === 'object' &&
-                parent.hasOwnProperty(name)
-                ) {
-                // removing node node
-                delete parent[name];
-            }
+            // removing leaf node
+            delete parent[name];
 
             return this;
         },
@@ -106,43 +102,22 @@ flock.single = (function ($utils, $path) {
          * until the first non-empty ancestor node.
          * @this {object} Source node.
          * @param path {string|string[]} Datastore path.
-         * @param result {object} Buffer holding output data.
          * @returns {object|boolean} Object with name and parent of removed node.
          */
-        cleanup: function (path, result) {
+        cleanup: function (path) {
             var tpath = $path.normalize(path),
-                root = this,
-                lastMulti = {
-                    parent: root,
-                    name: $utils.firstKey(root)
-                },
-                key;
+                key, parent;
 
-            while (tpath.length) {
-                key = tpath.shift();
-                if (root.hasOwnProperty(key)) {
-                    if (!$utils.isSingle(root)) {
-                        lastMulti = {
-                            parent: root,
-                            name: key
-                        };
-                    }
-                    root = root[key];
-                } else {
-                    // invalid path, nothing to unset
-                    return false;
-                }
-            }
+            do {
+                key = tpath.pop();
+                parent = self.get.call(this, tpath);
+                delete parent[key];
+            } while (tpath.length && $utils.isEmpty(parent));
 
-            // cutting back to last multi-property node
-            delete lastMulti.parent[lastMulti.name];
-
-            if (typeof result === 'object') {
-                result.parent = lastMulti.parent;
-                result.name = lastMulti.name;
-            }
-
-            return this;
+            return {
+                parent: parent,
+                key: key
+            };
         },
 
         /**

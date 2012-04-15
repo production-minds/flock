@@ -85,7 +85,7 @@
                 }
             },
 
-            removed = {};
+            removed;
 
         $single.cleanup.call(data, ['blaaaaah']);
 
@@ -110,9 +110,9 @@
             }
         }, "Single node removed");
 
-        $single.cleanup.call(data, ['hello', 'world', 'center'], removed);
+        removed = $single.cleanup.call(data, ['hello', 'world', 'center']);
 
-        deepEqual(removed, {parent: data.hello, name: 'world'}, "Cleanup returns name and parent of removed node");
+        deepEqual(removed, {parent: data.hello, key: 'world'}, "Cleanup returns name and parent of removed node");
 
         deepEqual(data, {
             hello: {
