@@ -15,29 +15,29 @@
         };
 
     test("Getting", function () {
-        equal($single.get.call(data, ['hi']), "There!", "Getting ordinal value");
-        equal($single.get.call(data, ['hello', 'world']), data.hello.world, "Getting datastore node");
-        equal($single.get.call(data, 'hello.world'), data.hello.world, "Getting datastore node w/ path in string notation");
-        ok(typeof $single.get.call(data, [
+        equal($single.get(data, ['hi']), "There!", "Getting ordinal value");
+        equal($single.get(data, ['hello', 'world']), data.hello.world, "Getting datastore node");
+        equal($single.get(data, 'hello.world'), data.hello.world, "Getting datastore node w/ path in string notation");
+        ok(typeof $single.get(data, [
             'hello', 'yall'
         ]) === 'undefined', "Attempting to get from invalid path returns undefined");
     });
 
     test("Setting", function () {
-        $single.set.call(data, ['hello', 'world', 'test'], "test");
+        $single.set(data, ['hello', 'world', 'test'], "test");
         equal(data.hello.world.test, "test", "Value set on existing node");
 
-        $single.set.call(data, ['hello', 'yall', 'folks'], "test");
-        equal($single.get.call(data, 'hello.yall.folks'), "test", "Value set on non-existing path");
+        $single.set(data, ['hello', 'yall', 'folks'], "test");
+        equal($single.get(data, 'hello.yall.folks'), "test", "Value set on non-existing path");
 
-        $single.set.call(data, ['hello', 'yall', 'folks']);
-        deepEqual($single.get.call(data, 'hello.yall.folks'), {}, "Default value for set is empty object");
+        $single.set(data, ['hello', 'yall', 'folks']);
+        deepEqual($single.get(data, 'hello.yall.folks'), {}, "Default value for set is empty object");
     });
 
     test("Math", function () {
-        $single.add.call(data, 'foo');
+        $single.add(data, 'foo');
         equal(data.foo, 6, "Default increment is 1");
-        $single.add.call(data, 'foo', 4);
+        $single.add(data, 'foo', 4);
         equal(data.foo, 10, "Custom increment");
     });
 
@@ -53,7 +53,7 @@
                 }
             };
 
-        $single.unset.call(data, ['hello', 'world', 'center']);
+        $single.unset(data, ['hello', 'world', 'center']);
         deepEqual(data, {
             hi: 'There!',
             hello: {
@@ -63,7 +63,7 @@
             }
         }, "Single ordinal node removed");
 
-        $single.unset.call(data, ['hello', 'all']);
+        $single.unset(data, ['hello', 'all']);
         deepEqual(data, {
             hi: 'There!',
             hello: {
@@ -83,11 +83,9 @@
                     },
                     all: "hey"
                 }
-            },
+            };
 
-            removed;
-
-        $single.cleanup.call(data, ['blaaaaah']);
+        $single.cleanup(data, ['blaaaaah']);
 
         deepEqual(data, {
             hi: 'There!',
@@ -99,7 +97,7 @@
             }
         }, "Attempting to remove invalid node doesn't change data");
 
-        $single.cleanup.call(data, ['hi']);
+        $single.cleanup(data, ['hi']);
 
         deepEqual(data, {
             hello: {
@@ -110,9 +108,7 @@
             }
         }, "Single node removed");
 
-        removed = $single.cleanup.call(data, ['hello', 'world', 'center']);
-
-        deepEqual(removed, {parent: data.hello, key: 'world'}, "Cleanup returns name and parent of removed node");
+        $single.cleanup(data, ['hello', 'world', 'center']);
 
         deepEqual(data, {
             hello: {
@@ -120,7 +116,7 @@
             }
         }, "Node removed with all empty ancestors");
 
-        $single.cleanup.call(data, ['hello', 'all']);
+        $single.cleanup(data, ['hello', 'all']);
         deepEqual(data, {}, "Remaining nodes removed with all empty ancestors");
     });
 
@@ -141,7 +137,7 @@
                 }
             };
 
-        deepEqual($single.map.call(data, ['foo'], ['bar']), {
+        deepEqual($single.map(data, ['foo'], ['bar']), {
             hello: {
                 test: "world"
             },
@@ -150,12 +146,12 @@
             }
         }, "First level values turned into two level lookup");
 
-        deepEqual($single.map.call(data, ['foo'], ['bar', 'test']), {
+        deepEqual($single.map(data, ['foo'], ['bar', 'test']), {
             hello: "world",
             lorem: "ipsum"
         }, "Second level values turned into one level lookup");
 
-        deepEqual($single.map.call(data, ['foo'], ['bar', 'test'], []), {
+        deepEqual($single.map(data, ['foo'], ['bar', 'test'], []), {
             "hello": {
                 "world": {
                     "foo": "hello",
