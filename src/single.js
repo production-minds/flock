@@ -4,7 +4,13 @@
 /*global flock */
 
 flock.single = (function ($utils, $path) {
-    var self = {
+    var self,
+        ctor;
+
+    //////////////////////////////
+    // Static
+
+    self = {
         /**
          * Gets a single value from the given datastore path.
          * @param root {object} Source node.
@@ -161,7 +167,25 @@ flock.single = (function ($utils, $path) {
         }
     };
 
-    return self;
+    //////////////////////////////
+    // Instance
+
+    ctor = function (root) {
+        var args = [root];
+        return {
+            get: $utils.genMethod(self.get, args),
+            set: $utils.genMethod(self.set, args),
+            add: $utils.genMethod(self.add, args),
+            unset: $utils.genMethod(self.unset, args),
+            cleanup: $utils.genMethod(self.cleanup, args),
+            map: $utils.genMethod(self.map, args)
+        };
+    };
+
+    // adding static methods
+    $utils.delegate(ctor, self);
+
+    return ctor;
 }(
     flock.utils,
     flock.path
