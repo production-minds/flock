@@ -61,8 +61,6 @@ flock.event = (function ($single, $path, $utils) {
 
             // subscribing modified handler instead of actual one
             self.subscribe(lookup, path, eventName, fullHandler);
-
-            return this;
         },
 
         /**
@@ -127,8 +125,6 @@ flock.event = (function ($single, $path, $utils) {
                     delete lookup[path];
                 }
             }
-
-            return this;
         },
 
         /**
@@ -231,8 +227,6 @@ flock.event = (function ($single, $path, $utils) {
                     }
                 );
             }
-
-            return this;
         },
 
         /**
@@ -266,8 +260,6 @@ flock.event = (function ($single, $path, $utils) {
                     );
                 }
             }
-
-            return this;
         },
 
         /**
@@ -279,7 +271,6 @@ flock.event = (function ($single, $path, $utils) {
          * @param [options] {object} Options.
          * @param [options.data] {object} Custom data to be passed to event handler.
          * @param [options.trigger] {boolean} Whether to trigger. Default: true.
-         * TODO: event should fire on topmost removed node
          */
         cleanup: function (lookup, root, path, options) {
             options = options || {};
@@ -303,8 +294,6 @@ flock.event = (function ($single, $path, $utils) {
                     );
                 }
             }
-
-            return this;
         }
     };
 
