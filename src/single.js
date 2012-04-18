@@ -173,6 +173,9 @@ flock.single = (function ($utils, $path) {
     ctor = function (root) {
         var args = [root];
         return {
+            // getters
+            root: function () { return root; },
+
             get: $utils.genMethod(self.get, args),
             set: $utils.genMethod(self.set, args),
             add: $utils.genMethod(self.add, args),
