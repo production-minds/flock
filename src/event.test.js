@@ -19,7 +19,8 @@
         event = $event(root);
 
     test("Subscription", function () {
-        function testHandler() { }
+        function testHandler() {
+        }
 
         event.subscribe('hello.world', 'testEvent', testHandler);
         event.subscribe('hello', 'otherEvent', testHandler);
@@ -40,11 +41,17 @@
         var i = 0, j = 0, k = 0,
             eventData = "eventData";
 
-        function testHandler() { i++; }
+        function testHandler() {
+            i++;
+        }
 
-        function otherHandler() { j++; }
+        function otherHandler() {
+            j++;
+        }
 
-        function topHandler() { k++; }
+        function topHandler() {
+            k++;
+        }
 
         function stopHandler() {
             i++;
@@ -99,7 +106,9 @@
     test("Delegation", function () {
         var i;
 
-        function testHandler() { i++; }
+        function testHandler() {
+            i++;
+        }
 
         i = 0;
         event.delegate('', 'testEvent', ['hello', 'world'], testHandler);
@@ -119,14 +128,94 @@
         equal(i, 2, "Pattern delegated event fired on other matching node");
     });
 
+    test("Getting", function () {
+        event.subscribe('', 'access', function (event, data) {
+            equal(event.name, 'access', "Event name (access) ok.");
+            equal(event.target, 'hello.world.center', "Event target ok.");
+            equal(data.value, '!!', "Value ok");
+            equal(data.data, 'test', "Custom data ok.");
+        });
+
+        event.get('hello.world.center', {data: 'test'});
+
+        event.unsubscribe('', 'access');
+
+        event.subscribe('', 'access', function (event, data) {
+            equal(typeof data.value, 'undefined', "Value ok on non-existing node");
+        });
+
+        event.get('hello.world.blahblah');
+
+        event.unsubscribe('', 'access');
+    });
+
+    test("Access", function () {
+        event.subscribe('hello.world.center', 'access', function (event, data) {
+            var handler = data.data;
+
+            handler(event.target, data.value);
+            return false;
+        });
+
+        event.get('hello.world.center', function (path, value) {
+            equal(path, 'hello.world.center', "Path is ok.");
+            equal(value, '!!', "Value is ok.");
+        });
+
+        event.unsubscribe('hello.world.center', 'access');
+    });
+
+    /**
+     * Exemplifies loading data on demand and returning with it.
+     */
+    test("On demand loading", function () {
+        /**
+         * Pretends to load data associated with a cache path.
+         * @param path {string} Cache path.
+         * @param handler {function} Loader handler.
+         */
+        function mockLoader(path, handler) {
+            handler(path, 'blah');
+        }
+
+        // subscribing to access event
+        event.subscribe('hello.world', 'access', function (event, data) {
+            var handler = data.data;
+
+            if (typeof data.value === 'undefined') {
+                // loading data if value is empty
+                mockLoader(event.target, function (path, value) {
+                    handler(event.target, value);
+                });
+            } else {
+                handler(event.target, data.value);
+            }
+
+            // preventing further event propagation
+            return false;
+        });
+
+        // getting existing node
+        event.get('hello.world.center', function (path, value) {
+            equal(value, '!!', "Data node accessed at existing node");
+        });
+
+        // attempting to load data from non-existing node
+        event.get('hello.world.blahblah', function (path, value) {
+            equal(value, 'blah', "Data node loaded and accessed on previously missing node");
+        });
+
+        event.unsubscribe('hello.world', 'access');
+    });
+
     test("Setting", function () {
         // checking handler arguments
         event.subscribe('', 'change', function (event, data) {
             equal(event.name, 'change', "Event name ok.");
-            deepEqual(event.target, 'hello.world.center', "Event target ok");
-            deepEqual(data.before, "!!", "Before value ok");
-            deepEqual(data.after, "!!!", "After value ok");
-            deepEqual(data.name, 'center', "Node name ok");
+            equal(event.target, 'hello.world.center', "Event target ok");
+            equal(data.before, "!!", "Before value ok");
+            equal(data.after, "!!!", "After value ok");
+            equal(data.name, 'center', "Node name ok");
             equal(data.data, "customData", "Custom data ok");
         });
         event.set(['hello', 'world', 'center'], "!!!", {data: "customData"});
@@ -134,9 +223,13 @@
 
         var i;
 
-        function onChange() { i++; }
+        function onChange() {
+            i++;
+        }
 
-        function onAdd() { i += 2; }
+        function onAdd() {
+            i += 2;
+        }
 
         event.subscribe('', 'add', onAdd);
         event.subscribe('', 'change', onChange);
@@ -165,7 +258,9 @@
     test("Unsetting", function () {
         var i;
 
-        function onRemove() { i++; }
+        function onRemove() {
+            i++;
+        }
 
         event.subscribe('', 'remove', onRemove);
 

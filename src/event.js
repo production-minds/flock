@@ -9,18 +9,46 @@ flock.event = (function ($single, $path, $utils) {
     var
         // regular event types
         events = {
+            EVENT_ACCESS: 'access',
             EVENT_CHANGE: 'change',
             EVENT_ADD: 'add',
             EVENT_REMOVE: 'remove'
         },
 
+        privates,
         self,
         ctor;
 
     //////////////////////////////
     // Static
 
+    privates = {
+        /**
+         * Preprocesses options object for use in event methods.
+         * @param options {object} Arbitrary.
+         * @return {object} Properly formatted options object.
+         */
+        preprocessOptions: function (options) {
+            switch (typeof options) {
+            case 'undefined':
+                // empty object when no options object is specified
+                return {};
+            case 'object':
+                // options argument when it is of object type
+                return options;
+            default:
+                //
+                return {
+                    data: options
+                };
+            }
+        }
+    };
+
     self = {
+        // private methods
+        privates: privates,
+
         /**
          * Subscribes to datastore event.
          * @param lookup {object} Event lookup.
@@ -157,7 +185,7 @@ flock.event = (function ($single, $path, $utils) {
                 event, i;
 
             // default target is the trigger path
-            options = options || {};
+            options = privates.preprocessOptions(options);
             options.target = options.target || spath;
 
             if (typeof events === 'object' &&
@@ -186,6 +214,37 @@ flock.event = (function ($single, $path, $utils) {
         },
 
         /**
+         * Retrieves a single value from the given datastore path and triggers an event.
+         * @param lookup {object} Event lookup.
+         * @param root {object} Source node.
+         * @param path {string|Array} Datastore path.
+         * @param [options] {object} Options.
+         * @param [options.data] {object} Custom data to be passed to event handler.
+         * @param [options.trigger] {boolean} Whether to trigger. Default: true.
+         */
+        get: function (lookup, root, path, options) {
+            options = privates.preprocessOptions(options);
+
+            var result = $single.get(root, path);
+
+            if (options.trigger !== false) {
+                self.trigger(
+                    lookup,
+                    path,
+                    events.EVENT_ACCESS,
+                    {
+                        data: {
+                            value: result,
+                            data: options.data
+                        }
+                    }
+                );
+            }
+
+            return result;
+        },
+
+        /**
          * Sets a singe value on the given datastore path and triggers an event.
          * @param lookup {object} Event lookup.
          * @param root {object} Source node.
@@ -196,7 +255,7 @@ flock.event = (function ($single, $path, $utils) {
          * @param [options.trigger] {boolean} Whether to trigger. Default: true.
          */
         set: function (lookup, root, path, value, options) {
-            options = options || {};
+            options = privates.preprocessOptions(options);
             path = $path.normalize(path);
 
             // storing 'before' node
@@ -239,7 +298,7 @@ flock.event = (function ($single, $path, $utils) {
          * @param [options.trigger] {boolean} Whether to trigger. Default: true.
          */
         unset: function (lookup, root, path, options) {
-            options = options || {};
+            options = privates.preprocessOptions(options);
 
             // storing 'before' node
             var before = $single.get(root, path);
@@ -273,7 +332,7 @@ flock.event = (function ($single, $path, $utils) {
          * @param [options.trigger] {boolean} Whether to trigger. Default: true.
          */
         cleanup: function (lookup, root, path, options) {
-            options = options || {};
+            options = privates.preprocessOptions(options);
 
             // storing 'before' node
             var before = $single.get(root, path);
@@ -307,14 +366,22 @@ flock.event = (function ($single, $path, $utils) {
 
         return {
             // getters
-            root: function () { return root; },
-            lookup: function () { return lookup; },
+            root: function () {
+                return root;
+            },
+            lookup: function () {
+                return lookup;
+            },
 
+            // event methods
             subscribe: $utils.genMethod(self.subscribe, lookupArgs),
             once: $utils.genMethod(self.once, lookupArgs),
             delegate: $utils.genMethod(self.delegate, lookupArgs),
             unsubscribe: $utils.genMethod(self.unsubscribe, lookupArgs),
             trigger: $utils.genMethod(self.trigger, lookupArgs),
+
+            // datastore methods
+            get: $utils.genMethod(self.get, rootArgs),
             set: $utils.genMethod(self.set, rootArgs),
             unset: $utils.genMethod(self.unset, rootArgs),
             cleanup: $utils.genMethod(self.cleanup, rootArgs)
