@@ -28,7 +28,7 @@ var flock;
         // shortcuts
         var u_utils = flock.utils,
             u_single = flock.single,
-            u_event = flock.event,
+            u_event = flock.evented,
             u_multi = flock.multi,
             genMethod = u_utils.genMethod,
             nodeMapper = options.nochaining ? undefined : flock,

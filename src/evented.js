@@ -3,7 +3,7 @@
  */
 /*global flock */
 
-flock.event = (function ($single, $path, $utils) {
+flock.evented = (function ($single, $path, $utils) {
     var
         // regular event types
         events = {
