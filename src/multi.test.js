@@ -286,11 +286,12 @@
     });
 
     test("String index", function () {
-        var data = {};
+        var data = {},
+            single = $single(data);
 
         // sets string for full text search
         function addWord(name) {
-            $single.set(data, name.split(''), {name: name});
+            single.set(name.split(''), {name: name});
         }
 
         // setting up cache
