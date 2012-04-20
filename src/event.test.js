@@ -1,5 +1,5 @@
 /*global flock, module, test, ok, equal, deepEqual, raises */
-(function ($event) {
+(function ($event, $single) {
     module("Event");
 
     var
@@ -16,7 +16,8 @@
             }
         },
 
-        event = $event(root);
+        // creating evented object explicitly from flock.single
+        event = $event(root, $single);
 
     test("Subscription", function () {
         function testHandler() {
@@ -276,4 +277,7 @@
         event.unset(['hello', 'world', 'center']);
         equal(i, 1, "Unsetting non-existing path doesn't trigger event");
     });
-}(flock.event));
+}(
+    flock.event,
+    flock.single
+));
