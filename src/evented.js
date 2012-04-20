@@ -73,7 +73,7 @@ flock.evented = (function ($single, $path, $utils) {
              * @param eventName {string} Name of event to subscribe to.
              * @param handler {function} Event handler.
              */
-            subscribe: function (path, eventName, handler) {
+            on: function (path, eventName, handler) {
                 // serializing path when necessary
                 path = path instanceof Array ?
                     path.join('.') :
@@ -85,6 +85,8 @@ flock.evented = (function ($single, $path, $utils) {
 
                 // adding handler to collection
                 handlers.push(handler);
+
+                return this;
             },
 
             /**
@@ -94,17 +96,19 @@ flock.evented = (function ($single, $path, $utils) {
              * @param eventName {string} Name of event to subscribe to.
              * @param handler {function} Event handler.
              */
-            once: function (path, eventName, handler) {
+            one: function (path, eventName, handler) {
                 function fullHandler() {
                     // calling actual handler
                     handler.apply(this, arguments);
 
                     // unsubscribing from event immediately
-                    self.unsubscribe(path, eventName, fullHandler);
+                    self.off(path, eventName, fullHandler);
                 }
 
                 // subscribing modified handler instead of actual one
-                self.subscribe(path, eventName, fullHandler);
+                self.on(path, eventName, fullHandler);
+
+                return this;
             },
 
             /**
@@ -128,7 +132,9 @@ flock.evented = (function ($single, $path, $utils) {
                 }
 
                 // subscribing modified handler instead of actual one
-                self.subscribe(path, eventName, fullHandler);
+                self.on(path, eventName, fullHandler);
+
+                return this;
             },
 
             /**
@@ -137,7 +143,7 @@ flock.evented = (function ($single, $path, $utils) {
              * @param [eventName] {string} Name of event to subscribe to.
              * @param [handler] {function} Event handler.
              */
-            unsubscribe: function (path, eventName, handler) {
+            off: function (path, eventName, handler) {
                 // serializing path when necessary
                 path = path instanceof Array ?
                     path.join('.') :
@@ -167,6 +173,8 @@ flock.evented = (function ($single, $path, $utils) {
                         delete lookup[path];
                     }
                 }
+
+                return this;
             },
 
             /**
@@ -224,6 +232,8 @@ flock.evented = (function ($single, $path, $utils) {
                     spath = apath.join('.');
                     self.trigger(spath, eventName, options);
                 }
+
+                return this;
             },
 
             //////////////////////////////
@@ -239,7 +249,7 @@ flock.evented = (function ($single, $path, $utils) {
             get: function (path, options) {
                 options = privates.preprocessOptions(options);
 
-                var result = base.get(path);
+                var result = base.get.call(this, path);
 
                 if (options.trigger !== false) {
                     self.trigger(
@@ -296,6 +306,8 @@ flock.evented = (function ($single, $path, $utils) {
                         }
                     );
                 }
+
+                return this;
             },
 
             /**
@@ -326,6 +338,8 @@ flock.evented = (function ($single, $path, $utils) {
                         );
                     }
                 }
+
+                return this;
             },
 
             /**
@@ -357,6 +371,8 @@ flock.evented = (function ($single, $path, $utils) {
                         );
                     }
                 }
+
+                return this;
             }
         });
 

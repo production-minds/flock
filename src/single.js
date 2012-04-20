@@ -42,11 +42,14 @@ flock.single = (function ($path, $utils) {
                         result = result[key];
                     } else {
                         // returning undefined when path doesn't exist
-                        return undefined;
+                        result = undefined;
+                        break;
                     }
                 }
 
-                return result;
+                return !this.wrap ?
+                    result :
+                    this.wrap(result);
             },
 
             /**
@@ -79,6 +82,8 @@ flock.single = (function ($path, $utils) {
 
                 // setting value as leaf node
                 parent[key] = value;
+
+                return this;
             },
 
             /**
@@ -97,6 +102,8 @@ flock.single = (function ($path, $utils) {
                     // incrementing value on path assuming it exists and is number
                     parent[key] += value || 1;
                 }
+
+                return this;
             },
 
             /**
@@ -110,6 +117,8 @@ flock.single = (function ($path, $utils) {
 
                 // removing leaf node
                 delete parent[key];
+
+                return this;
             },
 
             /**
@@ -132,6 +141,8 @@ flock.single = (function ($path, $utils) {
                     // continue when remaining leaf node is empty
                     tpath.length && $utils.isEmpty(parent)
                     );
+
+                return this;
             }
         };
 

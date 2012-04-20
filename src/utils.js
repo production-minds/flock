@@ -184,7 +184,7 @@ flock.utils = (function () {
                     }
                 }
             }
-            return flock;
+            return dest;
         }
     };
 

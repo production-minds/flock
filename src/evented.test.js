@@ -23,18 +23,18 @@
         function testHandler() {
         }
 
-        ds.subscribe('hello.world', 'testEvent', testHandler);
-        ds.subscribe('hello', 'otherEvent', testHandler);
+        ds.on('hello.world', 'testEvent', testHandler);
+        ds.on('hello', 'otherEvent', testHandler);
         equal(ds.lookup()['hello.world']['testEvent'][0], testHandler, "Event handler added");
         equal(ds.lookup()['hello']['otherEvent'][0], testHandler, "Other event handler added");
 
-        ds.unsubscribe('hello.world', 'testEvent', testHandler);
+        ds.off('hello.world', 'testEvent', testHandler);
         equal(ds.lookup()['hello.world']['testEvent'].length, 0, "Event handler removed");
 
-        ds.unsubscribe('hello.world', 'testEvent');
+        ds.off('hello.world', 'testEvent');
         equal(ds.lookup()['hello.world'].hasOwnProperty('testEvent'), false, "Event handlers removed for given event");
 
-        ds.unsubscribe('hello.world');
+        ds.off('hello.world');
         equal(ds.lookup().hasOwnProperty('hello.world'), false, "All event handlers removed from node");
     });
 
@@ -59,11 +59,11 @@
             return false;
         }
 
-        ds.subscribe('hello.world', 'testEvent', testHandler);
-        ds.subscribe('hello', 'testEvent', otherHandler);
-        ds.subscribe('', 'testEvent', topHandler);
-        ds.subscribe('hello.world', 'otherEvent', otherHandler);
-        ds.subscribe('hello.world', 'argTesterEvent', function (event, data) {
+        ds.on('hello.world', 'testEvent', testHandler);
+        ds.on('hello', 'testEvent', otherHandler);
+        ds.on('', 'testEvent', topHandler);
+        ds.on('hello.world', 'otherEvent', otherHandler);
+        ds.on('hello.world', 'argTesterEvent', function (event, data) {
             equal(event.name, 'argTesterEvent', "Event name passed to handler checks out");
             deepEqual(event.target, 'hello.world', "Event target passed to handler checks out");
             equal(data, eventData, "Custom event data passed to handler checks out");
@@ -84,20 +84,20 @@
         equal(k, 1, "> Event bubbled to root");
 
         j = 0;
-        ds.unsubscribe('hello.world');
+        ds.off('hello.world');
         ds.trigger('hello.world', 'testEvent');
         equal(j, 1, "Event bubbled to parent from non-capturing node");
 
         i = j = 0;
-        ds.subscribe('hello.world', 'testEvent', stopHandler);
+        ds.on('hello.world', 'testEvent', stopHandler);
         ds.trigger('hello.world', 'testEvent');
         equal(i, 1, "Event triggered on source node with handler that returns false");
         equal(j, 0, "> Event didn't bubble bubble to parent");
 
         // one-time events
         i = 0;
-        ds.unsubscribe('hello.world');
-        ds.once('hello.world', 'testEvent', testHandler);
+        ds.off('hello.world');
+        ds.one('hello.world', 'testEvent', testHandler);
         ds.trigger('hello.world', 'testEvent');
         equal(i, 1, "One-time event triggered handler");
         ds.trigger('hello.world', 'testEvent');
@@ -121,7 +121,7 @@
 
         // path patterns
         i = 0;
-        ds.unsubscribe('', 'testEvent');
+        ds.off('', 'testEvent');
         ds.delegate('', 'otherEvent', ['*', 'world'], testHandler);
         ds.trigger('hello.world', 'otherEvent');
         equal(i, 1, "Pattern delegated event fired on matching node");
@@ -130,7 +130,7 @@
     });
 
     test("Getting", function () {
-        ds.subscribe('', 'access', function (event, data) {
+        ds.on('', 'access', function (event, data) {
             equal(event.name, 'access', "Event name (access) ok.");
             equal(event.target, 'hello.world.center', "Event target ok.");
             equal(data.value, '!!', "Value ok");
@@ -139,19 +139,19 @@
 
         ds.get('hello.world.center', {data: 'test'});
 
-        ds.unsubscribe('', 'access');
+        ds.off('', 'access');
 
-        ds.subscribe('', 'access', function (event, data) {
+        ds.on('', 'access', function (event, data) {
             equal(typeof data.value, 'undefined', "Value ok on non-existing node");
         });
 
         ds.get('hello.world.blahblah');
 
-        ds.unsubscribe('', 'access');
+        ds.off('', 'access');
     });
 
     test("Access", function () {
-        ds.subscribe('hello.world.center', 'access', function (event, data) {
+        ds.on('hello.world.center', 'access', function (event, data) {
             var handler = data.data;
 
             handler(event.target, data.value);
@@ -163,7 +163,7 @@
             equal(value, '!!', "Value is ok.");
         });
 
-        ds.unsubscribe('hello.world.center', 'access');
+        ds.off('hello.world.center', 'access');
     });
 
     /**
@@ -180,7 +180,7 @@
         }
 
         // subscribing to access event
-        ds.subscribe('hello.world', 'access', function (event, data) {
+        ds.on('hello.world', 'access', function (event, data) {
             var handler = data.data;
 
             if (typeof data.value === 'undefined') {
@@ -206,12 +206,12 @@
             equal(value, 'blah', "Data node loaded and accessed on previously missing node");
         });
 
-        ds.unsubscribe('hello.world', 'access');
+        ds.off('hello.world', 'access');
     });
 
     test("Setting", function () {
         // checking handler arguments
-        ds.subscribe('', 'change', function (event, data) {
+        ds.on('', 'change', function (event, data) {
             equal(event.name, 'change', "Event name ok.");
             equal(event.target, 'hello.world.center', "Event target ok");
             equal(data.before, "!!", "Before value ok");
@@ -220,7 +220,7 @@
             equal(data.data, "customData", "Custom data ok");
         });
         ds.set(['hello', 'world', 'center'], "!!!", {data: "customData"});
-        ds.unsubscribe('', 'change');
+        ds.off('', 'change');
 
         var i;
 
@@ -232,8 +232,8 @@
             i += 2;
         }
 
-        ds.subscribe('', 'add', onAdd);
-        ds.subscribe('', 'change', onChange);
+        ds.on('', 'add', onAdd);
+        ds.on('', 'change', onChange);
 
         // testing data update
         i = 0;
@@ -252,8 +252,8 @@
         ds.set(['hello', 'world', 'whatever'], "blah");
         equal(i, 2, "Addition triggers 'add' event");
 
-        ds.unsubscribe('', 'add', onAdd);
-        ds.unsubscribe('', 'change', onChange);
+        ds.off('', 'add', onAdd);
+        ds.off('', 'change', onChange);
     });
 
     test("Unsetting", function () {
@@ -263,7 +263,7 @@
             i++;
         }
 
-        ds.subscribe('', 'remove', onRemove);
+        ds.on('', 'remove', onRemove);
 
         i = 0;
         root.hello.world.center = "a";
