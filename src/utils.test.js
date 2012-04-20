@@ -74,23 +74,23 @@
             key, count;
 
         tmp = {};
-        u_utils.delegateProperty(tmp, data, 'hi');
+        u_utils.addProperty(tmp, data, 'hi');
         equal(tmp.hi, data.hi, "Delegating single property");
 
         raises(function () {
-            u_utils.delegateProperty(tmp, data, 'hi');
+            u_utils.addProperty(tmp, data, 'hi');
         }, "Attempting to overwrite existing property fails");
 
-        u_utils.delegateProperty(tmp, data, 'hi', true);
+        u_utils.addProperty(tmp, data, 'hi', true);
         equal(tmp.hi, data.hi, "Overwriting single property in silent mode");
 
         tmp = {};
-        u_utils.delegate(tmp, data);
+        u_utils.extend(tmp, data);
         deepEqual(tmp, data, "Delegating all properties");
 
         tmp = {};
         count = 0;
-        u_utils.delegate(tmp, data.hello, ['world', 'third']);
+        u_utils.extend(tmp, data.hello, ['world', 'third']);
         for (key in tmp) {
             if (tmp.hasOwnProperty(key)) {
                 count++;

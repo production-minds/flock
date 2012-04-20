@@ -60,7 +60,7 @@ flock.path = (function ($utils) {
     };
 
     // delegating errors
-    $utils.delegate(self, errors);
+    $utils.extend(self, errors);
 
     return self;
 }(flock.utils));

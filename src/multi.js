@@ -24,7 +24,7 @@ flock.multi = (function ($single, $constants, $utils, $path, $query) {
 
         var self = Object.create(base);
 
-        $utils.delegate(self, {
+        $utils.extend(self, {
             //////////////////////////////
             // Control
 
@@ -202,7 +202,7 @@ flock.multi = (function ($single, $constants, $utils, $path, $query) {
     };
 
     // delegating errors
-    $utils.delegate(ctor, errors);
+    $utils.extend(ctor, errors);
 
     return ctor;
 }(

@@ -56,7 +56,7 @@ flock.evented = (function ($single, $path, $utils) {
         var lookup = {},
             self = Object.create(base);
 
-        $utils.delegate(self, {
+        $utils.extend(self, {
             //////////////////////////////
             // Getters, setters
 

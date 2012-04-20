@@ -122,7 +122,7 @@ flock.query = (function ($constants, $utils) {
     };
 
     // delegating errors
-    $utils.delegate(self, errors);
+    $utils.extend(self, errors);
 
     return self;
 }(flock.constants,

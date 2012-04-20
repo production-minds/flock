@@ -5,7 +5,7 @@
  */
 /*global flock */
 
-flock.constants = (function (u_utils) {
+flock.constants = (function ($utils) {
     var self = {
         KEYS: 0,        // collect leaf keys
         VALUES: 1,      // collect leaf values
@@ -15,7 +15,7 @@ flock.constants = (function (u_utils) {
     };
 
     // delegating constants on flock object
-    u_utils.delegate(flock, self);
+    $utils.extend(flock, self);
 
     return self;
 }(flock.utils));

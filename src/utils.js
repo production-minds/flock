@@ -153,7 +153,7 @@ flock.utils = (function () {
          * @param [silent] {boolean} Silent mode. When true, overwrites existing property.
          * @throws {string} When destination property exists.
          */
-        delegateProperty: function (dest, source, key, silent) {
+        addProperty: function (dest, source, key, silent) {
             if (silent || !dest.hasOwnProperty(key)) {
                 dest[key] = source[key];
             } else {
@@ -169,18 +169,18 @@ flock.utils = (function () {
          * @param [silent] {boolean} Silent mode. When true, overwrites existing properties.
          * does not raise exception.
          */
-        delegate: function (dest, source, keys, silent) {
+        extend: function (dest, source, keys, silent) {
             var key, i;
             if (keys instanceof Array) {
                 // delegating specified properties
                 for (i = 0; i < keys.length; i++) {
-                    self.delegateProperty(dest, source, keys[i], silent);
+                    self.addProperty(dest, source, keys[i], silent);
                 }
             } else {
                 // delegating all properties
                 for (key in source) {
                     if (source.hasOwnProperty(key)) {
-                        self.delegateProperty(dest, source, key, silent);
+                        self.addProperty(dest, source, key, silent);
                     }
                 }
             }
