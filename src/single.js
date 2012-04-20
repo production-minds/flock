@@ -6,7 +6,7 @@
  */
 /*global flock */
 
-flock.single = (function ($path, $utils) {
+flock.single = (function ($node, $path, $utils) {
     //////////////////////////////
     // Class
 
@@ -15,7 +15,10 @@ flock.single = (function ($path, $utils) {
      * @param root {object} Source node.
      */
     var ctor = function (root) {
-        var self = {
+        var base = $node(root),
+            self = Object.create(base);
+
+        $utils.extend(self, {
             /**
              * Getter for datastore root
              */
@@ -139,12 +142,12 @@ flock.single = (function ($path, $utils) {
                     delete parent[key];
                 } while (
                     // continue when remaining leaf node is empty
-                    tpath.length && $utils.isEmpty(parent)
+                    tpath.length && $node(parent).isEmpty()
                     );
 
                 return this;
             }
-        };
+        });
 
         return self;
     };
@@ -199,6 +202,7 @@ flock.single = (function ($path, $utils) {
 
     return ctor;
 }(
+    flock.node,
     flock.path,
     flock.utils
 ));
