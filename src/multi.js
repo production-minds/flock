@@ -17,12 +17,10 @@ flock.multi = (function ($single, $constants, $utils, $path, $query) {
     /**
      * @class Multi-node querying behavior for datastore.
      * @param root {object} Source node.
-     * @param [base] {object} Optional base class. (Not instance!)
-     * @example
-     * var ds = flock.multi({}, flock.single);
+     * @param [base] {object} Optional base.
      */
     ctor = function (root, base) {
-        base = (base || $single)(root);
+        base = base || $single(root);
 
         var self = Object.create(base);
 
