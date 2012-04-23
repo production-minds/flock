@@ -14,7 +14,7 @@
             foo: 5
         },
 
-        single = $single(data);
+        single = $single(data, {nochaining: true});
 
     test("Getting", function () {
         equal(single.get(['hi']), "There!", "Getting ordinal value");
@@ -158,9 +158,11 @@
                         test: "ipsum"
                     }
                 }
-            };
+            },
+            
+            single = $single(data, {nochaining: true});
 
-        deepEqual($single.map(data, ['foo'], ['bar']), {
+        deepEqual(single.map(['foo'], ['bar']), {
             hello: {
                 test: "world"
             },
@@ -169,7 +171,7 @@
             }
         }, "First level values turned into two level lookup");
 
-        deepEqual($single.map(data, ['foo'], ['bar']), {
+        deepEqual(single.map(['foo'], ['bar']), {
             hello: {
                 test: "world"
             },
@@ -178,12 +180,12 @@
             }
         }, "- same with non-static");
 
-        deepEqual($single.map(data, ['foo'], ['bar', 'test']), {
+        deepEqual(single.map(['foo'], ['bar', 'test']), {
             hello: "world",
             lorem: "ipsum"
         }, "Second level values turned into one level lookup");
 
-        deepEqual($single.map(data, ['foo'], ['bar', 'test'], []), {
+        deepEqual(single.map(['foo'], ['bar', 'test'], []), {
             "hello": {
                 "world": {
                     "foo": "hello",

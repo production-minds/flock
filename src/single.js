@@ -13,12 +13,19 @@ flock.single = (function ($node, $path, $utils) {
     /**
      * @class Single node datastore behavior.
      * @param root {object} Source node.
+     * @param [options] {object}
+     * @param [options.nochaining] {boolean} Whether query methods are chainable.
      */
-    var ctor = function (root) {
+    var ctor = function (root, options) {
+        options = options || {};
+
         var base = $node(root),
             self = Object.create(base);
 
         $utils.extend(self, {
+            //////////////////////////////
+            // Getters, setters
+
             /**
              * Getter for datastore root
              */
@@ -26,12 +33,27 @@ flock.single = (function ($node, $path, $utils) {
                 return root;
             },
 
+            //////////////////////////////
+            // Utilities
+
+            /**
+             * Wraps node in datastore object.
+             * @param node {object} Datastore node.
+             */
+            wrap: function (node) {
+                return ctor(node);
+            },
+
+            //////////////////////////////
+            // Control
+
             /**
              * Gets a single value from the given datastore path.
              * @param path {string|string[]} Datastore path.
+             * @param [nochaining] {boolean} Whether method should return bare node.
              * @returns {object} Node on specified path.
              */
-            get: function (path) {
+            get: function (path, nochaining) {
                 var result = root,
                     tpath = $path.normalize(path),
                     key;
@@ -50,8 +72,8 @@ flock.single = (function ($node, $path, $utils) {
                     }
                 }
 
-                return !this.wrap ?
-                    result :
+                return nochaining || options.nochaining ?
+                    result:
                     this.wrap(result);
             },
 
@@ -97,7 +119,7 @@ flock.single = (function ($node, $path, $utils) {
             add: function (path, value) {
                 var tpath = $path.normalize(path),
                     key = tpath.pop(),
-                    parent = self.get(tpath);
+                    parent = self.get(tpath, true);
 
                 if (parent.hasOwnProperty(key) &&
                     typeof parent[key] === 'number'
@@ -116,7 +138,7 @@ flock.single = (function ($node, $path, $utils) {
             unset: function (path) {
                 var tpath = $path.normalize(path),
                     key = tpath.pop(),
-                    parent = self.get(tpath);
+                    parent = self.get(tpath, true);
 
                 // removing leaf node
                 delete parent[key];
@@ -138,7 +160,7 @@ flock.single = (function ($node, $path, $utils) {
                     key = tpath.pop();
 
                     // taking parent and removing leaf node
-                    parent = self.get(tpath);
+                    parent = self.get(tpath, true);
                     delete parent[key];
                 } while (
                     // continue when remaining leaf node is empty
@@ -146,58 +168,55 @@ flock.single = (function ($node, $path, $utils) {
                     );
 
                 return this;
+            },
+
+            /**
+             * Transforms node structure by taking descendant values as keys in the output.
+             * Additional parameters specify the paths (in array or string notation) from whence
+             * to take the transformed node's keys.
+             * Empty array as last path will put the original child node as leaf node.
+             * @returns {object} Transformed node.
+             */
+            map: function () {
+                var
+                    // source and destination buffers
+                    source = ctor(root),
+                    dest = this.wrap({}),
+
+                    // path buffer
+                    paths = [],
+
+                    // loop variables
+                    item, path, last,
+                    i;
+
+                // normalizing paths
+                for (i = 0; i < arguments.length; i++) {
+                    paths.push($path.normalize(arguments[i]));
+                }
+
+                // walking through all immediate child nodes
+                for (item in root) {
+                    if (root.hasOwnProperty(item)) {
+                        // constructing output path from data on input paths
+                        path = [];
+                        for (i = 0; i < paths.length - 1; i++) {
+                            path.push(source.get([item].concat(paths[i]), true));
+                        }
+                        last = paths[paths.length - 1];
+
+                        // storing node on last input path on constructed output path
+                        dest.set(path, source.get([item].concat(last), true));
+                    }
+                }
+
+                return options.nochaining ?
+                    dest.root() :
+                    dest;
             }
         });
 
         return self;
-    };
-
-    //////////////////////////////
-    // Static methods
-
-    /**
-     * Transforms node structure by taking descendant values as keys in the output.
-     * @param node {object} Source node. Object with uniform child objects.
-     * TODO: check whether node argument is a flock object and return dest instead of dest.root()
-     * Additional parameters specify the paths (in array or string notation) from whence
-     * to take the transformed node's keys.
-     * Empty array as last path will put the original child node as leaf node.
-     * @returns {object} Transformed node.
-     */
-    ctor.map = function (node) {
-        var
-            // source and destination buffers
-            source = ctor(node),
-            dest = ctor({}),
-
-            // path buffer
-            paths = [],
-
-            // loop variables
-            item, path, last,
-            i;
-
-        // normalizing paths
-        for (i = 1; i < arguments.length; i++) {
-            paths.push($path.normalize(arguments[i]));
-        }
-
-        // walking through all immediate child nodes
-        for (item in node) {
-            if (node.hasOwnProperty(item)) {
-                // constructing output path from data on input paths
-                path = [];
-                for (i = 0; i < paths.length - 1; i++) {
-                    path.push(source.get([item].concat(paths[i])));
-                }
-                last = paths[paths.length - 1];
-
-                // storing node on last input path on constructed output path
-                dest.set(path, source.get([item].concat(last)));
-            }
-        }
-
-        return dest.root();
     };
 
     return ctor;

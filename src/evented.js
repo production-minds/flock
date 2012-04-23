@@ -246,10 +246,10 @@ flock.evented = (function ($single, $path, $utils) {
              * @param [options.data] {object} Custom data to be passed to event handler.
              * @param [options.trigger] {boolean} Whether to trigger. Default: true.
              */
-            get: function (path, options) {
+            get: function (path, options, nochaining) {
                 options = privates.preprocessOptions(options);
 
-                var result = base.get.call(this, path);
+                var result = base.get.call(this, path, nochaining);
 
                 if (options.trigger !== false) {
                     self.trigger(
@@ -280,14 +280,14 @@ flock.evented = (function ($single, $path, $utils) {
                 path = $path.normalize(path);
 
                 // storing 'before' node
-                var before = base.get(path),
+                var before = base.get(path, true),
                     after;
 
                 // setting value
                 base.set(path, value);
 
                 // acquiring 'after' node
-                after = base.get(path);
+                after = base.get(path, true);
 
                 // triggering event
                 if (options.trigger !== false) {
@@ -321,7 +321,7 @@ flock.evented = (function ($single, $path, $utils) {
                 options = privates.preprocessOptions(options);
 
                 // storing 'before' node
-                var before = base.get(path);
+                var before = base.get(path, true);
 
                 if (typeof before !== 'undefined') {
                     base.unset(path);
@@ -354,7 +354,7 @@ flock.evented = (function ($single, $path, $utils) {
                 options = privates.preprocessOptions(options);
 
                 // storing 'before' node
-                var before = base.get(path);
+                var before = base.get(path, true);
 
                 if (typeof before !== 'undefined') {
                     base.cleanup(path);

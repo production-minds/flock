@@ -53,7 +53,7 @@ flock.multi = (function ($single, $constants, $utils, $path, $query) {
 
                 // default case
                 if (!path.length) {
-                    return root;
+                    return this.root();
                 }
 
                 // traversal state variables
@@ -192,7 +192,7 @@ flock.multi = (function ($single, $constants, $utils, $path, $query) {
                             return undefined;
                         }
                     }
-                }(root, 0, 0));
+                }(this.root(), 0, 0));
 
                 return result;
             }
