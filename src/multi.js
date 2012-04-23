@@ -6,7 +6,7 @@
  */
 /*global flock */
 
-flock.multi = (function ($single, $constants, $utils, $path, $query) {
+flock.multi = (function ($constants, $query, $utils) {
     var
         errors = {
             ERROR_INVALIDPATH: "Invalid path."
@@ -16,15 +16,23 @@ flock.multi = (function ($single, $constants, $utils, $path, $query) {
 
     /**
      * @class Multi-node querying behavior for datastore.
-     * @param root {object} Source node.
-     * @param [base] {object} Optional base.
+     * @param base {object} Base class instance.
      */
-    ctor = function (root, base) {
-        base = base || $single(root);
-
+    ctor = function (base) {
         var self = Object.create(base);
 
         $utils.extend(self, {
+            //////////////////////////////
+            // Utilities
+
+            /**
+             * Wraps node in datastore object.
+             * @param node {object} Datastore node.
+             */
+            wrap: function (node) {
+                return ctor(node);
+            },
+
             //////////////////////////////
             // Control
 
@@ -38,9 +46,10 @@ flock.multi = (function ($single, $constants, $utils, $path, $query) {
              * @param [options.undef] whether to collect undefined entries, default: false
              * @param [options.value] value to set, or callback function to execute on nodes
              * when undefined, function returns collected values
+             * @param [nochaining] {boolean} Whether method should return bare node.
              * @return {object} Collected nodes.
              */
-            query: function (path, options) {
+            query: function (path, options, nochaining) {
                 options = options || {};
                 path = $query.normalize(path);
 
@@ -194,7 +203,10 @@ flock.multi = (function ($single, $constants, $utils, $path, $query) {
                     }
                 }(this.root(), 0, 0));
 
-                return result;
+                // optionally wrapping result into datastore object
+                return nochaining || this.options('nochaining') ?
+                    result :
+                    this.wrap(result);
             }
         });
 
@@ -206,9 +218,7 @@ flock.multi = (function ($single, $constants, $utils, $path, $query) {
 
     return ctor;
 }(
-    flock.single,
     flock.constants,
-    flock.utils,
-    flock.path,
-    flock.query
+    flock.query,
+    flock.utils
 ));

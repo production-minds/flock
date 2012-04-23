@@ -121,20 +121,26 @@
 
     test("Querying", function () {
         deepEqual(
-            ds.query('fourth.*', {mode: flock.BOTH})[1],
-            ds.get('fourth.1').root(),
+            ds
+                .query('fourth.*', {mode: flock.BOTH})
+                .get('1')
+                .root(),
+            ds
+                .get('fourth.1')
+                .root(),
             "Stacked querying and getting"
         );
     });
 
     test("Mapping", function () {
-        var ds = flock({
-            employees: {
-                emp1: {fname: "John", lname: "Smith", department: "IT"},
-                emp2: {fname: "John", lname: "Green", department: "HR"},
-                emp3: {fname: "Matt", lname: "Smith", department: "IT"}
-            }
-        }),
+        var
+            ds = flock({
+                employees: {
+                    emp1: {fname: "John", lname: "Smith", department: "IT"},
+                    emp2: {fname: "John", lname: "Green", department: "HR"},
+                    emp3: {fname: "Matt", lname: "Smith", department: "IT"}
+                }
+            }),
             tmp;
 
         tmp = ds

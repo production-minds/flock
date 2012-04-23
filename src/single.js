@@ -33,6 +33,17 @@ flock.single = (function ($node, $path, $utils) {
                 return root;
             },
 
+            /**
+             * Retrieves a copy of the options object, or one of its properties.
+             */
+            options: function (option) {
+                if (typeof option === 'undefined') {
+                    return $utils.extend({}, options);
+                } else {
+                    return options[option];
+                }
+            },
+
             //////////////////////////////
             // Utilities
 

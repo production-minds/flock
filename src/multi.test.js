@@ -30,7 +30,7 @@
                 }
             }
         },
-        multi = $multi(data);
+        multi = $multi($single(data, {nochaining: true}));
 
     module("Multi");
 
@@ -156,7 +156,7 @@
                 ]
             },
 
-            multi = $multi(data);
+            multi = $multi($single(data, {nochaining: true}));
 
         deepEqual(
             multi.query('...1'),
@@ -209,7 +209,7 @@
                 ]
             },
 
-            multi = $multi(data);
+            multi = $multi($single(data, {nochaining: true}));
 
         equal(multi.query(''), data, ".query('') and datastore root point to the same object");
         deepEqual(multi.query(['test', '.']), ['dot'], "Dot as key acts as regular string");
@@ -234,7 +234,7 @@
                 }
             },
 
-            multi = $multi(data);
+            multi = $multi($single(data, {nochaining: true}));
 
         multi.query('fourth.*.a', {value: {}});
         deepEqual(data.fourth, {
@@ -308,7 +308,7 @@
 
     test("Deleting multiple nodes", function () {
         var data = {},
-            multi = $multi(data);
+            multi = $multi($single(data, {nochaining: true}));
 
         multi.query('fourth', {value: {
             1: {
@@ -340,8 +340,8 @@
 
     test("String index", function () {
         var data = {},
-            single = $single(data),
-            multi = $multi(data);
+            single = $single(data, {nochaining: true}),
+            multi = $multi($single(data, {nochaining: true}));
 
         // sets string for full text search
         function addWord(name) {

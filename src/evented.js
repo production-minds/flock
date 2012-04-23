@@ -47,12 +47,9 @@ flock.evented = (function ($single, $path, $utils) {
 
     /**
      * @class Evented datastore behavior.
-     * @param root {object} Source node.
-     * @param [base] {object} Optional base class.
+     * @param base {object} Base class instance.
      */
-    ctor = function (root, base) {
-        base = base || $single(root);
-        
+    ctor = function (base) {
         var lookup = {},
             self = Object.create(base);
 

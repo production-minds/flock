@@ -25,24 +25,17 @@ var flock;
             self;
 
         if (!options.nomulti) {
-            base = $multi(null, base);
+            base = $multi(base);
         }
 
         if (!options.noevent) {
-            base = $evented(null, base);
+            base = $evented(base);
         }
 
         self = Object.create(base);
 
         // adding top-level methods
         $utils.extend(self, {
-            /**
-             * Retrieves a copy of the
-             */
-            options: function () {
-                return $utils.extend({}, options);
-            },
-
             /**
              * Wraps node in flock object
              * @param node {object} Datastore node.
