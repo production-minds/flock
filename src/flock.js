@@ -17,11 +17,15 @@ var flock;
         // creating default arguments
         options = options || {};
 
-        var $utils = flock.utils,
+        var
+            // module references
+            $utils = flock.utils,
             $single = flock.single,
             $multi = flock.multi,
             $evented = flock.evented,
-            base = $single(root, options),
+
+            // instantiating base class with identical arguments
+            base = $single.apply(this, arguments),
             self;
 
         if (!options.nomulti) {

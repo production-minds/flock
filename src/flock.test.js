@@ -155,4 +155,24 @@
 
         ok(tmp.get('HR.John.Green'), "Passing pats in string notation");
     });
+
+    test("Origin", function () {
+        equal(
+            ds
+                .get('fourth.1')
+                .get('a')
+                .origin().ds,
+            ds,
+            "Origin datastore OK"
+        );
+
+        deepEqual(
+            ds
+                .get('fourth.1')
+                .get('a')
+                .origin().path,
+            ['fourth', '1', 'a'],
+            "Origin path OK"
+        );
+    });
 }(flock));

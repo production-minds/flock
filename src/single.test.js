@@ -46,7 +46,7 @@
                 .get(['hello', 'world'])
                 .origin().ds,
             single,
-            "Offset datastore OK"
+            "Origin datastore OK"
         );
 
         deepEqual(
@@ -54,7 +54,7 @@
                 .get(['hello', 'world'])
                 .origin().path,
             ['hello', 'world'],
-            "Offset path OK"
+            "Origin path OK"
         );
 
         equal(
@@ -63,7 +63,7 @@
                     .get('world')
                 .origin().ds,
             single,
-            "Offset datastore OK (multi-depth)"
+            "Origin datastore OK (multi-depth)"
         );
 
         deepEqual(
@@ -72,7 +72,7 @@
                     .get('world')
                 .origin().path,
             ['hello', 'world'],
-            "Offset path OK (multi-depth)"
+            "Origin path OK (multi-depth)"
         );
     });
 
