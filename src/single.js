@@ -152,7 +152,9 @@ flock.single = (function ($node, $path, $utils) {
                     parent = self.get(tpath, true);
 
                 // removing leaf node
-                delete parent[key];
+                if (typeof parent === 'object') {
+                    delete parent[key];
+                }
 
                 return this;
             },
@@ -172,7 +174,11 @@ flock.single = (function ($node, $path, $utils) {
 
                     // taking parent and removing leaf node
                     parent = self.get(tpath, true);
-                    delete parent[key];
+                    if (typeof parent === 'object') {
+                        delete parent[key];
+                    } else {
+                        break;
+                    }
                 } while (
                     // continue when remaining leaf node is empty
                     tpath.length && $node(parent).isEmpty()
