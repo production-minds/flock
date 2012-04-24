@@ -12,7 +12,43 @@ flock.multi = (function ($constants, $query, $utils) {
             ERROR_INVALIDPATH: "Invalid path."
         },
 
+        privates,
         ctor;
+
+    //////////////////////////////
+    // Static privates
+
+    privates = {
+        /**
+         * Preprocesses options object for use in query-related methods.
+         * @param options {object} Arbitrary.
+         * @return {object} Properly formatted options object.
+         */
+        preprocessOptions: function (options) {
+            switch (typeof options) {
+            case 'undefined':
+                // empty object when no options object is specified
+                return {};
+            case 'object':
+                // options argument when it is of object type
+                return options;
+            case 'number':
+                /**
+                 * One of the flock constants is assumed here.
+                 * @see flock.constants
+                 */
+                return {
+                    mode: options
+                };
+            default:
+            case 'function':
+                // functions are treated as callbacks
+                return {
+                    value: options
+                };
+            }
+        }
+    };
 
     /**
      * @class Multi-node querying behavior for datastore.
@@ -38,7 +74,7 @@ flock.multi = (function ($constants, $query, $utils) {
 
             /**
              * Collects or modifies end nodes.
-             * @param path {string|Array} Datastore path expression.
+             * @param path {string|string[]} Datastore path.
              * @param [options] {object} Options.
              * @param [options.limit] max number of entries to retrieve, default: unlimited
              * @param [options.mode] type of return value is Object or Array (flock.key/flock.values/flock.both/flock.del), default: flock.array
@@ -50,7 +86,7 @@ flock.multi = (function ($constants, $query, $utils) {
              * @return {object} Collected nodes.
              */
             query: function (path, options, nochaining) {
-                options = options || {};
+                options = privates.preprocessOptions(options);
                 path = $query.normalize(path);
 
                 // setting defaults
@@ -207,6 +243,47 @@ flock.multi = (function ($constants, $query, $utils) {
                 return nochaining || this.options('nochaining') ?
                     result :
                     this.wrap(result);
+            },
+
+            //////////////////////////////
+            // Wrapper methods
+
+            /**
+             * Retrieves multiple nodes from datastore.
+             * @param path {string|string[]} Datastore path.
+             * @param [options] {object}
+             * @see flock.multi.query for options
+             */
+            mget: function (path, options) {
+                return self.query.apply(this, arguments);
+            },
+
+            /**
+             * Modifies multiple nodes in datastore. Sets the same value on each node defined by
+             * the path argument, or calls a handler function for each.
+             * @param path {string|string[]} Datastore path.
+             * @param value {object|function} Value to set or function to call on each affected node.
+             * @param [options] {object}
+             * @see flock.multi.query for options
+             */
+            mset: function (path, value, options) {
+                self.query.call(this, path, $utils.extend(options || {}, {
+                    value: value
+                }));
+                return this;
+            },
+
+            /**
+             * Removes multiple nodes from datastore.
+             * @param path {string|string[]} Datastore path.
+             * @param [options] {object}
+             * @see flock.multi.query for options
+             */
+            munset: function (path, options) {
+                self.query.call(this, path, $utils.extend(options || {}, {
+                    mode: flock.DEL
+                }));
+                return this;
             }
         });
 
@@ -215,6 +292,7 @@ flock.multi = (function ($constants, $query, $utils) {
 
     // delegating errors
     $utils.extend(ctor, errors);
+    $utils.extend(ctor, privates);
 
     return ctor;
 }(

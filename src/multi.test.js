@@ -236,7 +236,7 @@
 
             multi = $multi($single(data, {nochaining: true}));
 
-        multi.query('fourth.*.a', {value: {}});
+        multi.mset('fourth.*.a', {});
         deepEqual(data.fourth, {
             1: {
                 a: {},
@@ -252,7 +252,7 @@
             }
         }, "Setting empty object by default");
 
-        multi.query('fourth.*.a', {value: "A"});
+        multi.mset('fourth.*.a', "A");
         deepEqual(data.fourth, {
             1: {
                 a: "A",
@@ -268,9 +268,9 @@
             }
         }, "Setting the value 'A' on several nodes");
 
-        multi.query('fourth.*.b', {value: function (leaf) {
+        multi.mset('fourth.*.b', function (leaf) {
             return leaf + "X";
-        }});
+        });
         deepEqual(data.fourth, {
             1: {
                 a: "A",
@@ -286,7 +286,7 @@
             }
         }, "Adding character 'X' to each leaf node on path");
 
-        multi.query('fourth.*.c', {value: "C"});
+        multi.mset('fourth.*.c', "C");
         deepEqual(data.fourth, {
             1: {
                 a: "A",
@@ -310,7 +310,7 @@
         var data = {},
             multi = $multi($single(data, {nochaining: true}));
 
-        multi.query('fourth', {value: {
+        multi.mget('fourth', {value: {
             1: {
                 a: "One",
                 b: "Two"
@@ -324,7 +324,7 @@
                 b: "Six"
             }
         }});
-        multi.query('fourth.*.a', {mode: $.DEL});
+        multi.munset('fourth.*.a');
         deepEqual(data.fourth, {
             1: {
                 b: "Two"
