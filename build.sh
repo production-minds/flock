@@ -29,8 +29,9 @@ src/license.js \
 src/flock.js \
 src/utils.js \
 src/path.js \
+src/node.js \
 src/single.js \
-src/event.js \
+src/evented.js \
 src/constants.js \
 src/query.js \
 src/multi.js \
