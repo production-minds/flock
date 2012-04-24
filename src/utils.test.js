@@ -52,8 +52,6 @@
         base = {test: "hello"};
         extended = $utils.extend(base, data);
 
-        console.log(extended);
-
         notEqual(extended, base, "Result is different from base");
         equal(extended.test, base.test, "Result has base property");
         equal(extended.hasOwnProperty('test'), false, "Base property moved a level up the prototype chain");
