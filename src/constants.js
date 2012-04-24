@@ -15,7 +15,7 @@ flock.constants = (function ($utils) {
     };
 
     // delegating constants on flock object
-    $utils.extend(flock, self);
+    $utils.mixin(flock, self);
 
     return self;
 }(flock.utils));

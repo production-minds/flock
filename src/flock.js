@@ -32,10 +32,8 @@ var flock;
             base = $evented(base);
         }
 
-        self = Object.create(base);
-
         // adding top-level methods
-        $utils.extend(self, {
+        self = $utils.extend(base, {
             /**
              * Wraps node in flock object
              * @param node {object} Datastore node.
@@ -43,7 +41,7 @@ var flock;
             wrap: function (node) {
                 return options.nochaining ?
                     node :
-                    flock(node, options);
+                    flock.apply(this, arguments);
             }
         });
 

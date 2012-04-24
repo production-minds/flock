@@ -26,6 +26,56 @@
         ]) === 'undefined', "Attempting to get from invalid path returns undefined");
     });
 
+    test("Origin", function () {
+        var
+            data = {
+                hi: 'There!',
+                hello: {
+                    world: {
+                        center: "!!"
+                    },
+                    all: "hey"
+                },
+                foo: 5
+            },
+
+            single = $single(data);
+
+        equal(
+            single
+                .get(['hello', 'world'])
+                .origin().ds,
+            single,
+            "Offset datastore OK"
+        );
+
+        deepEqual(
+            single
+                .get(['hello', 'world'])
+                .origin().path,
+            ['hello', 'world'],
+            "Offset path OK"
+        );
+
+        equal(
+            single
+                .get('hello')
+                    .get('world')
+                .origin().ds,
+            single,
+            "Offset datastore OK (multi-depth)"
+        );
+
+        deepEqual(
+            single
+                .get('hello')
+                    .get('world')
+                .origin().path,
+            ['hello', 'world'],
+            "Offset path OK (multi-depth)"
+        );
+    });
+
     test("Setting", function () {
         single.set(['hello', 'world', 'test'], "testt");
         equal(data.hello.world.test, "testt", "Value set on existing node");
@@ -159,7 +209,7 @@
                     }
                 }
             },
-            
+
             single = $single(data, {nochaining: true});
 
         deepEqual(single.map(['foo'], ['bar']), {

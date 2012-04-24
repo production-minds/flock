@@ -55,9 +55,7 @@ flock.multi = (function ($constants, $query, $utils) {
      * @param base {object} Base class instance.
      */
     ctor = function (base) {
-        var self = Object.create(base);
-
-        $utils.extend(self, {
+        var self = $utils.extend(base, {
             //////////////////////////////
             // Utilities
 
@@ -66,7 +64,7 @@ flock.multi = (function ($constants, $query, $utils) {
              * @param node {object} Datastore node.
              */
             wrap: function (node) {
-                return ctor(node);
+                return ctor.apply(this, arguments);
             },
 
             //////////////////////////////
@@ -267,7 +265,7 @@ flock.multi = (function ($constants, $query, $utils) {
              * @see flock.multi.query for options
              */
             mset: function (path, value, options) {
-                self.query.call(this, path, $utils.extend(options || {}, {
+                self.query.call(this, path, $utils.blend(options || {}, {
                     value: value
                 }));
                 return this;
@@ -280,7 +278,7 @@ flock.multi = (function ($constants, $query, $utils) {
              * @see flock.multi.query for options
              */
             munset: function (path, options) {
-                self.query.call(this, path, $utils.extend(options || {}, {
+                self.query.call(this, path, $utils.blend(options || {}, {
                     mode: flock.DEL
                 }));
                 return this;
@@ -291,8 +289,8 @@ flock.multi = (function ($constants, $query, $utils) {
     };
 
     // delegating errors
-    $utils.extend(ctor, errors);
-    $utils.extend(ctor, privates);
+    $utils.mixin(ctor, errors);
+    $utils.mixin(ctor, privates);
 
     return ctor;
 }(

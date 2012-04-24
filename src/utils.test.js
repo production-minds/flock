@@ -1,4 +1,4 @@
-/*global flock, module, test, ok, equal, deepEqual, raises */
+/*global flock, module, test, ok, equal, notEqual, deepEqual, raises */
 (function ($utils) {
     module("Utils");
 
@@ -13,34 +13,58 @@
             }
         };
 
+    test("Mixin", function () {
+        var tmp;
+
+        tmp = {};
+        equal(
+            $utils.mixin(tmp, data),
+            tmp,
+            "Original destination is changed"
+        );
+
+        tmp = {};
+        deepEqual(
+            $utils.mixin(tmp, data),
+            data,
+            "All source properties copied"
+        );
+    });
+
+    test("Blend", function () {
+        notEqual(
+            $utils.blend({}, data),
+            data,
+            "Original destination object remains untouched"
+        );
+
+        deepEqual(
+            $utils.blend({}, data),
+            data,
+            "All source properties copied"
+        );
+    });
+
     test("Extend", function () {
-        var tmp,
-            key, count;
+        var base,
+            extended;
 
-        tmp = {};
-        $utils.privates.addProperty(tmp, data, 'hi');
-        equal(tmp.hi, data.hi, "Delegating single property");
+        base = {test: "hello"};
+        extended = $utils.extend(base, data);
 
-        raises(function () {
-            $utils.privates.addProperty(tmp, data, 'hi');
-        }, "Attempting to overwrite existing property fails");
+        console.log(extended);
 
-        $utils.privates.addProperty(tmp, data, 'hi', true);
-        equal(tmp.hi, data.hi, "Overwriting single property in silent mode");
+        notEqual(extended, base, "Result is different from base");
+        equal(extended.test, base.test, "Result has base property");
+        equal(extended.hasOwnProperty('test'), false, "Base property moved a level up the prototype chain");
 
-        tmp = {};
-        $utils.extend(tmp, data);
-        deepEqual(tmp, data, "Delegating all properties");
+        base = {};
+        extended = $utils.extend(base, data);
 
-        tmp = {};
-        count = 0;
-        $utils.extend(tmp, data.hello, ['world', 'third']);
-        for (key in tmp) {
-            if (tmp.hasOwnProperty(key)) {
-                count++;
-            }
-        }
-        ok(count === 2 && tmp.world === data.hello.world && tmp.third === data.hello.third,
-            "Delegating specified properties");
+        deepEqual(
+            extended,
+            data,
+            "All source properties copied"
+        );
     });
 }(flock.utils));

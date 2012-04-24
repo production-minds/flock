@@ -4,54 +4,65 @@
 /*global flock */
 
 flock.utils = (function () {
-    var privates,
-        self;
-
-    privates = {
+    var self = {
         /**
-         * Delegates a single property from one object to another.
-         * @param dest {object} Destination object, ie. that receives the properties.
-         * @param source {object} Source object, ie. that offers the properties.
-         * @param key {string} Name of property to delegate.
-         * @param [silent] {boolean} Silent mode. When true, overwrites existing property.
-         * @throws {string} When destination property exists.
+         * Mixes objects to an existing one, changing the original.
+         * @param dest {object} Destination object.
+         * Rest of parameters are objects to be mixed in.
          */
-        addProperty: function (dest, source, key, silent) {
-            if (silent || !dest.hasOwnProperty(key)) {
-                dest[key] = source[key];
-            } else {
-                throw "flock.utils.delegateProperty: Property at destination already exists.";
-            }
-        }
-    };
+        mixin: function (dest) {
+            var i, source,
+                key;
 
-    self = {
-        privates: privates,
+            for (i = 1; i < arguments.length; i++) {
+                // taking next source object
+                source = arguments[i];
 
-        /**
-         * Delegates properties from one object to another.
-         * @param dest {object} Destination object, ie. that receives the properties.
-         * @param source {object} Source object, ie. that offers the properties.
-         * @param [keys] {Array} List of properties to delegate.
-         * @param [silent] {boolean} Silent mode. When true, overwrites existing properties.
-         * does not raise exception.
-         */
-        extend: function (dest, source, keys, silent) {
-            var key, i;
-            if (keys instanceof Array) {
-                // delegating specified properties
-                for (i = 0; i < keys.length; i++) {
-                    privates.addProperty(dest, source, keys[i], silent);
-                }
-            } else {
-                // delegating all properties
+                // mixing source to result
                 for (key in source) {
                     if (source.hasOwnProperty(key)) {
-                        privates.addProperty(dest, source, key, silent);
+                        dest[key] = source[key];
                     }
                 }
             }
+
             return dest;
+        },
+
+        /**
+         * Mixes objects in parameter order. Does not change input.
+         * Parameters are objects to be mixed together.
+         */
+        blend: function () {
+            var result = {},
+                i, source,
+                key;
+
+            for (i = 0; i < arguments.length; i++) {
+                // taking next source object
+                source = arguments[i];
+
+                // mixing source to result
+                for (key in source) {
+                    if (source.hasOwnProperty(key)) {
+                        result[key] = source[key];
+                    }
+                }
+            }
+
+            return result;
+        },
+
+        /**
+         * Extends an object by creating a new instance of the old one and
+         * mixing the other objects to it.
+         * First parameter is base class instance.
+         */
+        extend: function () {
+            var args = Array.prototype.slice.call(arguments),
+                base = args.shift();
+            args.unshift(Object.create(base));
+            return self.mixin.apply(this, args);
         }
     };
 

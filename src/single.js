@@ -16,19 +16,19 @@ flock.single = (function ($node, $path, $utils) {
      * @param [options] {object}
      * @param [options.nochaining] {boolean} Whether query methods are chainable.
      */
-    var ctor = function (root, options) {
+    var ctor = function (root, options, origin) {
         options = options || {};
+        origin = origin || {
+            path: []
+        };
 
         var base = $node(root),
-            self = Object.create(base);
+            self;
 
-        $utils.extend(self, {
+        self = $utils.extend(base, {
             //////////////////////////////
             // Getters, setters
 
-            /**
-             * Getter for datastore root
-             */
             root: function () {
                 return root;
             },
@@ -38,10 +38,14 @@ flock.single = (function ($node, $path, $utils) {
              */
             options: function (option) {
                 if (typeof option === 'undefined') {
-                    return $utils.extend({}, options);
+                    return $utils.blend({}, options);
                 } else {
                     return options[option];
                 }
+            },
+
+            origin: function () {
+                return origin;
             },
 
             //////////////////////////////
@@ -52,7 +56,7 @@ flock.single = (function ($node, $path, $utils) {
              * @param node {object} Datastore node.
              */
             wrap: function (node) {
-                return ctor(node);
+                return ctor.apply(this, arguments);
             },
 
             //////////////////////////////
@@ -65,6 +69,8 @@ flock.single = (function ($node, $path, $utils) {
              * @returns {object} Node on specified path.
              */
             get: function (path, nochaining) {
+                path = $path.normalize(path);
+
                 var result = root,
                     tpath = $path.normalize(path),
                     key;
@@ -84,8 +90,11 @@ flock.single = (function ($node, $path, $utils) {
                 }
 
                 return nochaining || options.nochaining ?
-                    result:
-                    this.wrap(result);
+                    result :
+                    this.wrap(result, options, {
+                        ds: origin.ds || this,
+                        path: origin.path.concat(path)
+                    });
             },
 
             /**
