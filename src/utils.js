@@ -34,23 +34,9 @@ flock.utils = (function () {
          * Parameters are objects to be mixed together.
          */
         blend: function () {
-            var result = {},
-                i, source,
-                key;
-
-            for (i = 0; i < arguments.length; i++) {
-                // taking next source object
-                source = arguments[i];
-
-                // mixing source to result
-                for (key in source) {
-                    if (source.hasOwnProperty(key)) {
-                        result[key] = source[key];
-                    }
-                }
-            }
-
-            return result;
+            var args = Array.prototype.slice.call(arguments);
+            args.unshift({});
+            return self.mixin.apply(this, args);
         },
 
         /**
