@@ -213,6 +213,20 @@
 
         equal(multi.traverse(''), data, ".traverse('') and datastore root point to the same object");
         deepEqual(multi.traverse(['test', '.']), ['dot'], "Dot as key acts as regular string");
+
+        deepEqual(
+            $multi($single(undefined, {nochaining: true}))
+                .mget(['made', 'up', 'path']),
+            [],
+            "Traversal works on datastore with undefined root node"
+        );
+
+        deepEqual(
+            $multi($single('ordinal', {nochaining: true}))
+                .mget(['made', 'up', 'path']),
+            [],
+            "Traversal works on datastore with ordinal root node"
+        );
     });
 
     test("Modifying multiple nodes", function () {

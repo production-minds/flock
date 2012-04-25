@@ -235,7 +235,7 @@ flock.multi = (function ($constants, $query, $utils) {
                             return undefined;
                         }
                     }
-                }(this.root(), 0, []));
+                }(this.root() || {}, 0, []));
 
                 // optionally wrapping result into datastore object
                 return nochaining || this.options('nochaining') ?
