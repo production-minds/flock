@@ -72,7 +72,7 @@ flock.multi = (function ($constants, $query, $utils) {
 
             /**
              * Collects or modifies end nodes.
-             * @param path {string|string[]} Datastore path.
+             * @param query {string|string[]} Datastore query expression.
              * @param [options] {object} Options.
              * @param [options.limit] max number of entries to retrieve, default: unlimited
              * @param [options.mode] type of return value is Object or Array (flock.key/flock.values/flock.both/flock.del), default: flock.array
@@ -83,9 +83,9 @@ flock.multi = (function ($constants, $query, $utils) {
              * @param [nochaining] {boolean} Whether method should return bare node.
              * @return {object} Collected nodes.
              */
-            query: function (path, options, nochaining) {
+            query: function (query, options, nochaining) {
                 options = privates.preprocessOptions(options);
-                path = $query.normalize(path);
+                query = $query.normalize(query);
 
                 // setting defaults
                 if (typeof options.value === 'undefined' &&
@@ -95,7 +95,7 @@ flock.multi = (function ($constants, $query, $utils) {
                 }
 
                 // default case
-                if (!path.length) {
+                if (!query.length) {
                     return this.root();
                 }
 
@@ -113,7 +113,7 @@ flock.multi = (function ($constants, $query, $utils) {
                  * @param i {number} Current position in path,
                  * @param depth {number} Current depth in tree.
                  */
-                (function walk(obj, i, depth) {
+                (function walk(obj, i, path) {
                     var key, j;
 
                     /**
@@ -125,10 +125,10 @@ flock.multi = (function ($constants, $query, $utils) {
                     function node(key) {
                         var value;
 
-                        if (i < path.length - 1) {
+                        if (i < query.length - 1) {
                             // current node has children, burrowing one level deeper
                             if (obj.hasOwnProperty(key)) {
-                                walk(obj[key], i + 1, depth + 1);
+                                walk(obj[key], i + 1, path.concat(key));
                             }
                         } else {
                             // leaf node reached
@@ -167,7 +167,7 @@ flock.multi = (function ($constants, $query, $utils) {
                                 // when updating
                                 if (typeof options.value === 'function') {
                                     // calling custom handler on node
-                                    value = options.value(obj[key]);
+                                    value = options.value(obj[key], path);
                                     if (typeof value !== 'undefined') {
                                         obj[key] = value;
                                     }
@@ -185,17 +185,17 @@ flock.multi = (function ($constants, $query, $utils) {
 
                     // detecting loopback
                     if (!loopback) {
-                        for (j = 0; j < depth; j++) {
+                        for (j = 0; j < path.length; j++) {
                             if (obj === stack[j]) {
                                 return undefined;
                             }
                         }
                         // putting current object on the stack
-                        stack[depth] = obj;
+                        stack[path.length] = obj;
                     }
 
                     // processing next key in path
-                    key = path[i];
+                    key = query[i];
                     if (key === '*') {
                         // processing wildcard node
                         for (key in obj) {
@@ -210,14 +210,14 @@ flock.multi = (function ($constants, $query, $utils) {
                         // must be object type as strings have indexes, too
                         for (key in obj) {
                             if (obj.hasOwnProperty(key)) {
-                                if (key === path[i + 1]) {
+                                if (key === query[i + 1]) {
                                     // current key matches next key in path
                                     // re-walking current object but leving skipper key
-                                    walk(obj, i + 1, depth);
+                                    walk(obj, i + 1, path.concat());
                                 } else {
                                     // current key doesn't match next key in path
                                     // walking next level, but staying on skipper key
-                                    walk(obj[key], i, depth + 1);
+                                    walk(obj[key], i, path.concat(key));
                                 }
                             }
                         }
@@ -230,12 +230,12 @@ flock.multi = (function ($constants, $query, $utils) {
                         }
                     } else {
                         // processing single node
-                        key = path[i];
+                        key = query[i];
                         if (node(key)) {
                             return undefined;
                         }
                     }
-                }(this.root(), 0, 0));
+                }(this.root(), 0, []));
 
                 // optionally wrapping result into datastore object
                 return nochaining || this.options('nochaining') ?
