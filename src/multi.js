@@ -83,7 +83,7 @@ flock.multi = (function ($constants, $query, $utils) {
              * @param [nochaining] {boolean} Whether method should return bare node.
              * @return {object} Collected nodes.
              */
-            query: function (query, options, nochaining) {
+            traverse: function (query, options, nochaining) {
                 options = privates.preprocessOptions(options);
                 query = $query.normalize(query);
 
@@ -253,7 +253,7 @@ flock.multi = (function ($constants, $query, $utils) {
              * @see flock.multi.query for options
              */
             mget: function (path, options) {
-                return self.query.apply(this, arguments);
+                return self.traverse.apply(this, arguments);
             },
 
             /**
@@ -265,7 +265,7 @@ flock.multi = (function ($constants, $query, $utils) {
              * @see flock.multi.query for options
              */
             mset: function (path, value, options) {
-                self.query.call(this, path, $utils.blend(options || {}, {
+                self.traverse.call(this, path, $utils.blend(options || {}, {
                     value: value
                 }));
                 return this;
@@ -278,7 +278,7 @@ flock.multi = (function ($constants, $query, $utils) {
              * @see flock.multi.query for options
              */
             munset: function (path, options) {
-                self.query.call(this, path, $utils.blend(options || {}, {
+                self.traverse.call(this, path, $utils.blend(options || {}, {
                     mode: flock.DEL
                 }));
                 return this;

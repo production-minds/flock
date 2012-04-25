@@ -37,7 +37,7 @@
     test("Wildcards", function () {
         // testing single-level wildcards
         deepEqual(
-            multi.query('fourth.*'),
+            multi.traverse('fourth.*'),
             [
                 {a: "One", b: "Two"},
                 {a: "Three", b: "Four"},
@@ -45,21 +45,21 @@
             ],
             "Collecting nodes from path 'fourth.*'");
         deepEqual(
-            multi.query('fourth.*', {limit: 1}),
+            multi.traverse('fourth.*', {limit: 1}),
             [
                 {a: "One", b: "Two"}
             ],
             "Retrieving first node from path 'fourth.*'");
         deepEqual(
-            multi.query('fourth.*.a'),
+            multi.traverse('fourth.*.a'),
             ["One", "Three", "Five"],
             "Collecting nodes from path 'fourth.*.a'");
         deepEqual(
-            multi.query('fourth.2.*'),
+            multi.traverse('fourth.2.*'),
             ["Three", "Four"],
             "Collecting nodes from path 'fourth.2.*'");
         deepEqual(
-            multi.query('*.1'),
+            multi.traverse('*.1'),
             [
                 {},
                 {a: "One", b: "Two"}
@@ -67,32 +67,32 @@
             "Collecting nodes from path '*.1'");
 
         deepEqual(
-            multi.query('first,second.*', {mode: $.BOTH}),
+            multi.traverse('first,second.*', {mode: $.BOTH}),
             {a: {}, b: {}, c: {}, d: {}, e: {}, 1: {}, 2: {}, 3: {}},
             "Getting results as lookup");
     });
 
     test("OR relation", function () {
         deepEqual(
-            multi.query(['fourth', [1, 3]]),
+            multi.traverse(['fourth', [1, 3]]),
             [
                 {a: "One", b: "Two"},
                 {a: "Five", b: "Six"}
             ],
             "Collecting specific nodes from path 'fourth.1,3'");
         deepEqual(
-            multi.query('fourth.1,3'),
+            multi.traverse('fourth.1,3'),
             [
                 {a: "One", b: "Two"},
                 {a: "Five", b: "Six"}
             ],
             "Collecting specific nodes from path 'fourth.1,3' (passed as string)");
         deepEqual(
-            multi.query(['fourth', [1, 3], '*']),
+            multi.traverse(['fourth', [1, 3], '*']),
             ["One", "Two", "Five", "Six"],
             "Collecting specific nodes from path 'fourth.1,3.*'");
         deepEqual(
-            multi.query([
+            multi.traverse([
                 ['first', 'third']
             ]),
             [
@@ -101,7 +101,7 @@
             ],
             "Collecting specific nodes from path 'first,third'");
         deepEqual(
-            multi.query('first,third'),
+            multi.traverse('first,third'),
             [
                 { a: {}, b: {}, c: {}, d: {}, e: {} },
                 {}
@@ -109,7 +109,7 @@
             "Collecting specific nodes from path 'first,third' (passed as string)");
 
         deepEqual(
-            multi.query([
+            multi.traverse([
                 ['thousandth', 'third']
             ]),
             [
@@ -117,13 +117,13 @@
             ],
             "Collecting non-existent keys");
         deepEqual(
-            multi.query([
+            multi.traverse([
                 ['thousandth', 'third']
             ], {mode: $.BOTH}),
             {third: {}},
             "Collecting non-existent keys (as lookup)");
         deepEqual(
-            multi.query([
+            multi.traverse([
                 ['thousandth', 'third']
             ], {undef: true}),
             [undefined, {}],
@@ -131,9 +131,9 @@
     });
 
     test("Counting", function () {
-        equal(multi.query('first.*', {mode: $.COUNT}), 5, "5 elements on path 'first.*'");
-        equal(multi.query('fourth.*.a', {mode: $.COUNT}), 3, "3 elements on path 'fourth.*.a'");
-        equal(multi.query('...a', {mode: $.COUNT}), 4, "4 elements on path '...a'");
+        equal(multi.traverse('first.*', {mode: $.COUNT}), 5, "5 elements on path 'first.*'");
+        equal(multi.traverse('fourth.*.a', {mode: $.COUNT}), 3, "3 elements on path 'fourth.*.a'");
+        equal(multi.traverse('...a', {mode: $.COUNT}), 4, "4 elements on path '...a'");
     });
 
     test("Skipping", function () {
@@ -159,7 +159,7 @@
             multi = $multi($single(data, {nochaining: true}));
 
         deepEqual(
-            multi.query('...1'),
+            multi.traverse('...1'),
             [
                 {},
                 "hello",
@@ -168,18 +168,18 @@
             ],
             "Collecting nodes from path '...1'");
         deepEqual(
-            multi.query(['what', '3', 'awe']),
+            multi.traverse(['what', '3', 'awe']),
             ["some"],
             "Collecting nodes from path 'what.3.awe'");
         deepEqual(
-            multi.query([null, '3', 'awe']),
+            multi.traverse([null, '3', 'awe']),
             ["some"],
             "Collecting nodes from path '...3.awe'");
 
         // creating loopback
         data.test.b = data.test;
         deepEqual(
-            multi.query('...1'),
+            multi.traverse('...1'),
             [
                 {},
                 "hello",
@@ -211,8 +211,8 @@
 
             multi = $multi($single(data, {nochaining: true}));
 
-        equal(multi.query(''), data, ".query('') and datastore root point to the same object");
-        deepEqual(multi.query(['test', '.']), ['dot'], "Dot as key acts as regular string");
+        equal(multi.traverse(''), data, ".traverse('') and datastore root point to the same object");
+        deepEqual(multi.traverse(['test', '.']), ['dot'], "Dot as key acts as regular string");
     });
 
     test("Modifying multiple nodes", function () {
@@ -358,31 +358,31 @@
         addWord("wedding");
 
         // querying data
-        deepEqual(multi.query("w.o...name"), [
+        deepEqual(multi.traverse("w.o...name"), [
             "world",
             "worn",
             "wounded"
         ], "wo...");
-        deepEqual(multi.query("h.e.r...name"), [
+        deepEqual(multi.traverse("h.e.r...name"), [
             "hero",
             "hers"
         ], "her...");
-        deepEqual(multi.query("w...name"), [
+        deepEqual(multi.traverse("w...name"), [
             "world",
             "worn",
             "wounded",
             "wedding"
         ], "w...");
-        deepEqual(multi.query("h...name"), [
+        deepEqual(multi.traverse("h...name"), [
             "hello",
             "hero",
             "hers"
         ], "h...");
-        deepEqual(multi.query("w.o.*.n...name"), [
+        deepEqual(multi.traverse("w.o.*.n...name"), [
             "worn",
             "wounded"
         ], "wo*n...");
-        deepEqual(multi.query("*.e...name"), [
+        deepEqual(multi.traverse("*.e...name"), [
             "hello",
             "hero",
             "hers",

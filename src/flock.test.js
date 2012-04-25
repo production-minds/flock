@@ -122,7 +122,7 @@
     test("Querying", function () {
         deepEqual(
             ds
-                .query('fourth.*', {mode: flock.BOTH})
+                .mget('fourth.*', {mode: flock.BOTH})
                 .get('1')
                 .root(),
             ds
