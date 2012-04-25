@@ -106,8 +106,6 @@ flock.single = (function ($node, $path, $utils) {
              * @param [value] {object} Value to set on path
              */
             set: function (path, value) {
-                value = value || {};
-
                 var parent = root,
                     tpath = $path.normalize(path),
                     key;

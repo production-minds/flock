@@ -87,7 +87,7 @@
         equal(single.get('hello.yall.folks'), "test", "Value set on non-existing path");
 
         single.set(['hello', 'yall', 'folks']);
-        deepEqual(single.get('hello.yall.folks'), {}, "Default value for set is empty object");
+        equal(typeof single.get('hello.yall.folks'), 'undefined', "Default value for set is undefined");
     });
 
     test("Math", function () {
