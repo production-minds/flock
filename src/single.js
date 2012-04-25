@@ -15,6 +15,9 @@ flock.single = (function ($node, $path, $utils) {
      * @param root {object} Source node.
      * @param [options] {object}
      * @param [options.nochaining] {boolean} Whether query methods are chainable.
+     * @param [origin] {object}
+     * @param [origin.ds] {flock.single} Origin datastore.
+     * @param [origin.path] {string[]} Path of root relative to root of origin datastore.
      */
     var ctor = function (root, options, origin) {
         options = options || {};
