@@ -6,11 +6,11 @@ var flock = flock || {};
 flock.evented = (function ($path, $utils) {
     var
         // regular event types
-        events = {
-            EVENT_ACCESS: 'access',
-            EVENT_CHANGE: 'change',
-            EVENT_ADD: 'add',
-            EVENT_REMOVE: 'remove'
+        constants = {
+            ACCESS: 'standardEvent.access',
+            CHANGE: 'standardEvent.change',
+            ADD: 'standardEvent.add',
+            REMOVE: 'standardEvent.remove'
         },
 
         privates,
@@ -251,7 +251,7 @@ flock.evented = (function ($path, $utils) {
                 if (options.trigger !== false) {
                     self.trigger(
                         path,
-                        events.EVENT_ACCESS,
+                        constants.ACCESS,
                         {
                             data: {
                                 value: result,
@@ -291,8 +291,8 @@ flock.evented = (function ($path, $utils) {
                     self.trigger(
                         path,
                         typeof before === 'undefined' ?
-                            events.EVENT_ADD :
-                            events.EVENT_CHANGE,
+                            constants.ADD :
+                            constants.CHANGE,
                         {
                             data: {
                                 before: before,
@@ -327,7 +327,7 @@ flock.evented = (function ($path, $utils) {
                     if (options.trigger !== false) {
                         self.trigger(
                             path,
-                            events.EVENT_REMOVE,
+                            constants.REMOVE,
                             {
                                 before: before,
                                 data: options.data
@@ -360,7 +360,7 @@ flock.evented = (function ($path, $utils) {
                     if (options.trigger !== false) {
                         self.trigger(
                             path,
-                            events.EVENT_REMOVE,
+                            constants.REMOVE,
                             {
                                 before: before,
                                 data: options.data
@@ -379,7 +379,11 @@ flock.evented = (function ($path, $utils) {
     //////////////////////////////
     // Static members
 
-    ctor.privates = privates;
+    // delegating to class
+    $utils.mixin(ctor, privates);
+
+    // delegating to flock
+    $utils.mixin(flock, constants);
 
     return ctor;
 }(

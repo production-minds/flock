@@ -130,8 +130,8 @@
     });
 
     test("Getting", function () {
-        ds.on('', 'access', function (event, data) {
-            equal(event.name, 'access', "Event name (access) ok.");
+        ds.on('', flock.ACCESS, function (event, data) {
+            equal(event.name, flock.ACCESS, "Event name (access) ok.");
             equal(event.target, 'hello.world.center', "Event target ok.");
             equal(data.value, '!!', "Value ok");
             equal(data.data, 'test', "Custom data ok.");
@@ -139,19 +139,19 @@
 
         ds.get('hello.world.center', {data: 'test'});
 
-        ds.off('', 'access');
+        ds.off('', flock.ACCESS);
 
-        ds.on('', 'access', function (event, data) {
+        ds.on('', flock.ACCESS, function (event, data) {
             equal(typeof data.value, 'undefined', "Value ok on non-existing node");
         });
 
         ds.get('hello.world.blahblah');
 
-        ds.off('', 'access');
+        ds.off('', flock.ACCESS);
     });
 
     test("Access", function () {
-        ds.on('hello.world.center', 'access', function (event, data) {
+        ds.on('hello.world.center', flock.ACCESS, function (event, data) {
             var handler = data.data;
 
             handler(event.target, data.value);
@@ -163,7 +163,7 @@
             equal(value, '!!', "Value is ok.");
         });
 
-        ds.off('hello.world.center', 'access');
+        ds.off('hello.world.center', flock.ACCESS);
     });
 
     /**
@@ -180,7 +180,7 @@
         }
 
         // subscribing to access event
-        ds.on('hello.world', 'access', function (event, data) {
+        ds.on('hello.world', flock.ACCESS, function (event, data) {
             var handler = data.data;
 
             if (typeof data.value === 'undefined') {
@@ -206,13 +206,13 @@
             equal(value, 'blah', "Data node loaded and accessed on previously missing node");
         });
 
-        ds.off('hello.world', 'access');
+        ds.off('hello.world', flock.ACCESS);
     });
 
     test("Setting", function () {
         // checking handler arguments
-        ds.on('', 'change', function (event, data) {
-            equal(event.name, 'change', "Event name ok.");
+        ds.on('', flock.CHANGE, function (event, data) {
+            equal(event.name, flock.CHANGE, "Event name ok.");
             equal(event.target, 'hello.world.center', "Event target ok");
             equal(data.before, "!!", "Before value ok");
             equal(data.after, "!!!", "After value ok");
@@ -220,7 +220,7 @@
             equal(data.data, "customData", "Custom data ok");
         });
         ds.set(['hello', 'world', 'center'], "!!!", {data: "customData"});
-        ds.off('', 'change');
+        ds.off('', flock.CHANGE);
 
         var i;
 
@@ -232,13 +232,13 @@
             i += 2;
         }
 
-        ds.on('', 'add', onAdd);
-        ds.on('', 'change', onChange);
+        ds.on('', flock.ADD, onAdd);
+        ds.on('', flock.CHANGE, onChange);
 
         // testing data update
         i = 0;
         ds.set(['hello', 'world', 'center'], {data: "blah"});
-        equal(i, 1, "Update triggers 'change' event");
+        equal(i, 1, "Update triggers flock.CHANGE event");
 
         i = 0;
         ds.set(['hello', 'world', 'center'], "boo", {data: {foo: "bar"}});
@@ -250,10 +250,10 @@
         // testing data addition
         i = 0;
         ds.set(['hello', 'world', 'whatever'], "blah");
-        equal(i, 2, "Addition triggers 'add' event");
+        equal(i, 2, "Addition triggers flock.ADD event");
 
-        ds.off('', 'add', onAdd);
-        ds.off('', 'change', onChange);
+        ds.off('', flock.ADD, onAdd);
+        ds.off('', flock.CHANGE, onChange);
     });
 
     test("Unsetting", function () {
@@ -263,12 +263,12 @@
             i++;
         }
 
-        ds.on('', 'remove', onRemove);
+        ds.on('', flock.REMOVE, onRemove);
 
         i = 0;
         root.hello.world.center = "a";
         ds.unset(['hello', 'world', 'center']);
-        equal(i, 1, "Unsetting triggers 'remove' event");
+        equal(i, 1, "Unsetting triggers flock.REMOVE event");
 
         root.hello.world.center = "a";
         ds.unset(['hello', 'world', 'center'], {trigger: false});
