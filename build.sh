@@ -32,7 +32,6 @@ src/path.js \
 src/node.js \
 src/single.js \
 src/evented.js \
-src/constants.js \
 src/query.js \
 src/multi.js \
 > "build/$NAME.js"

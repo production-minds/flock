@@ -6,10 +6,18 @@
  */
 /*global flock */
 
-flock.multi = (function ($constants, $query, $utils) {
+flock.multi = (function ($query, $utils) {
     var
         errors = {
             ERROR_INVALIDPATH: "Invalid path."
+        },
+
+        constants = {
+            KEYS: 0,        // collect leaf keys
+            VALUES: 1,      // collect leaf values
+            BOTH: 2,        // collect key:value pairs of leaf nodes
+            DEL: 3,         // delete leaf nodes
+            COUNT: 4        // count leaf nodes
         },
 
         privates,
@@ -91,7 +99,7 @@ flock.multi = (function ($constants, $query, $utils) {
                 if (typeof options.value === 'undefined' &&
                     typeof options.mode === 'undefined'
                     ) {
-                    options.mode = $constants.VALUES;
+                    options.mode = constants.VALUES;
                 }
 
                 // default case
@@ -137,24 +145,24 @@ flock.multi = (function ($constants, $query, $utils) {
                                 value = obj[key];
                                 if (options.undef || typeof value !== 'undefined') {
                                     switch (options.mode) {
-                                    case $constants.VALUES:
+                                    case constants.VALUES:
                                         // collecting value from nodes
                                         result.push(value);
                                         break;
-                                    case $constants.KEYS:
+                                    case constants.KEYS:
                                         // collecting key from node
                                         result.push(key);
                                         break;
-                                    case $constants.BOTH:
+                                    case constants.BOTH:
                                         // collecting key AND value from node
                                         // WARNING: new values with same key overwrite old
                                         result[key] = value;
                                         break;
-                                    case $constants.DEL:
+                                    case constants.DEL:
                                         // deleting node
                                         delete obj[key];
                                         break;
-                                    case $constants.COUNT:
+                                    case constants.COUNT:
                                         // counting node
                                         result++;
                                         break;
@@ -279,7 +287,7 @@ flock.multi = (function ($constants, $query, $utils) {
              */
             munset: function (path, options) {
                 self.traverse.call(this, path, $utils.blend(options || {}, {
-                    mode: flock.DEL
+                    mode: constants.DEL
                 }));
                 return this;
             }
@@ -288,13 +296,15 @@ flock.multi = (function ($constants, $query, $utils) {
         return self;
     };
 
-    // delegating errors
+    // delegating to class
     $utils.mixin(ctor, errors);
     $utils.mixin(ctor, privates);
 
+    // delegating constants to flock
+    $utils.mixin(flock, constants);
+
     return ctor;
 }(
-    flock.constants,
     flock.query,
     flock.utils
 ));

@@ -403,7 +403,9 @@
             "wedding"
         ], "*e...");
     });
-}(flock.constants,
+}(
+    flock,
     flock.multi,
     flock.path,
-    flock.single));
+    flock.single
+));

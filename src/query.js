@@ -3,7 +3,7 @@
  */
 /*global flock */
 
-flock.query = (function ($constants, $utils) {
+flock.query = (function ($utils) {
     /*jshint regexp:false */
     var RE_PATH_VALIDATOR = /^(\.{3})*([^\.,]+(\.{1,3}|,))*[^\.,]+$/,
         RE_PATH_SKIPPER = /\.{2,}/,
@@ -125,5 +125,6 @@ flock.query = (function ($constants, $utils) {
     $utils.mixin(self, errors);
 
     return self;
-}(flock.constants,
-    flock.utils));
+}(
+    flock.utils
+));
