@@ -1,7 +1,7 @@
 /**
  * Flock Datastore Utilities
  */
-/*global flock */
+var flock = flock || {};
 
 flock.utils = (function () {
     var self = {

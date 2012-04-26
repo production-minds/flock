@@ -82,19 +82,37 @@
             noevent: true
         });
 
-        deepEqual(tmp.options(), {
-            noevent: true
-        }, "Non-default options set (nochaining: true)");
+        deepEqual(
+            tmp.options(),
+            {
+                noevent: true
+            },
+            "Non-default options set (nochaining: true)"
+        );
 
-        deepEqual(tmp.get('hello.world').options(), {
-            noevent: true
-        }, "Derived flock object preserves options");
+        deepEqual(
+            tmp.get('hello.world').options(),
+            {
+                noevent: true
+            },
+            "Derived flock object preserves options"
+        );
 
         tmp.options().nomulti = true;
         ok(typeof tmp.options().nomulti === 'undefined', "Options cannot be modified through property");
 
         // non-live tets
         ok(tmp.get(['hello', 'world']).isEmpty(), "utils.empty delegated to flock");
+
+        tmp = $({}, $.COMPAT);
+        deepEqual(
+            tmp.options(),
+            {
+                noevent: true,
+                nochaining: true
+            },
+            "Compatibility options"
+        );
     });
 
     test("Events", function () {

@@ -1,7 +1,7 @@
 /**
  * Query Pattern Management
  */
-/*global flock */
+var flock = flock || {};
 
 flock.query = (function ($utils) {
     /*jshint regexp:false */

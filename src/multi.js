@@ -4,7 +4,7 @@
  * Implements querying, modification, and removal of multiple datastore
  * nodes at a time.
  */
-/*global flock */
+var flock = flock || {};
 
 flock.multi = (function ($query, $utils) {
     var

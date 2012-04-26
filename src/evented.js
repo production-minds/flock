@@ -1,7 +1,7 @@
 /**
  * Datastore Event Management
  */
-/*global flock */
+var flock = flock || {};
 
 flock.evented = (function ($path, $utils) {
     var

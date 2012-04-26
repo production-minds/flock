@@ -4,7 +4,7 @@
  * Implements setting, retrieval, and removal of specific datastore
  * nodes one at a time.
  */
-/*global flock */
+var flock = flock || {};
 
 flock.single = (function ($node, $path, $utils) {
     //////////////////////////////

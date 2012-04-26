@@ -1,7 +1,7 @@
 /**
  * Basic Datastore Node
  */
-/*global flock */
+var flock = flock || {};
 
 flock.node = (function () {
     return function (node) {

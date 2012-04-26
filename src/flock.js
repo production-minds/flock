@@ -1,9 +1,18 @@
 /**
  * Flock Wrapper Object
  */
-var flock;
+var flock = flock || {};
 
-(function () {
+(function ($utils, $single, $multi, $evented) {
+    var
+        // library-level constants
+        constants = {
+            COMPAT: 'mainOptions.compat'
+        },
+
+        // backup of library so far
+        backup = flock;
+
     /**
      * Flock constructor
      * @constructor
@@ -14,16 +23,19 @@ var flock;
      * @param [options.nochaining] {boolean} No wrapping of querying methods in flock object.
      */
     flock = function (root, options) {
-        // creating default arguments
-        options = options || {};
+        // filtering options argument
+        if (options === flock.COMPAT) {
+            // compatibility mode, no events, no chaining
+            options = {
+                noevent: true,
+                nochaining: true
+            };
+        } else {
+            // empty options
+            options = options || {};
+        }
 
         var
-            // module references
-            $utils = flock.utils,
-            $single = flock.single,
-            $multi = flock.multi,
-            $evented = flock.evented,
-
             // instantiating base class with identical arguments
             base = $single.apply(this, arguments),
             self;
@@ -51,4 +63,13 @@ var flock;
 
         return self;
     };
-}());
+
+    // (re-)adding properties and methods to flock
+    $utils.mixin(flock, constants);
+    $utils.mixin(flock, backup);
+}(
+    flock.utils,
+    flock.single,
+    flock.multi,
+    flock.evented
+));
