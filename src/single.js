@@ -25,6 +25,16 @@ flock.single = (function ($node, $path, $utils) {
             path: []
         };
 
+        /**
+         * Defaulting root to empty object when nor root
+         * neither origin is specified.
+         */
+        if (typeof origin.ds === 'undefined' &&
+            typeof root === 'undefined'
+            ) {
+            root = {};
+        }
+
         var base = $node(root),
             self;
 

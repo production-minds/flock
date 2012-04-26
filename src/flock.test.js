@@ -34,7 +34,7 @@
     module("Flock");
 
     test("Utils", function () {
-        //deepEqual(ds.keys(), ['first', 'second', 'third', 'fourth'], "Key extraction");
+        deepEqual(ds.keys(), ['first', 'second', 'third', 'fourth'], "Key extraction");
     });
 
     test("Creation", function () {
@@ -42,7 +42,9 @@
         equal($("hello").root(), "hello", "Flock based on ordinal (string)");
         equal($(true).root(), true, "Flock based on ordinal (boolean)");
         equal($(null).root(), null, "Flock based on null");
-        equal(typeof $(undefined).root(), 'undefined', "Flock based on undefined");
+
+        deepEqual($().root(), {}, "Flock based on undefined defaults to empty object");
+        equal(typeof $().get('test').root(), 'undefined', "Derived flock based on undefined");
     });
 
     test("Single", function () {
