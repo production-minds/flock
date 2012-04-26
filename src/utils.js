@@ -52,5 +52,8 @@ flock.utils = (function () {
         }
     };
 
+    // delegating utilities to flock
+    self.mixin(flock, self);
+
     return self;
 }());
