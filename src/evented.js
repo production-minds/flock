@@ -53,6 +53,43 @@ flock.evented = (function ($path, $utils) {
         var lookup = {},
             self;
 
+        //////////////////////////////
+        // Privates
+
+        /**
+         * Triggers standard datastore event
+         * depending on the before and after values.
+         * @param path {string|string[]} Datastore path.
+         * @param before Value before the change.
+         * @param after Value after the change.
+         * @param customData Data submitted by the user.
+         */
+        function triggerChanges(path, before, after, customData) {
+            // checking whether anything changed
+            if (before === after) {
+                return;
+            }
+
+            var data = {
+                data: {
+                    before: before,
+                    after: after,
+                    data: customData
+                }
+            };
+
+            // triggering change event
+            self.trigger(path, constants.CHANGE, data);
+
+            // also triggering add/remove event when necessary
+            if (typeof before === 'undefined') {
+                self.trigger(path, constants.ADD, data);
+            } else if (typeof after === 'undefined') {
+                self.trigger(path, constants.REMOVE, data);
+            }
+        }
+
+
         self = $utils.extend(base, {
             //////////////////////////////
             // Getters, setters
@@ -288,20 +325,7 @@ flock.evented = (function ($path, $utils) {
 
                 // triggering event
                 if (options.trigger !== false) {
-                    self.trigger(
-                        path,
-                        typeof before === 'undefined' ?
-                            constants.ADD :
-                            constants.CHANGE,
-                        {
-                            data: {
-                                before: before,
-                                after: after,
-                                name: path[path.length - 1],
-                                data: options.data
-                            }
-                        }
-                    );
+                    triggerChanges(path, before, after, options.data);
                 }
 
                 return this;
@@ -325,14 +349,7 @@ flock.evented = (function ($path, $utils) {
 
                     // triggering event
                     if (options.trigger !== false) {
-                        self.trigger(
-                            path,
-                            constants.REMOVE,
-                            {
-                                before: before,
-                                data: options.data
-                            }
-                        );
+                        triggerChanges(path, before, undefined, options.data);
                     }
                 }
 
@@ -358,14 +375,7 @@ flock.evented = (function ($path, $utils) {
 
                     // triggering event
                     if (options.trigger !== false) {
-                        self.trigger(
-                            path,
-                            constants.REMOVE,
-                            {
-                                before: before,
-                                data: options.data
-                            }
-                        );
+                        triggerChanges(path, before, undefined, options.data);
                     }
                 }
 

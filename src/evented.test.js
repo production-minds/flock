@@ -216,20 +216,19 @@
             equal(event.target, 'hello.world.center', "Event target ok");
             equal(data.before, "!!", "Before value ok");
             equal(data.after, "!!!", "After value ok");
-            equal(data.name, 'center', "Node name ok");
             equal(data.data, "customData", "Custom data ok");
         });
         ds.set(['hello', 'world', 'center'], "!!!", {data: "customData"});
         ds.off('', flock.CHANGE);
 
-        var i;
+        var i, j;
 
         function onChange() {
             i++;
         }
 
         function onAdd() {
-            i += 2;
+            j += 2;
         }
 
         ds.on('', flock.ADD, onAdd);
@@ -248,9 +247,9 @@
         equal(i, 0, "Non-triggering call to event.set()");
 
         // testing data addition
-        i = 0;
+        j = 0;
         ds.set(['hello', 'world', 'whatever'], "blah");
-        equal(i, 2, "Addition triggers flock.ADD event");
+        equal(j, 2, "Addition triggers flock.ADD event");
 
         ds.off('', flock.ADD, onAdd);
         ds.off('', flock.CHANGE, onChange);
