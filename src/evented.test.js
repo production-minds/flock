@@ -1,4 +1,4 @@
-/*global flock, module, test, ok, equal, deepEqual, raises */
+/*global flock, module, test, expect, ok, equal, deepEqual, raises */
 (function ($evented, $single) {
     module("Event");
 
@@ -129,47 +129,28 @@
         equal(i, 2, "Pattern delegated event fired on other matching node");
     });
 
-    test("Getting", function () {
+    test("Access", function () {
+        expect(5);
+
         ds.on('', flock.ACCESS, function (event, data) {
-            equal(event.name, flock.ACCESS, "Event name (access) ok.");
-            equal(event.target, 'hello.world.center', "Event target ok.");
-            equal(data.value, '!!', "Value ok");
+            equal(event.name, flock.ACCESS, "Event name (flock.ACCESS) ok.");
+            equal(event.name, flock.ACCESS, "Event name (flock.ACCESS) ok.");
+            equal(event.target, 'hello.world.blahblah', "Event target ok.");
+            equal(typeof data.value, 'undefined', "Value ok on non-existing node");
             equal(data.data, 'test', "Custom data ok.");
         });
 
-        ds.get('hello.world.center', {data: 'test'});
+        ds.get('hello.world.blahblah', {data: 'test'});
 
         ds.off('', flock.ACCESS);
-
-        ds.on('', flock.ACCESS, function (event, data) {
-            equal(typeof data.value, 'undefined', "Value ok on non-existing node");
-        });
-
-        ds.get('hello.world.blahblah');
-
-        ds.off('', flock.ACCESS);
-    });
-
-    test("Access", function () {
-        ds.on('hello.world.center', flock.ACCESS, function (event, data) {
-            var handler = data.data;
-
-            handler(event.target, data.value);
-            return false;
-        });
-
-        ds.get('hello.world.center', function (path, value) {
-            equal(path, 'hello.world.center', "Path is ok.");
-            equal(value, '!!', "Value is ok.");
-        });
-
-        ds.off('hello.world.center', flock.ACCESS);
     });
 
     /**
      * Exemplifies loading data on demand and returning with it.
      */
     test("On demand loading", function () {
+        expect(1);
+
         /**
          * Pretends to load data associated with a cache path.
          * @param path {string} Cache path.
@@ -183,22 +164,13 @@
         ds.on('hello.world', flock.ACCESS, function (event, data) {
             var handler = data.data;
 
-            if (typeof data.value === 'undefined') {
-                // loading data if value is empty
-                mockLoader(event.target, function (path, value) {
-                    handler(event.target, value);
-                });
-            } else {
-                handler(event.target, data.value);
-            }
+            // loading missing data
+            mockLoader(event.target, function (path, value) {
+                handler(event.target, value);
+            });
 
             // preventing further event propagation
             return false;
-        });
-
-        // getting existing node
-        ds.get('hello.world.center', function (path, value) {
-            equal(value, '!!', "Data node accessed at existing node");
         });
 
         // attempting to load data from non-existing node

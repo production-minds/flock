@@ -283,19 +283,21 @@ flock.evented = (function ($path, $utils) {
             get: function (path, options, nochaining) {
                 options = privates.preprocessOptions(options);
 
-                var result = base.get.call(this, path, nochaining);
+                var result = base.get.call(this, path, nochaining),
+                    data;
 
-                if (options.trigger !== false) {
-                    self.trigger(
-                        path,
-                        constants.ACCESS,
-                        {
-                            data: {
-                                value: result,
-                                data: options.data
-                            }
+                if (options.trigger !== false &&
+                    typeof result === 'undefined'
+                    ) {
+                    data = {
+                        data: {
+                            value: result,
+                            data: options.data
                         }
-                    );
+                    };
+
+                    // triggering access event
+                    self.trigger(path, constants.ACCESS, data);
                 }
 
                 return result;
