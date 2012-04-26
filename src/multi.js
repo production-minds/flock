@@ -12,12 +12,13 @@ flock.multi = (function ($query, $utils) {
             ERROR_INVALIDPATH: "Invalid path."
         },
 
+        // traversal modes
         constants = {
-            KEYS: 0,        // collect leaf keys
-            VALUES: 1,      // collect leaf values
-            BOTH: 2,        // collect key:value pairs of leaf nodes
-            DEL: 3,         // delete leaf nodes
-            COUNT: 4        // count leaf nodes
+            KEYS: 'traversalModes.keys', // collect leaf keys
+            VALUES: 'traversalModes.values', // collect leaf values
+            BOTH: 'traversalModes.keysAndValues', // collect key:value pairs of leaf nodes
+            DEL: 'traversalModes.delete', // delete leaf nodes
+            COUNT: 'traversalModes.count' // count leaf nodes
         },
 
         privates,
@@ -54,6 +55,23 @@ flock.multi = (function ($query, $utils) {
                 return {
                     value: options
                 };
+            }
+        },
+
+        /**
+         * Initializes traversal result according to traversal mode
+         * @param mode {string} Traversal mode.
+         */
+        initResult: function (mode) {
+            switch (mode) {
+            case constants.KEYS:
+            case constants.VALUES:
+                return [];
+            default:
+            case constants.BOTH:
+                return {};
+            case constants.COUNT:
+                return 0;
             }
         }
     };
@@ -111,7 +129,7 @@ flock.multi = (function ($query, $utils) {
                 var
                     limit = options.limit || 0,
                     loopback = options.loopback || false,
-                    result = {2: {}, 4: 0}[options.mode] || [],
+                    result = privates.initResult(options.mode),
                     stack = options.loopback ? null : [];
 
                 /**
