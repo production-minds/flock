@@ -38,23 +38,23 @@
     });
 
     test("Creation", function () {
-        equal($(5).root(), 5, "Flock based on ordinal (number)");
-        equal($("hello").root(), "hello", "Flock based on ordinal (string)");
-        equal($(true).root(), true, "Flock based on ordinal (boolean)");
-        equal($(null).root(), null, "Flock based on null");
+        equal($(5).root, 5, "Flock based on ordinal (number)");
+        equal($("hello").root, "hello", "Flock based on ordinal (string)");
+        equal($(true).root, true, "Flock based on ordinal (boolean)");
+        equal($(null).root, null, "Flock based on null");
 
-        deepEqual($().root(), {}, "Flock based on undefined defaults to empty object");
-        equal(typeof $().get('test').root(), 'undefined', "Derived flock based on undefined");
+        deepEqual($().root, {}, "Flock based on undefined defaults to empty object");
+        equal(typeof $().get('test').root, 'undefined', "Derived flock based on undefined");
     });
 
     test("Single", function () {
-        deepEqual(ds.get(['fourth', '1', 'a']).root(), "One", "Simple get");
+        deepEqual(ds.get(['fourth', '1', 'a']).root, "One", "Simple get");
 
         deepEqual(
             ds
                 .get(['fourth', '1'])
                 .get(['a'])
-                .root(),
+                .root,
             "One",
             "Chained get"
         );
@@ -64,19 +64,19 @@
                 .get(['fourth', '1'])
                 .set(['c'], "Hello!")
                 .get(['c'])
-                .root(),
+                .root,
             "Hello!",
             "Chained set & get"
         );
 
-        ok(typeof ds.get(['nonexisting', '1', 'a']).root() === 'undefined', "Empty result set returns undefined");
+        ok(typeof ds.get(['nonexisting', '1', 'a']).root === 'undefined', "Empty result set returns undefined");
 
         var nonChainable = $({hello: {world: {}}}, {nochaining: true});
         deepEqual(nonChainable.get('hello'), {world: {}}, "Querying returns bare node on non-chaninng datastore");
     });
 
     test("Options", function () {
-        deepEqual(ds.options(), {}, "All flags are false by default");
+        deepEqual(ds.options, {}, "All flags are false by default");
 
         var tmp;
 
@@ -85,7 +85,7 @@
         });
 
         deepEqual(
-            tmp.options(),
+            tmp.options,
             {
                 noevent: true
             },
@@ -93,22 +93,24 @@
         );
 
         deepEqual(
-            tmp.get('hello.world').options(),
+            tmp.get('hello.world').options,
             {
                 noevent: true
             },
             "Derived flock object preserves options"
         );
 
-        tmp.options().nomulti = true;
-        ok(typeof tmp.options().nomulti === 'undefined', "Options cannot be modified through property");
+        /*
+        tmp.options.nomulti = true;
+        ok(typeof tmp.options.nomulti === 'undefined', "Options cannot be modified through property");
+        */
 
         // non-live tets
         ok(tmp.get(['hello', 'world']).isEmpty(), "utils.empty delegated to flock");
 
         tmp = $({}, $.COMPAT);
         deepEqual(
-            tmp.options(),
+            tmp.options,
             {
                 noevent: true,
                 nochaining: true
@@ -144,10 +146,10 @@
             ds
                 .mget('fourth.*', {mode: $.BOTH})
                 .get('1')
-                .root(),
+                .root,
             ds
                 .get('fourth.1')
-                .root(),
+                .root,
             "Stacked querying and getting"
         );
     });
@@ -181,7 +183,7 @@
             ds
                 .get('fourth.1')
                 .get('a')
-                .origin().ds,
+                .origin.ds,
             ds,
             "Origin datastore OK"
         );
@@ -190,7 +192,7 @@
             ds
                 .get('fourth.1')
                 .get('a')
-                .offset(),
+                .origin.offset,
             ['fourth', '1', 'a'],
             "Origin path OK"
         );

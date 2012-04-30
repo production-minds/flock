@@ -14,7 +14,7 @@
             foo: 5
         },
 
-        single = $single(data, {nochaining: true});
+        single = $single.create(data, {nochaining: true});
 
     test("Getting", function () {
         equal(single.get(['hi']), "There!", "Getting ordinal value");
@@ -39,12 +39,12 @@
                 foo: 5
             },
 
-            single = $single(data);
+            single = $single.create(data);
 
         equal(
             single
                 .get(['hello', 'world'])
-                .origin().ds,
+                .origin.ds,
             single,
             "Origin datastore OK"
         );
@@ -52,7 +52,7 @@
         deepEqual(
             single
                 .get(['hello', 'world'])
-                .offset(),
+                .origin.offset,
             ['hello', 'world'],
             "Origin path OK"
         );
@@ -61,7 +61,7 @@
             single
                 .get('hello')
                     .get('world')
-                .origin().ds,
+                .origin.ds,
             single,
             "Origin datastore OK (multi-depth)"
         );
@@ -70,7 +70,7 @@
             single
                 .get('hello')
                     .get('world')
-                .offset(),
+                .origin.offset,
             ['hello', 'world'],
             "Origin path OK (multi-depth)"
         );
@@ -114,7 +114,7 @@
                 }
             },
 
-            single = $single(data);
+            single = $single.create(data);
 
         single.unset(['hello', 'world', 'center']);
         deepEqual(data, {
@@ -159,7 +159,7 @@
                 }
             },
 
-            single = $single(data);
+            single = $single.create(data);
 
         single.cleanup(['blaaaaah']);
         deepEqual(data, {
@@ -210,7 +210,7 @@
                 }
             },
 
-            single = $single(data, {nochaining: true});
+            single = $single.create(data, {nochaining: true});
 
         deepEqual(single.map(['foo'], ['bar']), {
             hello: {

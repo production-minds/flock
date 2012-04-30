@@ -37,7 +37,7 @@ var flock = flock || {};
 
         var
             // instantiating base class with identical arguments
-            base = $single.apply(this, arguments),
+            base = $single.create.apply(this, arguments),
             self;
 
         if (!options.nomulti) {

@@ -122,7 +122,7 @@ flock.multi = (function ($query, $utils) {
 
                 // default case
                 if (!query.length) {
-                    return this.root();
+                    return this.root;
                 }
 
                 // traversal state variables
@@ -261,10 +261,10 @@ flock.multi = (function ($query, $utils) {
                             return undefined;
                         }
                     }
-                }(this.root() || {}, 0, []));
+                }(this.root || {}, 0, []));
 
                 // optionally wrapping result into datastore object
-                return nochaining || this.options('nochaining') ?
+                return nochaining || this.options.nochaining ?
                     result :
                     this.wrap(result);
             },

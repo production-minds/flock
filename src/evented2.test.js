@@ -17,17 +17,17 @@
         },
 
         // evented datastore
-        original = $evented($single(root)),
+        original = $evented($single.create(root)),
 
         // derived evented datastore
-        derived = $evented2($single(root.hello.world, null, {
+        derived = $evented2($single.create(root.hello.world, null, {
             ds: original,
             offset: ['hello', 'world']
         }));
 
     test("Creation", function () {
-        deepEqual(derived.offset(), ['hello', 'world'], "Derived offset");
-        equal(derived.ds(), original, "Original datasotre in derived");
+        deepEqual(derived.origin.offset, ['hello', 'world'], "Derived offset");
+        equal(derived.origin.ds, original, "Original datasotre in derived");
     });
 
     test("Subscription", function () {

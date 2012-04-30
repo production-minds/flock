@@ -285,7 +285,7 @@ flock.evented = (function ($path, $utils) {
 
                 var result = base.get.call(this, path, nochaining),
                     root = flock.node.isPrototypeOf(result) ?
-                        result.root() :
+                        result.root :
                         result,
                     data;
 

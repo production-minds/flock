@@ -20,10 +20,10 @@ flock.evented2 = (function ($path, $utils) {
                 path = args.shift();
 
             path = $path.normalize(path);
-            path = this.offset().concat(path);
+            path = this.origin.offset.concat(path);
             args.unshift(path);
 
-            return this.ds()[methodName].apply(this, args);
+            return this.origin.ds[methodName].apply(this, args);
         };
     }
 
@@ -38,7 +38,7 @@ flock.evented2 = (function ($path, $utils) {
             // Getters, setters
 
             lookup: function () {
-                return this.ds().lookup();
+                return this.origin.ds.lookup();
             },
 
             //////////////////////////////

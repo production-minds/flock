@@ -17,7 +17,7 @@
         },
 
         // creating evented datastore object explicitly from flock.single
-        ds = $evented($single(root, {nochaining: true}));
+        ds = $evented($single.create(root, {nochaining: true}));
 
     test("Subscription", function () {
         function testHandler() {
