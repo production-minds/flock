@@ -7,11 +7,11 @@ flock.node = (function () {
     var self = {
         /**
          * @constructor
-         * @param node {object} Datastore node.
+         * @param root {object} Datastore node.
          */
-        create: function (node) {
+        create: function (root) {
             return Object.create(self, {
-                node: {value: node, writable: false}
+                root: {value: root, writable: false}
             });
         },
 
@@ -22,8 +22,8 @@ flock.node = (function () {
         isEmpty: function () {
             var result = true,
                 key;
-            for (key in this.node) {
-                if (this.node.hasOwnProperty(key)) {
+            for (key in this.root) {
+                if (this.root.hasOwnProperty(key)) {
                     result = false;
                     break;
                 }
@@ -39,8 +39,8 @@ flock.node = (function () {
             var result = false,
                 key,
                 count = 0;
-            for (key in this.node) {
-                if (this.node.hasOwnProperty(key)) {
+            for (key in this.root) {
+                if (this.root.hasOwnProperty(key)) {
                     result = ++count === 1;
                     if (count > 1) {
                         break;
@@ -54,30 +54,30 @@ flock.node = (function () {
          * Tests node for being null.
          */
         isNull: function () {
-            return this.node === null;
+            return this.root === null;
         },
 
         /**
          * Tests node for being undefined.
          */
         isUndefined: function () {
-            return typeof this.node === 'undefined';
+            return typeof this.root === 'undefined';
         },
 
         /**
          * Tests node for being ordinal.
          */
         isOrdinal: function () {
-            return typeof this.node === 'string' ||
-                typeof this.node === 'number' ||
-                typeof this.node === 'boolean';
+            return typeof this.root === 'string' ||
+                typeof this.root === 'number' ||
+                typeof this.root === 'boolean';
         },
 
         /**
          * Tests node for being non-null object.
          */
         isNode: function () {
-            return typeof this.node === 'object' && this.node !== null;
+            return typeof this.root === 'object' && this.root !== null;
         },
 
         /**
@@ -85,8 +85,8 @@ flock.node = (function () {
          */
         firstKey: function () {
             var key;
-            for (key in this.node) {
-                if (this.node.hasOwnProperty(key)) {
+            for (key in this.root) {
+                if (this.root.hasOwnProperty(key)) {
                     return key;
                 }
             }
@@ -98,8 +98,8 @@ flock.node = (function () {
         keys: function () {
             var key,
                 result = [];
-            for (key in this.node) {
-                if (this.node.hasOwnProperty(key)) {
+            for (key in this.root) {
+                if (this.root.hasOwnProperty(key)) {
                     result.push(key);
                 }
             }
@@ -112,9 +112,9 @@ flock.node = (function () {
         values: function () {
             var key,
                 result = [];
-            for (key in this.node) {
-                if (this.node.hasOwnProperty(key)) {
-                    result.push(this.node[key]);
+            for (key in this.root) {
+                if (this.root.hasOwnProperty(key)) {
+                    result.push(this.root[key]);
                 }
             }
             return result;
