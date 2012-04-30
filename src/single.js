@@ -197,7 +197,7 @@ flock.single = (function ($node, $path, $utils) {
         map: function () {
             var
                 // source and destination buffers
-                source = this.create(this.root),
+                source = flock.single.create(this.root),
                 dest = this.wrap({}),
 
                 // path buffer
