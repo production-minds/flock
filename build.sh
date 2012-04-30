@@ -31,6 +31,7 @@ src/path.js \
 src/node.js \
 src/single.js \
 src/evented.js \
+src/evented2.js \
 src/query.js \
 src/multi.js \
 src/flock.js \

@@ -3,9 +3,9 @@
  */
 var flock = flock || {};
 
-flock.node = (function () {
+flock.node = (function ($utils) {
     return function (node) {
-        return {
+        return $utils.extend(flock.base, {
             /**
              * Tests node for having no keys.
              * @returns {boolean}
@@ -110,6 +110,8 @@ flock.node = (function () {
                 }
                 return result;
             }
-        };
+        });
     };
-}());
+}(
+    flock.utils
+));

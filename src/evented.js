@@ -284,14 +284,16 @@ flock.evented = (function ($path, $utils) {
                 options = privates.preprocessOptions(options);
 
                 var result = base.get.call(this, path, nochaining),
+                    root = flock.base.isPrototypeOf(result) ?
+                        result.root() :
+                        result,
                     data;
 
                 if (options.trigger !== false &&
-                    typeof result === 'undefined'
+                    typeof root === 'undefined'
                     ) {
                     data = {
                         data: {
-                            value: result,
                             data: options.data
                         }
                     };
