@@ -22,7 +22,9 @@ flock.single = (function ($node, $path, $utils) {
     var ctor = function (root, options, origin) {
         options = options || {};
         origin = origin || {
-            path: []
+            /** @type flock.single */
+            ds: undefined,
+            offset: []
         };
 
         /**
@@ -38,7 +40,7 @@ flock.single = (function ($node, $path, $utils) {
         var base = $node(root),
             self;
 
-        self = $utils.extend(base, {
+        self = $utils.extend(base, /** @lends flock.single */ {
             //////////////////////////////
             // Getters, setters
 
@@ -59,6 +61,14 @@ flock.single = (function ($node, $path, $utils) {
 
             origin: function () {
                 return origin;
+            },
+
+            ds: function () {
+                return origin.ds;
+            },
+
+            offset: function () {
+                return origin.offset;
             },
 
             //////////////////////////////
@@ -106,7 +116,7 @@ flock.single = (function ($node, $path, $utils) {
                     result :
                     this.wrap(result, options, {
                         ds: origin.ds || this,
-                        path: origin.path.concat(path)
+                        offset: origin.offset.concat(path)
                     });
             },
 

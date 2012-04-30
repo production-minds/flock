@@ -52,7 +52,7 @@
         deepEqual(
             single
                 .get(['hello', 'world'])
-                .origin().path,
+                .offset(),
             ['hello', 'world'],
             "Origin path OK"
         );
@@ -70,7 +70,7 @@
             single
                 .get('hello')
                     .get('world')
-                .origin().path,
+                .offset(),
             ['hello', 'world'],
             "Origin path OK (multi-depth)"
         );

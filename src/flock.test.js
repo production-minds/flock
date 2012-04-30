@@ -190,7 +190,7 @@
             ds
                 .get('fourth.1')
                 .get('a')
-                .origin().path,
+                .offset(),
             ['fourth', '1', 'a'],
             "Origin path OK"
         );
