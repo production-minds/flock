@@ -37,7 +37,7 @@ flock.single = (function ($node, $path, $utils) {
             root = {};
         }
 
-        var base = $node(root),
+        var base = $node.create(root),
             self;
 
         self = $utils.extend(base, /** @lends flock.single */ {
@@ -211,7 +211,7 @@ flock.single = (function ($node, $path, $utils) {
                     }
                 } while (
                     // continue when remaining leaf node is empty
-                    tpath.length && $node(parent).isEmpty()
+                    tpath.length && $node.create(parent).isEmpty()
                     );
 
                 return this;

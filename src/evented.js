@@ -284,7 +284,7 @@ flock.evented = (function ($path, $utils) {
                 options = privates.preprocessOptions(options);
 
                 var result = base.get.call(this, path, nochaining),
-                    root = flock.base.isPrototypeOf(result) ?
+                    root = flock.node.isPrototypeOf(result) ?
                         result.root() :
                         result,
                     data;
