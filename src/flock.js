@@ -41,7 +41,7 @@ var flock = flock || {};
             self;
 
         if (!options.nomulti) {
-            base = $multi(base);
+            base = $multi.create(base);
         }
 
         if (!options.noevent) {

@@ -30,7 +30,7 @@
                 }
             }
         },
-        multi = $multi($single.create(data, {nochaining: true}));
+        multi = $multi.create($single.create(data, {nochaining: true}));
 
     module("Multi");
 
@@ -156,7 +156,7 @@
                 ]
             },
 
-            multi = $multi($single.create(data, {nochaining: true}));
+            multi = $multi.create($single.create(data, {nochaining: true}));
 
         deepEqual(
             multi.traverse('...1'),
@@ -209,20 +209,20 @@
                 ]
             },
 
-            multi = $multi($single.create(data, {nochaining: true}));
+            multi = $multi.create($single.create(data, {nochaining: true}));
 
         equal(multi.traverse(''), data, ".traverse('') and datastore root point to the same object");
         deepEqual(multi.traverse(['test', '.']), ['dot'], "Dot as key acts as regular string");
 
         deepEqual(
-            $multi($single.create(undefined, {nochaining: true}))
+            $multi.create($single.create(undefined, {nochaining: true}))
                 .mget(['made', 'up', 'path']),
             [],
             "Traversal works on datastore with undefined root node"
         );
 
         deepEqual(
-            $multi($single.create('ordinal', {nochaining: true}))
+            $multi.create($single.create('ordinal', {nochaining: true}))
                 .mget(['made', 'up', 'path']),
             [],
             "Traversal works on datastore with ordinal root node"
@@ -248,7 +248,7 @@
                 }
             },
 
-            multi = $multi($single.create(data, {nochaining: true}));
+            multi = $multi.create($single.create(data, {nochaining: true}));
 
         multi.mset('fourth.*.a', {});
         deepEqual(data.fourth, {
@@ -322,7 +322,7 @@
 
     test("Deleting multiple nodes", function () {
         var data = {},
-            multi = $multi($single.create(data, {nochaining: true}));
+            multi = $multi.create($single.create(data, {nochaining: true}));
 
         multi.mget('fourth', {value: {
             1: {
@@ -355,7 +355,7 @@
     test("String index", function () {
         var data = {},
             single = $single.create(data, {nochaining: true}),
-            multi = $multi($single.create(data, {nochaining: true}));
+            multi = $multi.create($single.create(data, {nochaining: true}));
 
         // sets string for full text search
         function addWord(name) {
