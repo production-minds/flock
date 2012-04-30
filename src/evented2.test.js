@@ -17,10 +17,10 @@
         },
 
         // evented datastore
-        original = $evented($single.create(root)),
+        original = $evented.create($single.create(root)),
 
         // derived evented datastore
-        derived = $evented2($single.create(root.hello.world, null, {
+        derived = $evented2.create($single.create(root.hello.world, null, {
             ds: original,
             offset: ['hello', 'world']
         }));

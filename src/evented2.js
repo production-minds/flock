@@ -5,8 +5,8 @@
  */
 var flock = flock || {};
 
-flock.evented2 = (function ($path, $utils) {
-    var ctor;
+flock.evented2 = (function ($single, $path, $utils) {
+    var self;
 
     /**
      * Generates a method with datastore path as first parameter.
@@ -17,49 +17,53 @@ flock.evented2 = (function ($path, $utils) {
     function genMethod(methodName) {
         return function () {
             var args = Array.prototype.slice.call(arguments),
-                path = args.shift();
+                path = args.shift(),
+                ds = this.origin.ds,
+                offset = this.origin.offset;
 
             path = $path.normalize(path);
-            path = this.origin.offset.concat(path);
+            path = offset.concat(path);
             args.unshift(path);
 
-            return this.origin.ds[methodName].apply(this, args);
+            return ds[methodName].apply(ds, args);
         };
     }
 
     //////////////////////////////
     // Class
 
-    ctor = function (base) {
-        var self;
+    self = {
+        /**
+         * @constructor
+         * @param base {object} Base class instance.
+         */
+        create: function (base) {
+            if (arguments.length > 1) {
+                // root and options were passed instead of base
+                // falling back to flock.single
+                base = $single.create.apply(this, arguments);
+            }
 
-        self = $utils.extend(base, {
-            //////////////////////////////
-            // Getters, setters
+            return $utils.extend(base, self);
+        },
 
-            lookup: function () {
-                return this.origin.ds.lookup();
-            },
+        //////////////////////////////
+        // Event functionality
 
-            //////////////////////////////
-            // Event functionality
-
-            on: genMethod('on'),
-            one: genMethod('one'),
-            delegate: genMethod('delegate'),
-            off: genMethod('off'),
-            trigger: genMethod('trigger'),
-            get: genMethod('get'),
-            set: genMethod('set'),
-            unset: genMethod('unset'),
-            cleanup: genMethod('cleanup')
-        });
-
-        return self;
+        on: genMethod('on'),
+        one: genMethod('one'),
+        delegate: genMethod('delegate'),
+        off: genMethod('off'),
+        trigger: genMethod('trigger'),
+        get: genMethod('get'),
+        set: genMethod('set'),
+        unset: genMethod('unset'),
+        cleanup: genMethod('cleanup')
     };
 
-    return ctor;
+    return self;
 }(
+    flock.single,
     flock.path,
     flock.utils
 ));

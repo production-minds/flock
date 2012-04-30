@@ -17,7 +17,7 @@
         },
 
         // creating evented datastore object explicitly from flock.single
-        ds = $evented($single.create(root, {nochaining: true}));
+        ds = $evented.create($single.create(root, {nochaining: true}));
 
     test("Subscription", function () {
         function testHandler() {
@@ -25,17 +25,17 @@
 
         ds.on('hello.world', 'testEvent', testHandler);
         ds.on('hello', 'otherEvent', testHandler);
-        equal(ds.lookup()['hello.world']['testEvent'][0], testHandler, "Event handler added");
-        equal(ds.lookup()['hello']['otherEvent'][0], testHandler, "Other event handler added");
+        equal(ds.lookup['hello.world']['testEvent'][0], testHandler, "Event handler added");
+        equal(ds.lookup['hello']['otherEvent'][0], testHandler, "Other event handler added");
 
         ds.off('hello.world', 'testEvent', testHandler);
-        equal(ds.lookup()['hello.world']['testEvent'].length, 0, "Event handler removed");
+        equal(ds.lookup['hello.world']['testEvent'].length, 0, "Event handler removed");
 
         ds.off('hello.world', 'testEvent');
-        equal(ds.lookup()['hello.world'].hasOwnProperty('testEvent'), false, "Event handlers removed for given event");
+        equal(ds.lookup['hello.world'].hasOwnProperty('testEvent'), false, "Event handlers removed for given event");
 
         ds.off('hello.world');
-        equal(ds.lookup().hasOwnProperty('hello.world'), false, "All event handlers removed from node");
+        equal(ds.lookup.hasOwnProperty('hello.world'), false, "All event handlers removed from node");
     });
 
     test("Triggering", function () {

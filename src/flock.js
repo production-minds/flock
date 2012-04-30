@@ -45,7 +45,7 @@ var flock = flock || {};
         }
 
         if (!options.noevent) {
-            base = $evented(base);
+            base = $evented.create(base);
         }
 
         // adding top-level methods
