@@ -3,7 +3,7 @@
  */
 var flock = flock || {};
 
-(function ($utils, $single, $multi, $evented) {
+(function ($utils, $single, $multi, $evented, $evented2) {
     var
         // library-level constants
         constants = {
@@ -45,7 +45,11 @@ var flock = flock || {};
         }
 
         if (!options.noevent) {
-            base = $evented.create(base);
+            if (base.origin.offset.length > 0) {
+                base = $evented2.create(base);
+            } else {
+                base = $evented.create(base);
+            }
         }
 
         // adding top-level methods
@@ -71,5 +75,6 @@ var flock = flock || {};
     flock.utils,
     flock.single,
     flock.multi,
-    flock.evented
+    flock.evented,
+    flock.evented2
 ));

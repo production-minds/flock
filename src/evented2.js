@@ -19,13 +19,24 @@ flock.evented2 = (function ($single, $path, $utils) {
             var args = Array.prototype.slice.call(arguments),
                 path = args.shift(),
                 ds = this.origin.ds,
-                offset = this.origin.offset;
+                offset = this.origin.offset,
+                result;
 
+            // prending path with offset
             path = $path.normalize(path);
             path = offset.concat(path);
             args.unshift(path);
 
-            return ds[methodName].apply(ds, args);
+            // running method on origin datastore
+            result = ds[methodName].apply(ds, args);
+
+            if (result === ds) {
+                // returning current datastore object when method returned itself
+                return this;
+            } else {
+                // returning result otheriwse
+                return result;
+            }
         };
     }
 
