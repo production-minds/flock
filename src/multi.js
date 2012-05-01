@@ -253,7 +253,7 @@ flock.multi = (function ($query, $utils) {
             }(this.root || {}, 0, []));
 
             // optionally wrapping result into datastore object
-            return nochaining || this.options.nochaining ?
+            return nochaining || this.nochaining ?
                 result :
                 this.wrap(result);
         },

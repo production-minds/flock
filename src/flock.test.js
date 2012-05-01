@@ -84,19 +84,15 @@
             noevent: true
         });
 
-        deepEqual(
-            tmp.options,
-            {
-                noevent: true
-            },
+        equal(
+            tmp.options.noevent,
+            true,
             "Non-default options set (nochaining: true)"
         );
 
-        deepEqual(
-            tmp.get('hello.world').options,
-            {
-                noevent: true
-            },
+        equal(
+            tmp.get('hello.world').options.noevent,
+            true,
             "Derived flock object preserves options"
         );
 
@@ -190,7 +186,7 @@
             ds
                 .get('fourth.1')
                 .get('a')
-                .origin.ds,
+                .origin,
             ds,
             "Origin datastore OK"
         );
@@ -199,7 +195,7 @@
             ds
                 .get('fourth.1')
                 .get('a')
-                .origin.offset,
+                .offset,
             ['fourth', '1', 'a'],
             "Origin path OK"
         );

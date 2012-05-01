@@ -44,7 +44,7 @@
         equal(
             single
                 .get(['hello', 'world'])
-                .origin.ds,
+                .origin,
             single,
             "Origin datastore OK"
         );
@@ -52,7 +52,7 @@
         deepEqual(
             single
                 .get(['hello', 'world'])
-                .origin.offset,
+                .offset,
             ['hello', 'world'],
             "Origin path OK"
         );
@@ -61,7 +61,7 @@
             single
                 .get('hello')
                     .get('world')
-                .origin.ds,
+                .origin,
             single,
             "Origin datastore OK (multi-depth)"
         );
@@ -70,7 +70,7 @@
             single
                 .get('hello')
                     .get('world')
-                .origin.offset,
+                .offset,
             ['hello', 'world'],
             "Origin path OK (multi-depth)"
         );

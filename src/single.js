@@ -13,22 +13,17 @@ flock.single = (function ($node, $path, $utils) {
          * @param root {object} Source node.
          * @param [options] {object}
          * @param [options.nochaining] {boolean} Whether query methods are chainable.
-         * @param [origin] {object}
-         * @param [origin.ds] {flock.single} Origin datastore.
-         * @param [origin.path] {string[]} Path of root relative to root of origin datastore.
+         * @param [options.origin] {flock.single} Origin datastore.
+         * @param [options.offset] {string[]} Path of root relative to root of origin datastore.
          */
-        create: function (root, options, origin) {
+        create: function (root, options) {
             options = options || {};
-            origin = origin || {
-                ds: undefined,
-                offset: []
-            };
 
             /**
              * Defaulting root to empty object when nor root
              * neither origin is specified.
              */
-            if (typeof origin.ds === 'undefined' &&
+            if (typeof options.origin === 'undefined' &&
                 typeof root === 'undefined'
                 ) {
                 root = {};
@@ -37,7 +32,9 @@ flock.single = (function ($node, $path, $utils) {
             return Object.create(self, {
                 root: {value: root, writable: false},
                 options: {value: options, writable: false},
-                origin: {value: origin, writable: false}
+                nochaining: {value: options.nochaining, writable: false},
+                origin: {value: options.origin, writable: false},
+                offset: {value: options.offset ? options.offset : [], writable: false}
             });
         },
 
@@ -82,12 +79,12 @@ flock.single = (function ($node, $path, $utils) {
                 }
             }
 
-            return nochaining || this.options.nochaining ?
+            return nochaining || this.nochaining ?
                 result :
-                this.wrap(result, this.options, {
-                    ds: this.origin.ds || this,
-                    offset: this.origin.offset.concat(path)
-                });
+                this.wrap(result, $utils.blend(this.options, {
+                    origin: this.origin || this,
+                    offset: this.offset.concat(path)
+                }));
         },
 
         /**
@@ -227,7 +224,7 @@ flock.single = (function ($node, $path, $utils) {
                 }
             }
 
-            return this.options.nochaining ?
+            return this.nochaining ?
                 dest.root :
                 dest;
         }

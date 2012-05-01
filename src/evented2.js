@@ -18,8 +18,8 @@ flock.evented2 = (function ($single, $path, $utils) {
         return function () {
             var args = Array.prototype.slice.call(arguments),
                 path = args.shift(),
-                ds = this.origin.ds,
-                offset = this.origin.offset,
+                ds = this.origin,
+                offset = this.offset,
                 result;
 
             // prending path with offset

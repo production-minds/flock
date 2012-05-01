@@ -45,7 +45,7 @@ var flock = flock || {};
         }
 
         if (!options.noevent) {
-            if (base.origin.offset.length > 0) {
+            if (base.offset.length > 0) {
                 base = $evented2.create(base);
             } else {
                 base = $evented.create(base);
@@ -59,7 +59,7 @@ var flock = flock || {};
              * @param node {object} Datastore node.
              */
             wrap: function (node) {
-                return options.nochaining ?
+                return this.nochaining ?
                     node :
                     flock.apply(this, arguments);
             }
