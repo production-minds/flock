@@ -56,12 +56,16 @@
         equal(extended.test, base.test, "Result has base property");
         equal(extended.hasOwnProperty('test'), false, "Base property moved a level up the prototype chain");
 
-        base = {};
+        base = Object.prototype;
         extended = $utils.extend(base, data);
 
+        /**
+         * deepEqual doesn't see non-writable properties
+         * added using Object.create(), that's why we compare only fractions
+         */
         deepEqual(
-            extended,
-            data,
+            extended.hello,
+            data.hello,
             "All source properties copied"
         );
     });

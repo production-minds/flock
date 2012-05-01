@@ -44,11 +44,17 @@ flock.utils = (function () {
          * mixing the other objects to it.
          * First parameter is base class instance.
          */
-        extend: function () {
-            var args = Array.prototype.slice.call(arguments),
-                base = args.shift();
-            args.unshift(Object.create(base));
-            return self.mixin.apply(this, args);
+        extend: function (base, extension) {
+            var properties = {},
+                key;
+            for (key in extension) {
+                if (extension.hasOwnProperty(key)) {
+                    properties[key] = {
+                        value: extension[key]
+                    };
+                }
+            }
+            return Object.create(base, properties);
         }
     };
 
