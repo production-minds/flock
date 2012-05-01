@@ -31,7 +31,7 @@ flock.single = (function ($node, $path, $utils) {
 
             return Object.create(self, {
                 root: {value: root, writable: false},
-                options: {value: options, writable: false},
+                options: {value: options, writable: false}, // for internal use
                 nochaining: {value: options.nochaining, writable: false},
                 origin: {value: options.origin, writable: false},
                 offset: {value: options.offset ? options.offset : [], writable: false}

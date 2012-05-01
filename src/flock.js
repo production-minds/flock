@@ -27,6 +27,7 @@ var flock = flock || {};
         if (options === flock.COMPAT) {
             // compatibility mode, no events, no chaining
             options = {
+                nomulti: false,
                 noevent: true,
                 nochaining: true
             };
@@ -54,6 +55,9 @@ var flock = flock || {};
 
         // adding top-level methods
         self = $utils.extend(base, {
+            noevent: options.noevent,
+            nomulti: options.nomulti,
+
             /**
              * Wraps node in flock object
              * @param node {object} Datastore node.

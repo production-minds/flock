@@ -76,7 +76,10 @@
     });
 
     test("Options", function () {
-        deepEqual(ds.options, {}, "All flags are false by default");
+        ok(
+            !ds.nochaining && !ds.nomulti && !ds.noevent,
+            "All flags are false by default"
+        );
 
         var tmp;
 
@@ -85,32 +88,32 @@
         });
 
         equal(
-            tmp.options.noevent,
+            tmp.noevent,
             true,
             "Non-default options set (nochaining: true)"
         );
 
         equal(
-            tmp.get('hello.world').options.noevent,
+            tmp.get('hello.world').noevent,
             true,
-            "Derived flock object preserves options"
+            "Derived (.get) flock object preserves options"
         );
 
-        /*
-        tmp.options.nomulti = true;
-        ok(typeof tmp.options.nomulti === 'undefined', "Options cannot be modified through property");
-        */
+        equal(
+            tmp.mget('first.*').noevent,
+            true,
+            "Derived (.mget) flock object preserves options"
+        );
+
+        tmp.nomulti = true;
+        ok(typeof tmp.nomulti === 'undefined', "Options cannot be modified through property");
 
         // non-live tets
         ok(tmp.get(['hello', 'world']).isEmpty(), "utils.empty delegated to flock");
 
         tmp = $({}, $.COMPAT);
-        deepEqual(
-            tmp.options,
-            {
-                noevent: true,
-                nochaining: true
-            },
+        ok(
+            tmp.noevent && tmp.nochaining,
             "Compatibility options"
         );
     });
