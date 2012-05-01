@@ -41,10 +41,12 @@ flock.utils = (function () {
 
         /**
          * Extends an object by creating a new instance of the old one and
-         * mixing the other objects to it.
-         * First parameter is base class instance.
+         * mixing the extension object to it.
+         * @param base {object} Object to extend.
+         * @param extension {object} Object holding the properties to add to the extended instance.
+         * @param nocreate {boolean} Whether to bypass creation of new object. Default: false.
          */
-        extend: function (base, extension) {
+        extend: function (base, extension, nocreate) {
             var properties = {},
                 key;
             for (key in extension) {
@@ -54,7 +56,9 @@ flock.utils = (function () {
                     };
                 }
             }
-            return Object.create(base, properties);
+            return nocreate === true ?
+                Object.defineProperties(base, properties) :
+                Object.create(base, properties);
         }
     };
 

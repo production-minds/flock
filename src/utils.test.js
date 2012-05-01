@@ -68,5 +68,12 @@
             data.hello,
             "All source properties copied"
         );
+
+        base = {test: "test"};
+        extended = $utils.extend(base, data, true);
+
+        equal(base, extended, "Immediate extension adds / changes properties on base object");
+        equal(extended.test, "test", "Extended has original property");
+        equal(extended.hi, data.hi, "Extended has new property");
     });
 }(flock.utils));
