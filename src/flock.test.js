@@ -128,9 +128,16 @@
 
         // triggering event on child node and capturing on parent node
         ds.on(['fourth'], 'testEvent', testHandler);
+
         i = 0;
         ds.trigger(['fourth', '1'], 'testEvent', "moreInfo");
         equal(i, 1, "Event triggered and captured");
+
+        ds
+            .get(['fourth', '1'])
+            .trigger([], 'testEvent', "moreInfo");
+        equal(i, 2, "Chaining get & trigger");
+
         ds.off(['fourth'], 'testEvent');
 
         // capturing event on root node
