@@ -3,8 +3,8 @@
  */
 var flock = flock || {};
 
-flock.node = (function () {
-    var self = {
+flock.node = (function ($utils) {
+    var self = $utils.extend(Object.prototype, {
         /**
          * @constructor
          * @param root {object} Datastore node.
@@ -119,7 +119,9 @@ flock.node = (function () {
             }
             return result;
         }
-    };
+    });
 
     return self;
-}());
+}(
+    flock.utils
+));

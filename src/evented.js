@@ -55,7 +55,7 @@ flock.evented = (function ($single, $path, $utils) {
                 lookup: {value: {}, writable: false}
             });
 
-            return $utils.mixin(that, self);
+            return $utils.extend(that, self, true);
         },
 
         //////////////////////////////
