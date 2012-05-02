@@ -67,7 +67,7 @@
             "Collecting nodes from path '*.1'");
 
         deepEqual(
-            multi.traverse('first,second.*', {mode: $.BOTH}),
+            multi.traverse('first,second.*', $.BOTH),
             {a: {}, b: {}, c: {}, d: {}, e: {}, 1: {}, 2: {}, 3: {}},
             "Getting results as lookup");
     });

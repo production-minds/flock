@@ -39,7 +39,7 @@ flock.multi = (function ($query, $utils) {
         case 'object':
             // options argument when it is of object type
             return options;
-        case 'number':
+        case 'string':
             /**
              * One of the flock constants is assumed here.
              * @see flock.constants
