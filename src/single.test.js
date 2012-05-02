@@ -94,11 +94,11 @@
         single.add('foo');
         equal(data.foo, 6, "Default increment is 1");
 
-        single.add('foo');
-        equal(data.foo, 7, "- same with non-static");
-
         single.add('foo', 3);
-        equal(data.foo, 10, "Custom increment");
+        equal(data.foo, 9, "Custom increment");
+
+        single.add('bar', 2);
+        equal(data.bar, 2, "Adding to non-existing node");
     });
 
     test("Unsetting", function () {

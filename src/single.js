@@ -122,18 +122,14 @@ flock.single = (function ($node, $path, $utils) {
         /**
          * Increments value on the object's key.
          * @param path {string|string[]} Datastore path.
-         * @param [value] {number} Optional value to add to key.
+         * @param [inc] {number} Optional increment.
          */
-        add: function (path, value) {
+        add: function (path, inc) {
             var tpath = $path.normalize(path),
-                key = tpath.pop(),
-                parent = this.get(tpath, true);
+                value = this.get(tpath, true) || 0;
 
-            if (parent.hasOwnProperty(key) &&
-                typeof parent[key] === 'number'
-                ) {
-                // incrementing value on path assuming it exists and is number
-                parent[key] += value || 1;
+            if (typeof value === 'number') {
+                this.set(tpath, value + (inc || 1));
             }
 
             return this;
