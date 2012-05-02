@@ -99,6 +99,10 @@
 
         single.add('bar', 2);
         equal(data.bar, 2, "Adding to non-existing node");
+
+        var chained = $single.create(data);
+        chained.add('foo');
+        equal(data.foo, 10, "Custom increment with chaining");
     });
 
     test("Unsetting", function () {

@@ -126,7 +126,7 @@ flock.single = (function ($node, $path, $utils) {
          */
         add: function (path, inc) {
             var tpath = $path.normalize(path),
-                value = this.get(tpath, true) || 0;
+                value = self.get.call(this, tpath, true) || 0;
 
             if (typeof value === 'number') {
                 this.set(tpath, value + (inc || 1));
