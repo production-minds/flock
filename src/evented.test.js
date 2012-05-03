@@ -17,7 +17,7 @@
         },
 
         // creating evented datastore object explicitly from flock.single
-        ds = $evented.create($single.create(root, {nochaining: true}));
+        ds = $evented.create($single.create(root));
 
     test("Subscription", function () {
         function testHandler() {
@@ -127,6 +127,13 @@
         equal(i, 1, "Pattern delegated event fired on matching node");
         ds.trigger('bybye.world', 'otherEvent');
         equal(i, 2, "Pattern delegated event fired on other matching node");
+    });
+
+    test("Getting", function () {
+        equal(ds.get('hi').root, "There!", "Normal chained get");
+        equal(ds.get('hi', {nochaining: true}), "There!", "No chaining with full options object");
+        equal(ds.get('hi', {nochaining: true}), "There!", "No chaining with full options object");
+        equal(ds.get('hi', true), "There!", "No chaining with legacy argument");
     });
 
     test("Access", function () {

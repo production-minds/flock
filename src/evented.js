@@ -28,11 +28,16 @@ flock.evented = (function ($single, $path, $utils) {
         case 'undefined':
             // empty object when no options object is specified
             return {};
+        case 'boolean':
+            // boolean option defaults to single.get's nochaining argument
+            // for compatibility
+            return {
+                nochaining: true
+            };
         case 'object':
             // options argument when it is of object type
             return options;
         default:
-            //
             return {
                 data: options
             };
@@ -277,11 +282,12 @@ flock.evented = (function ($single, $path, $utils) {
          * @param [options] {object} Options.
          * @param [options.data] {object} Custom data to be passed to event handler.
          * @param [options.trigger] {boolean} Whether to trigger. Default: true.
+         * @param [options.nochaining] {boolean} Whether method should return bare node.
          */
-        get: function (path, options, nochaining) {
+        get: function (path, options) {
             options = preprocessOptions(options);
 
-            var result = $single.get.call(this, path, nochaining),
+            var result = $single.get.call(this, path, options.nochaining),
                 root = flock.single.isPrototypeOf(result) ?
                     result.root :
                     result,
