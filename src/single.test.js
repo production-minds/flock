@@ -14,42 +14,95 @@
             foo: 5
         },
 
-        single = $single(data);
+        single = $single.create(data, {nochaining: true});
 
     test("Getting", function () {
-        equal($single.get(data, ['hi']), "There!", "Getting ordinal value");
-        equal(single.get(['hi']), "There!", "- same with non-static");
+        equal(single.get(['hi']), "There!", "Getting ordinal value");
 
-        equal($single.get(data, ['hello', 'world']), data.hello.world, "Getting datastore node");
-        equal($single.get(data, 'hello.world'), data.hello.world, "Getting datastore node w/ path in string notation");
-        ok(typeof $single.get(data, [
+        equal(single.get(['hello', 'world']), data.hello.world, "Getting datastore node");
+        equal(single.get('hello.world'), data.hello.world, "Getting datastore node w/ path in string notation");
+        ok(typeof single.get([
             'hello', 'yall'
         ]) === 'undefined', "Attempting to get from invalid path returns undefined");
     });
 
+    test("Origin", function () {
+        var
+            data = {
+                hi: 'There!',
+                hello: {
+                    world: {
+                        center: "!!"
+                    },
+                    all: "hey"
+                },
+                foo: 5
+            },
+
+            single = $single.create(data);
+
+        equal(
+            single
+                .get(['hello', 'world'])
+                .origin,
+            single,
+            "Origin datastore OK"
+        );
+
+        deepEqual(
+            single
+                .get(['hello', 'world'])
+                .offset,
+            ['hello', 'world'],
+            "Origin path OK"
+        );
+
+        equal(
+            single
+                .get('hello')
+                    .get('world')
+                .origin,
+            single,
+            "Origin datastore OK (multi-depth)"
+        );
+
+        deepEqual(
+            single
+                .get('hello')
+                    .get('world')
+                .offset,
+            ['hello', 'world'],
+            "Origin path OK (multi-depth)"
+        );
+    });
+
     test("Setting", function () {
-        $single.set(data, ['hello', 'world', 'test'], "testt");
+        single.set(['hello', 'world', 'test'], "testt");
         equal(data.hello.world.test, "testt", "Value set on existing node");
 
         single.set(['hello', 'world', 'test'], "test");
         equal(data.hello.world.test, "test", "- same with non-static");
 
-        $single.set(data, ['hello', 'yall', 'folks'], "test");
-        equal($single.get(data, 'hello.yall.folks'), "test", "Value set on non-existing path");
+        single.set(['hello', 'yall', 'folks'], "test");
+        equal(single.get('hello.yall.folks'), "test", "Value set on non-existing path");
 
-        $single.set(data, ['hello', 'yall', 'folks']);
-        deepEqual($single.get(data, 'hello.yall.folks'), {}, "Default value for set is empty object");
+        single.set(['hello', 'yall', 'folks']);
+        equal(typeof single.get('hello.yall.folks'), 'undefined', "Default value for set is undefined");
     });
 
     test("Math", function () {
-        $single.add(data, 'foo');
+        single.add('foo');
         equal(data.foo, 6, "Default increment is 1");
 
-        single.add('foo');
-        equal(data.foo, 7, "- same with non-static");
+        single.add('foo', 3);
+        equal(data.foo, 9, "Custom increment");
 
-        $single.add(data, 'foo', 3);
-        equal(data.foo, 10, "Custom increment");
+        single.add('bar', 2);
+        equal(data.bar, 2, "Adding to non-existing node");
+
+        var chained = $single.create(data);
+        chained.add('foo');
+        equal(data.foo, 10, "Custom increment with chaining");
     });
 
     test("Unsetting", function () {
@@ -65,9 +118,9 @@
                 }
             },
 
-            single = $single(data);
+            single = $single.create(data);
 
-        $single.unset(data, ['hello', 'world', 'center']);
+        single.unset(['hello', 'world', 'center']);
         deepEqual(data, {
             hi: 'There!',
             hello: {
@@ -88,7 +141,7 @@
             }
         }, "Single ordinal node removed");
 
-        $single.unset(data, ['hello', 'all']);
+        single.unset(['hello', 'all']);
         deepEqual(data, {
             hi: 'There!',
             hello: {
@@ -108,9 +161,11 @@
                     },
                     all: "hey"
                 }
-            };
+            },
 
-        $single.cleanup(data, ['blaaaaah']);
+            single = $single.create(data);
+
+        single.cleanup(['blaaaaah']);
         deepEqual(data, {
             hi: 'There!',
             hello: {
@@ -121,7 +176,7 @@
             }
         }, "Attempting to remove invalid node doesn't change data");
 
-        $single.cleanup(data, ['hi']);
+        single.cleanup(['hi']);
         deepEqual(data, {
             hello: {
                 world: {
@@ -131,14 +186,14 @@
             }
         }, "Single node removed");
 
-        $single.cleanup(data, ['hello', 'world', 'center']);
+        single.cleanup(['hello', 'world', 'center']);
         deepEqual(data, {
             hello: {
                 all: "hey"
             }
         }, "Node removed with all empty ancestors");
 
-        $single.cleanup(data, ['hello', 'all']);
+        single.cleanup(['hello', 'all']);
         deepEqual(data, {}, "Remaining nodes removed with all empty ancestors");
     });
 
@@ -159,9 +214,9 @@
                 }
             },
 
-            single = $single(data);
+            single = $single.create(data, {nochaining: true});
 
-        deepEqual($single.map(data, ['foo'], ['bar']), {
+        deepEqual(single.map(['foo'], ['bar']), {
             hello: {
                 test: "world"
             },
@@ -179,12 +234,12 @@
             }
         }, "- same with non-static");
 
-        deepEqual($single.map(data, ['foo'], ['bar', 'test']), {
+        deepEqual(single.map(['foo'], ['bar', 'test']), {
             hello: "world",
             lorem: "ipsum"
         }, "Second level values turned into one level lookup");
 
-        deepEqual($single.map(data, ['foo'], ['bar', 'test'], []), {
+        deepEqual(single.map(['foo'], ['bar', 'test'], []), {
             "hello": {
                 "world": {
                     "foo": "hello",

@@ -1,191 +1,168 @@
-/*global flock, module, test, ok, equal, notEqual, deepEqual, raises, console */
+/*global flock, module, test, ok, equal, notEqual, deepEqual, raises */
 (function ($) {
-    var cache = $({
-        first: {
-            a: {},
-            b: {},
-            c: {},
-            d: {},
-            e: {}
-        },
-        second: {
-            1: {},
-            2: {},
-            3: {}
-        },
-        third: {},
-        fourth: {
-            1: {
-                a: "One",
-                b: "Two"
+    var
+        ds = $({
+            first: {
+                a: {},
+                b: {},
+                c: {},
+                d: {},
+                e: {}
             },
-            2: {
-                a: "Three",
-                b: "Four"
+            second: {
+                1: {},
+                2: {},
+                3: {}
             },
-            3: {
-                a: "Five",
-                b: "Six"
+            third: {},
+            fourth: {
+                1: {
+                    a: "One",
+                    b: "Two"
+                },
+                2: {
+                    a: "Three",
+                    b: "Four"
+                },
+                3: {
+                    a: "Five",
+                    b: "Six"
+                }
             }
-        }
-    });
+        });
 
     module("Flock");
 
     test("Utils", function () {
-        deepEqual(cache.keys(), ['first', 'second', 'third', 'fourth'], "Key extraction");
+        deepEqual(ds.keys(), ['first', 'second', 'third', 'fourth'], "Key extraction");
     });
 
     test("Creation", function () {
-        equal($(5).node(), 5, "Flock based on ordinal (number)");
-        equal($("hello").node(), "hello", "Flock based on ordinal (string)");
-        equal($(true).node(), true, "Flock based on ordinal (boolean)");
-        equal($(null).node(), null, "Flock based on null");
-        equal(typeof $(undefined).node(), 'undefined', "Flock based on undefined");
+        equal($(5).root, 5, "Flock based on ordinal (number)");
+        equal($("hello").root, "hello", "Flock based on ordinal (string)");
+        equal($(true).root, true, "Flock based on ordinal (boolean)");
+        equal($(null).root, null, "Flock based on null");
+
+        deepEqual($().root, {}, "Flock based on undefined defaults to empty object");
+        equal(typeof $().get('test').root, 'undefined', "Derived flock based on undefined");
     });
 
     test("Single", function () {
-        deepEqual(cache.get(['fourth', '1', 'a']).node(), "One", "Simple get");
+        deepEqual(ds.get(['fourth', '1', 'a']).root, "One", "Simple get");
 
         deepEqual(
-            cache
+            ds
                 .get(['fourth', '1'])
                 .get(['a'])
-                    .node(),
+                .root,
             "One",
             "Chained get"
         );
 
         deepEqual(
-            cache
+            ds
                 .get(['fourth', '1'])
                 .set(['c'], "Hello!")
                 .get(['c'])
-                    .node(),
+                .root,
             "Hello!",
             "Chained set & get"
         );
 
-        ok(typeof cache.get(['nonexisting', '1', 'a']).node() === 'undefined', "Empty result set returns undefined");
+        ok(typeof ds.get(['nonexisting', '1', 'a']).root === 'undefined', "Empty result set returns undefined");
 
-        var nonChainable = $({hello: {world: {}}}, {nolive: true, nochaining: true});
+        var nonChainable = $({hello: {world: {}}}, {nochaining: true});
         deepEqual(nonChainable.get('hello'), {world: {}}, "Querying returns bare node on non-chaninng datastore");
     });
 
     test("Options", function () {
-        deepEqual(cache.options(), {
-            nolive: false,
-            noinit: false,
-            noevent: false,
-            nomulti: false,
-            nochaining: false
-        }, "All flags are false by default");
+        ok(
+            !ds.nochaining && !ds.nomulti && !ds.noevent,
+            "All flags are false by default"
+        );
 
         var tmp;
 
         tmp = $({hello: {world: {}}}, {
-            nolive: true
+            noevent: true
         });
 
-        deepEqual(tmp.options(), {
-            nolive: true,
-            noinit: undefined,
-            noevent: undefined,
-            nomulti: undefined,
-            nochaining: undefined
-        }, "Non-default options set (nolive: true)");
+        equal(
+            tmp.noevent,
+            true,
+            "Non-default options set (nochaining: true)"
+        );
 
-        deepEqual(tmp.get('hello.world').options(), {
-            nolive: true,
-            noinit: undefined,
-            noevent: undefined,
-            nomulti: undefined,
-            nochaining: undefined
-        }, "Derived flock object preserves options");
+        equal(
+            tmp.get('hello.world').noevent,
+            true,
+            "Derived (.get) flock object preserves options"
+        );
 
-        tmp.options().noevent = true;
-        ok(typeof tmp.options().noevent === 'undefined', "Options cannot be modified through property");
+        equal(
+            tmp.mget('first.*').noevent,
+            true,
+            "Derived (.mget) flock object preserves options"
+        );
+
+        tmp.nomulti = true;
+        ok(typeof tmp.nomulti === 'undefined', "Options cannot be modified through property");
 
         // non-live tets
         ok(tmp.get(['hello', 'world']).isEmpty(), "utils.empty delegated to flock");
 
-        tmp = $({hello: {world: {}}}, {
-            noinit: true
-        });
-        equal(tmp.node().hasOwnProperty($.live.metaKey()), false, "Option 'noinit' prevents automatic initialization");
-    });
-
-    test("Live", function () {
-        equal(
-            cache
-                .get(['fourth', '1'])
-                .parent()
-                    .node(),
-            cache
-                .get(['fourth'])
-                    .node(),
-            "Parent acquired"
+        tmp = $({}, $.COMPAT);
+        ok(
+            tmp.noevent && tmp.nochaining,
+            "Compatibility options"
         );
-
-        deepEqual(
-            cache
-                .get(['fourth', '1'])
-                    .path(),
-            ['fourth', '1'],
-            "Path resolution"
-        );
-
-        equal(
-            cache
-                .get(['first', 'a'])
-                    .name(),
-            "a",
-            "Node name retrieval"
-        );
-
-        var tmp = $({}, {nolive: true});
-        ok(typeof cache.node()[$.live.metaKey()] === 'object', "Flock with 'nolive' off does initialize by default.");
-        ok(typeof tmp.node()[$.live.metaKey()] === 'undefined', "Flock with 'nolive' on doesn't initialize by default.");
     });
 
     test("Events", function () {
         var i;
-        function testHandler() { i++; }
+
+        function testHandler() {
+            i++;
+        }
 
         // triggering event on child node and capturing on parent node
-        cache.get(['fourth'])
-            .on('testEvent', testHandler);
+        ds.on(['fourth'], 'testEvent', testHandler);
+
         i = 0;
-        cache.get(['fourth', '1'])
-            .trigger('testEvent', "moreInfo");
+        ds.trigger(['fourth', '1'], 'testEvent', "moreInfo");
         equal(i, 1, "Event triggered and captured");
-        cache.get(['fourth'])
-            .off('testEvent');
+
+        ds
+            .get(['fourth', '1'])
+            .trigger([], 'testEvent', "moreInfo");
+        equal(i, 2, "Chaining get & trigger");
+
+        ds.off(['fourth'], 'testEvent');
 
         // capturing event on root node
-        cache.on('testEvent', testHandler);
+        ds.on([], 'testEvent', testHandler);
         i = 0;
-        cache.get(['fourth', '1'])
-            .trigger('testEvent', "moreInfo");
+        ds.trigger(['fourth', '1'], 'testEvent', "moreInfo");
         equal(i, 1, "Event captured on root node");
-        cache.off('testEvent');
+        ds.off([], 'testEvent');
     });
 
     test("Querying", function () {
         deepEqual(
-            cache
-                .query('fourth.*', {mode: flock.BOTH})
+            ds
+                .mget('fourth.*', {mode: $.BOTH})
                 .get('1')
-                    .node(),
-            cache
+                .root,
+            ds
                 .get('fourth.1')
-                    .node(),
+                .root,
             "Stacked querying and getting"
         );
     });
 
     test("Mapping", function () {
-        var ds = flock({
+        var
+            ds = flock({
                 employees: {
                     emp1: {fname: "John", lname: "Smith", department: "IT"},
                     emp2: {fname: "John", lname: "Green", department: "HR"},
@@ -205,5 +182,25 @@
             .map('department', 'fname', 'lname', '');
 
         ok(tmp.get('HR.John.Green'), "Passing pats in string notation");
+    });
+
+    test("Origin", function () {
+        equal(
+            ds
+                .get('fourth.1')
+                .get('a')
+                .origin,
+            ds,
+            "Origin datastore OK"
+        );
+
+        deepEqual(
+            ds
+                .get('fourth.1')
+                .get('a')
+                .offset,
+            ['fourth', '1', 'a'],
+            "Origin path OK"
+        );
     });
 }(flock));

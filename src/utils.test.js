@@ -1,5 +1,5 @@
-/*global flock, module, test, ok, equal, deepEqual, raises */
-(function (u_utils) {
+/*global flock, module, test, ok, equal, notEqual, deepEqual, raises */
+(function ($utils) {
     module("Utils");
 
     var data = {
@@ -13,90 +13,67 @@
             }
         };
 
-    test("Methods and poperties", function () {
-        var staticTest = function (a, b) {
-                return a + b;
-            },
-            undefTest = function () { },
-            instanceTest;
+    test("Mixin", function () {
+        var tmp;
 
-        instanceTest = u_utils.genMethod(staticTest, [5]);
-        equal(instanceTest(4), 9, "Generated method remembers arguments");
+        tmp = {};
+        equal(
+            $utils.mixin(tmp, data),
+            tmp,
+            "Original destination is changed"
+        );
 
-        instanceTest = u_utils.genMethod(undefTest, [5], function() { return "ready"; });
-        equal(instanceTest(4), "ready", "Generated method applies mapper");
-
-        instanceTest = u_utils.genMethod(staticTest, [5], function(result, custom) { return result + custom; }, 9);
-        equal(instanceTest(4), 18, "Passing custom data to mapper");
-
-        instanceTest = u_utils.genMethod(undefTest, [5], "foo");
-        equal(instanceTest(4), "foo", "Generated method returns specified (non-function) value");
+        tmp = {};
+        deepEqual(
+            $utils.mixin(tmp, data),
+            data,
+            "All source properties copied"
+        );
     });
 
-    test("Objects", function () {
-        equal(u_utils.isEmpty(), true, "Undefined tested for empty");
-        equal(u_utils.isEmpty(null), true, "Null tested for empty");
-        equal(u_utils.isEmpty(0), true, "Number tested for empty");
-        equal(u_utils.isEmpty("hello"), false, "String fails for empty");
+    test("Blend", function () {
+        notEqual(
+            $utils.blend({}, data),
+            data,
+            "Original destination object remains untouched"
+        );
 
-        equal(u_utils.isEmpty({}), true, "Empty object tested for empty");
-        equal(u_utils.isEmpty({foo: "bar"}), false, "Non-empty object tested for empty");
-
-        equal(u_utils.isSingle({}), false, "Empty object tested for single");
-        equal(u_utils.isSingle({foo: "bar"}), true, "Single-property object tested for single");
-        equal(u_utils.isSingle({foo: "bar", what: "eva"}), false, "Multi-property object tested for single");
-
-        equal(u_utils.isNull(0), false, "Number is not null");
-        equal(u_utils.isNull(null), true, "Null is null");
-        equal(u_utils.isUndefined(0), false, "Number is not undefined");
-        equal(u_utils.isUndefined(undefined), true, "Undefined is not undefined");
-        equal(u_utils.isOrdinal(null), false, "Null is not ordinal");
-        equal(u_utils.isOrdinal(undefined), false, "Undefined is not ordinal");
-        equal(u_utils.isOrdinal(0), true, "Number is ordinal");
-        equal(u_utils.isOrdinal("hello"), true, "String is ordinal");
-        equal(u_utils.isOrdinal(true), true, "Boolean is ordinal");
-
-        equal(u_utils.isNode(0), false, "Number is not node");
-        equal(u_utils.isNode("hello"), false, "String is not node");
-        equal(u_utils.isNode(null), false, "Null is not node");
-        equal(u_utils.isNode(undefined), false, "Undefined is not node");
-        equal(u_utils.isNode({}), true, "Object is node");
-
-        equal(u_utils.firstKey({foo: "bar"}), 'foo', "First property of an object");
-        ok(typeof u_utils.firstKey({}) === 'undefined', "First property of an empty object");
-
-        deepEqual(u_utils.keys({foo: "bar", hello: "world"}), ['foo', 'hello'], "Key extraction");
-        deepEqual(u_utils.values({foo: "bar", hello: "world"}), ['bar', 'world'], "Value extraction");
+        deepEqual(
+            $utils.blend({}, data),
+            data,
+            "All source properties copied"
+        );
     });
 
-    test("Delegation", function () {
-        var tmp,
-            key, count;
+    test("Extend", function () {
+        var base,
+            extended;
 
-        tmp = {};
-        u_utils.delegateProperty(tmp, data, 'hi');
-        equal(tmp.hi, data.hi, "Delegating single property");
+        base = {test: "hello"};
+        extended = $utils.extend(base, data);
 
-        raises(function () {
-            u_utils.delegateProperty(tmp, data, 'hi');
-        }, "Attempting to overwrite existing property fails");
+        notEqual(extended, base, "Result is different from base");
+        equal(extended.test, base.test, "Result has base property");
+        equal(extended.hasOwnProperty('test'), false, "Base property moved a level up the prototype chain");
 
-        u_utils.delegateProperty(tmp, data, 'hi', true);
-        equal(tmp.hi, data.hi, "Overwriting single property in silent mode");
+        base = Object.prototype;
+        extended = $utils.extend(base, data);
 
-        tmp = {};
-        u_utils.delegate(tmp, data);
-        deepEqual(tmp, data, "Delegating all properties");
+        /**
+         * deepEqual doesn't see non-writable properties
+         * added using Object.create(), that's why we compare only fractions
+         */
+        deepEqual(
+            extended.hello,
+            data.hello,
+            "All source properties copied"
+        );
 
-        tmp = {};
-        count = 0;
-        u_utils.delegate(tmp, data.hello, ['world', 'third']);
-        for (key in tmp) {
-            if (tmp.hasOwnProperty(key)) {
-                count++;
-            }
-        }
-        ok(count === 2 && tmp.world === data.hello.world && tmp.third === data.hello.third,
-            "Delegating specified properties");
+        base = {test: "test"};
+        extended = $utils.extend(base, data, true);
+
+        equal(base, extended, "Immediate extension adds / changes properties on base object");
+        equal(extended.test, "test", "Extended has original property");
+        equal(extended.hi, data.hi, "Extended has new property");
     });
 }(flock.utils));

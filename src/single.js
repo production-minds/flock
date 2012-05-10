@@ -1,24 +1,67 @@
 /**
  * Single Node Functionality
+ *
+ * Implements setting, retrieval, and removal of specific datastore
+ * nodes one at a time.
  */
-/*global flock */
+var flock = flock || {};
 
-flock.single = (function ($utils, $path) {
-    var self,
-        ctor;
+flock.single = (function ($node, $path, $utils) {
+    var self = $utils.extend($node, {
+        /**
+         * @constructor
+         * @param root {object} Source node.
+         * @param [options] {object}
+         * @param [options.nochaining] {boolean} Whether query methods are chainable.
+         * @param [options.origin] {flock.single} Origin datastore.
+         * @param [options.offset] {string[]} Path of root relative to root of origin datastore.
+         */
+        create: function (root, options) {
+            options = options || {};
 
-    //////////////////////////////
-    // Static
+            /**
+             * Defaulting root to empty object when nor root
+             * neither origin is specified.
+             */
+            if (typeof options.origin === 'undefined' &&
+                typeof root === 'undefined'
+                ) {
+                root = {};
+            }
 
-    self = {
+            return Object.create(self, {
+                root: {value: root, writable: false},
+                options: {value: options, writable: false}, // for internal use
+                nochaining: {value: options.nochaining, writable: false},
+                origin: {value: options.origin, writable: false},
+                offset: {value: options.offset ? options.offset : [], writable: false}
+            });
+        },
+
+        //////////////////////////////
+        // Utilities
+
+        /**
+         * Wraps node in datastore object.
+         * @param node {object} Datastore node.
+         */
+        wrap: function (node) {
+            return this.create.apply(this, arguments);
+        },
+
+        //////////////////////////////
+        // Control
+
         /**
          * Gets a single value from the given datastore path.
-         * @param root {object} Source node.
          * @param path {string|string[]} Datastore path.
+         * @param [nochaining] {boolean} Whether method should return bare node.
          * @returns {object} Node on specified path.
          */
-        get: function (root, path) {
-            var result = root,
+        get: function (path, nochaining) {
+            path = $path.normalize(path);
+
+            var result = this.root,
                 tpath = $path.normalize(path),
                 key;
 
@@ -31,23 +74,26 @@ flock.single = (function ($utils, $path) {
                     result = result[key];
                 } else {
                     // returning undefined when path doesn't exist
-                    return undefined;
+                    result = undefined;
+                    break;
                 }
             }
 
-            return result;
+            return nochaining || this.nochaining ?
+                result :
+                this.wrap(result, $utils.blend(this.options, {
+                    origin: this.origin || this,
+                    offset: this.offset.concat(path)
+                }));
         },
 
         /**
          * Sets a singe value on the given datastore path.
-         * @param root {object} Source node.
          * @param path {string|string[]} Datastore path.
          * @param [value] {object} Value to set on path
          */
-        set: function (root, path, value) {
-            value = value || {};
-
-            var parent = root,
+        set: function (path, value) {
+            var parent = this.root,
                 tpath = $path.normalize(path),
                 key;
 
@@ -69,48 +115,49 @@ flock.single = (function ($utils, $path) {
 
             // setting value as leaf node
             parent[key] = value;
+
+            return this;
         },
 
         /**
          * Increments value on the object's key.
-         * @param root {object} Source node.
          * @param path {string|string[]} Datastore path.
-         * @param [value] {number} Optional value to add to key.
+         * @param [inc] {number} Optional increment.
          */
-        add: function (root, path, value) {
+        add: function (path, inc) {
             var tpath = $path.normalize(path),
-                key = tpath.pop(),
-                parent = self.get(root, tpath);
+                value = self.get.call(this, tpath, true) || 0;
 
-            if (parent.hasOwnProperty(key) &&
-                typeof parent[key] === 'number'
-                ) {
-                // incrementing value on path assuming it exists and is number
-                parent[key] += value || 1;
+            if (typeof value === 'number') {
+                this.set(tpath, value + (inc || 1));
             }
+
+            return this;
         },
 
         /**
          * Removes a single node from the datastore.
-         * @param root {object} Source node.
          * @param path {string|string[]} Datastore path.
          */
-        unset: function (root, path) {
+        unset: function (path) {
             var tpath = $path.normalize(path),
                 key = tpath.pop(),
-                parent = self.get(root, tpath);
+                parent = this.get(tpath, true);
 
             // removing leaf node
-            delete parent[key];
+            if (typeof parent === 'object') {
+                delete parent[key];
+            }
+
+            return this;
         },
 
         /**
          * Removes a node from the datastore. Cleans up empty parent nodes
          * until the first non-empty ancestor node.
-         * @param root {object} Source node.
          * @param path {string|string[]} Datastore path.
          */
-        cleanup: function (root, path) {
+        cleanup: function (path) {
             var tpath = $path.normalize(path),
                 key, parent;
 
@@ -119,77 +166,69 @@ flock.single = (function ($utils, $path) {
                 key = tpath.pop();
 
                 // taking parent and removing leaf node
-                parent = self.get(root, tpath);
-                delete parent[key];
+                parent = this.get(tpath, true);
+                if (typeof parent === 'object') {
+                    delete parent[key];
+                } else {
+                    break;
+                }
             } while (
                 // continue when remaining leaf node is empty
-                tpath.length && $utils.isEmpty(parent)
+                tpath.length && $node.create(parent).isEmpty()
                 );
+
+            return this;
         },
 
         /**
          * Transforms node structure by taking descendant values as keys in the output.
-         * @param node {object} Source node. Object with uniform child objects.
          * Additional parameters specify the paths (in array or string notation) from whence
          * to take the transformed node's keys.
          * Empty array as last path will put the original child node as leaf node.
          * @returns {object} Transformed node.
-         * @throws {string} When immediate child nodes are not objects.
-         * @example See unit test.
          */
-        map: function (node) {
-            var result = {},
+        map: function () {
+            var
+                // source and destination buffers
+                source = flock.single.create(this.root),
+                dest = this.wrap({}),
+
+                // path buffer
                 paths = [],
+
+                // loop variables
                 item, path, last,
                 i;
 
             // normalizing paths
-            for (i = 1; i < arguments.length; i++) {
+            for (i = 0; i < arguments.length; i++) {
                 paths.push($path.normalize(arguments[i]));
             }
 
             // walking through all immediate child nodes
-            for (item in node) {
-                if (node.hasOwnProperty(item)) {
+            for (item in this.root) {
+                if (this.root.hasOwnProperty(item)) {
                     // constructing output path from data on input paths
                     path = [];
                     for (i = 0; i < paths.length - 1; i++) {
-                        path.push(self.get(node, [item].concat(paths[i])));
+                        path.push(source.get([item].concat(paths[i]), true));
                     }
                     last = paths[paths.length - 1];
 
                     // storing node on last input path on constructed output path
-                    self.set(result, path, self.get(node, [item].concat(last)));
+                    dest.set(path, source.get([item].concat(last), true));
                 }
             }
 
-            return result;
+            return this.nochaining ?
+                dest.root :
+                dest;
         }
-    };
+    });
 
-    //////////////////////////////
-    // Instance
-
-    ctor = function (root) {
-        var args = [root];
-        return {
-            // getters
-            root: function () { return root; },
-
-            get: $utils.genMethod(self.get, args),
-            set: $utils.genMethod(self.set, args),
-            add: $utils.genMethod(self.add, args),
-            unset: $utils.genMethod(self.unset, args),
-            cleanup: $utils.genMethod(self.cleanup, args),
-            map: $utils.genMethod(self.map, args)
-        };
-    };
-
-    // adding static methods
-    $utils.delegate(ctor, self);
-
-    return ctor;
+    return self;
 }(
-    flock.utils,
-    flock.path
+    flock.node,
+    flock.path,
+    flock.utils
 ));

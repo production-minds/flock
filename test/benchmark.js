@@ -15,7 +15,7 @@
         ds.set(name.split('').concat(suffixSet), name);
     }
     function getName(name) {
-        return ds.query(name.split('').concat(suffixGet), null, true).node();
+        return ds.traverse(name.split('').concat(suffixGet), null, true).node();
     }
 
     function buildCache() {
@@ -41,12 +41,12 @@
     buildCache();
     buildJOrder();
 
-    jOB.benchmark("Querying in cache", ".getName()", ".query()");
+    jOB.benchmark("Querying in cache", ".getName()", ".traverse()");
 
     jOB.test("single node", function () {
         return [{result: ds.get('C.o.n')}];
     }, function () {
-        return [{result: ds.query('C.o.n').node()}];
+        return [{result: ds.traverse('C.o.n').node()}];
     });
 
     jOB.test("multiple nodes", function () {
@@ -59,7 +59,7 @@
         }
         return result;
     }, function () {
-        return ds.query('C.o.n.*').node();
+        return ds.traverse('C.o.n.*').node();
     });
 
     (function () {
@@ -85,11 +85,11 @@
         function stacked_flock() {
             var stage;
             stage = ds.get('C.o.n');
-            stage.query('...name', {loopback: true}).node();
+            stage.traverse('...name', {loopback: true}).node();
             stage = stage.get('s');
-            stage.query('...name', {loopback: true}).node();
+            stage.traverse('...name', {loopback: true}).node();
             stage = stage.get('t');
-            return stage.query('...name', {loopback: true}).node();
+            return stage.traverse('...name', {loopback: true}).node();
         }, function stacked_jOrder() {
             var hits;
             hits = table.where([{name: 'Con'}], {renumber: true, mode: jOrder.startof});

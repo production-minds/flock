@@ -1,7 +1,7 @@
 /**
  * Basic Path Processing Functionality
  */
-/*global flock*/
+var flock = flock || {};
 
 flock.path = (function ($utils) {
     var RE_PATHVALIDATOR = /^([^\.]+\.)*[^\.]+$/,
@@ -60,7 +60,7 @@ flock.path = (function ($utils) {
     };
 
     // delegating errors
-    $utils.delegate(self, errors);
+    $utils.mixin(self, errors);
 
     return self;
 }(flock.utils));

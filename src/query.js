@@ -1,12 +1,14 @@
 /**
  * Query Pattern Management
  */
-/*global flock */
+var flock = flock || {};
 
-flock.query = (function (u_constants, u_utils) {
+flock.query = (function ($utils) {
+    /*jshint regexp:false */
     var RE_PATH_VALIDATOR = /^(\.{3})*([^\.,]+(\.{1,3}|,))*[^\.,]+$/,
         RE_PATH_SKIPPER = /\.{2,}/,
         errors, self;
+    /*jshint regexp:true */
 
     errors = {
         ERROR_INVALIDPATH: "Invalid path."
@@ -120,8 +122,9 @@ flock.query = (function (u_constants, u_utils) {
     };
 
     // delegating errors
-    u_utils.delegate(self, errors);
+    $utils.mixin(self, errors);
 
     return self;
-}(flock.constants,
-    flock.utils));
+}(
+    flock.utils
+));
