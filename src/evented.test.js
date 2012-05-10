@@ -1,4 +1,4 @@
-/*global flock, module, test, expect, ok, equal, deepEqual, raises */
+/*global window, flock, module, test, expect, stop, start, ok, equal, deepEqual, raises */
 (function ($evented, $single) {
     module("Event");
 
@@ -136,8 +136,10 @@
         equal(ds.get('hi', true), "There!", "No chaining with legacy argument");
     });
 
-    test("Access", function () {
-        expect(5);
+    test("Access", function accessTest() {
+        expect(10);
+
+        // general access handling
 
         ds.on('', flock.ACCESS, function (event, data) {
             equal(event.name, flock.ACCESS, "Event name (flock.ACCESS) ok.");
@@ -145,11 +147,44 @@
             equal(event.target, 'hello.world.blahblah', "Event target ok.");
             equal(typeof data.value, 'undefined', "Value ok on non-existing node");
             equal(data.data, 'test', "Custom data ok.");
+            equal(data.caller, accessTest, "Caller identification ok.");
         });
 
         ds.get('hello.world.blahblah', {data: 'test'});
 
         ds.off('', flock.ACCESS);
+
+        // access handling with repeat
+
+        ds.on('not.existing.path', flock.ACCESS, function (event, data) {
+            // fixing failure
+            ds.set('not.existing.path', 'hello', {trigger: false});
+
+            // stopping test b/c of settimout
+            stop();
+
+            // repeating original call that invoked the access event
+            window.setTimeout(data.rerun, 10);
+        });
+
+        var i = 0;
+
+        (function (arg) {
+            equal(arg, 'test', "Caller arguments are ok.");
+            var value = ds.get('not.existing.path').root;
+            switch (i) {
+            case 0:
+                equal(typeof value, 'undefined', "Value initially doesn't exist");
+                break;
+            case 1:
+                equal(value, 'hello', "Value exists after event handler ran");
+                break;
+            }
+            i++;
+            start();
+        }('test'));
+
+        ds.off('not.existing.path');
     });
 
     /**
