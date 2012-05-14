@@ -254,6 +254,7 @@ flock.evented = (function ($single, $path, $utils) {
                 for (i = 0; i < handlers.length; i++) {
                     event = {
                         name: eventName,
+                        path: spath,
                         target: options.target
                     };
                     if (handlers[i](event, options.data) === false) {

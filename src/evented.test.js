@@ -65,7 +65,8 @@
         ds.on('hello.world', 'otherEvent', otherHandler);
         ds.on('hello.world', 'argTesterEvent', function (event, data) {
             equal(event.name, 'argTesterEvent', "Event name passed to handler checks out");
-            deepEqual(event.target, 'hello.world', "Event target passed to handler checks out");
+            equal(event.path, 'hello.world', "Event path passed to handler checks out");
+            equal(event.target, 'hello.world', "Event target passed to handler checks out");
             equal(data, eventData, "Custom event data passed to handler checks out");
             return false;
         });
@@ -137,7 +138,7 @@
     });
 
     test("Access", function accessTest() {
-        expect(10);
+        expect(11);
 
         // general access handling
 
@@ -145,6 +146,7 @@
             equal(event.name, flock.ACCESS, "Event name (flock.ACCESS) ok.");
             equal(event.name, flock.ACCESS, "Event name (flock.ACCESS) ok.");
             equal(event.target, 'hello.world.blahblah', "Event target ok.");
+            equal(event.path, "", "Event path ok.");
             equal(typeof data.value, 'undefined', "Value ok on non-existing node");
             equal(data.data, 'test', "Custom data ok.");
             equal(data.caller, accessTest, "Caller identification ok.");
