@@ -291,20 +291,13 @@ flock.evented = (function ($single, $path, $utils) {
                 root = flock.single.isPrototypeOf(result) ?
                     result.root :
                     result,
-                data,
-                caller, args;
+                data;
 
             if (options.trigger !== false &&
                 typeof root === 'undefined'
                 ) {
-                caller = arguments.callee.caller;
-                args = arguments.callee.caller['arguments'];
                 data = {
                     data: {
-                        caller: caller,
-                        rerun: function () {
-                            caller.apply(this, args);
-                        },
                         data: options.data
                     }
                 };
