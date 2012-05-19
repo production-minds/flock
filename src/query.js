@@ -3,7 +3,7 @@
  */
 var flock = flock || {};
 
-flock.query = (function ($utils) {
+flock.query = (function ($path, $utils) {
     /*jshint regexp:false */
     var RE_PATH_VALIDATOR = /^(\.{3})*([^\.,]+(\.{1,3}|,))*[^\.,]+$/,
         RE_PATH_SKIPPER = /\.{2,}/,
@@ -14,7 +14,7 @@ flock.query = (function ($utils) {
         ERROR_INVALIDPATH: "Invalid path."
     };
 
-    self = {
+    self = $utils.extend($path, {
         //////////////////////////////
         // Control
 
@@ -119,12 +119,13 @@ flock.query = (function ($utils) {
             return i === actual.length &&
                 j === expected.length;
         }
-    };
+    });
 
     // delegating errors
     $utils.mixin(self, errors);
 
     return self;
 }(
+    flock.path,
     flock.utils
 ));
