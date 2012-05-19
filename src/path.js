@@ -12,7 +12,7 @@ flock.path = (function ($utils) {
         ERROR_INVALIDPATH: "Invalid path."
     };
 
-    self = {
+    self = $utils.extend(Object.prototype, {
         //////////////////////////////
         // Control
 
@@ -56,8 +56,32 @@ flock.path = (function ($utils) {
             actual = self.normalize(actual);
             expected = self.normalize(expected);
             return actual.join('.') === expected.join('.');
+        },
+
+        /**
+         * Determines common root of two paths.
+         * @param path1 {string|string[]}
+         * @param path2 {string|string[]}
+         * @returns {string[]} Normalized path.
+         */
+        common: function (path1, path2) {
+            path1 = self.normalize(path1);
+            path2 = self.normalize(path2);
+
+            var result = [],
+                length = Math.min(path1.length, path2.length),
+                i;
+            for (i = 0; i < length; i++) {
+                if (path1[i] === path2[i]) {
+                    result.push(path1[i]);
+                } else {
+                    return result;
+                }
+            }
+
+            return result;
         }
-    };
+    });
 
     // delegating errors
     $utils.mixin(self, errors);
