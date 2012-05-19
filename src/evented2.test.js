@@ -16,10 +16,10 @@
             }
         },
 
-        // evented datastore
+    // evented datastore
         original = $evented.create($single.create(root)),
 
-        // derived evented datastore
+    // derived evented datastore
         derived = $evented2.create($single.create(root.hello.world, {
             origin: original,
             offset: ['hello', 'world']
@@ -104,8 +104,8 @@
         original.on(
             '',
             flock.CHANGE,
-            function (event, data) {
-                equal(data.after, 'testValue', "Value set on node");
+            function (event) {
+                equal(event.after, 'testValue', "Value set on node");
                 equal(event.target, 'hello.world.test', "Absolute path to changed node");
             }
         );
@@ -122,8 +122,8 @@
         original.on(
             '',
             flock.REMOVE,
-            function (event, data) {
-                equal(data.before, 'testValue', "Before value removed from node");
+            function (event) {
+                equal(event.before, 'testValue', "Before value removed from node");
                 equal(event.target, 'hello.world.test', "Absolute path to removed node");
             }
         );

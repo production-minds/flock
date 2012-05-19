@@ -16,7 +16,7 @@
             }
         },
 
-        // creating evented datastore object explicitly from flock.single
+    // creating evented datastore object explicitly from flock.single
         ds = $evented.create($single.create(root));
 
     test("Subscription", function () {
@@ -146,7 +146,7 @@
             equal(event.name, flock.ACCESS, "Event name (flock.ACCESS) ok.");
             equal(event.target, 'hello.world.blahblah', "Event target ok.");
             equal(typeof data.value, 'undefined', "Value ok on non-existing node");
-            equal(data.data, 'test', "Custom data ok.");
+            equal(data, 'test', "Custom data ok.");
         });
 
         ds.get('hello.world.blahblah', {data: 'test'});
@@ -171,7 +171,7 @@
 
         // subscribing to access event
         ds.on('hello.world', flock.ACCESS, function (event, data) {
-            var handler = data.data;
+            var handler = data;
 
             // loading missing data
             mockLoader(event.target, function (path, value) {
@@ -195,9 +195,9 @@
         ds.on('', flock.CHANGE, function (event, data) {
             equal(event.name, flock.CHANGE, "Event name ok.");
             equal(event.target, 'hello.world.center', "Event target ok");
-            equal(data.before, "!!", "Before value ok");
-            equal(data.after, "!!!", "After value ok");
-            equal(data.data, "customData", "Custom data ok");
+            equal(event.before, "!!", "Before value ok");
+            equal(event.after, "!!!", "After value ok");
+            equal(data, "customData", "Custom data ok");
         });
         ds.set(['hello', 'world', 'center'], "!!!", {data: "customData"});
         ds.off('', flock.CHANGE);

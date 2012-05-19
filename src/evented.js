@@ -5,7 +5,7 @@ var flock = flock || {};
 
 flock.evented = (function ($single, $path, $utils) {
     var
-        // regular event types
+    // regular event types
         constants = {
             ACCESS: 'standardEvent.access',
             CHANGE: 'standardEvent.change',
@@ -72,30 +72,30 @@ flock.evented = (function ($single, $path, $utils) {
          * @param path {string|string[]} Datastore path.
          * @param before Value before the change.
          * @param after Value after the change.
-         * @param customData Data submitted by the user.
+         * @param data Data submitted by the user.
          */
-        triggerChanges: function (path, before, after, customData) {
+        triggerChanges: function (path, before, after, data) {
             // checking whether anything changed
             if (before === after) {
                 return;
             }
 
-            var data = {
-                data: {
+            var triggerOptions = {
+                event: {
                     before: before,
-                    after: after,
-                    data: customData
-                }
+                    after: after
+                },
+                data: data
             };
 
             // triggering change event
-            this.trigger(path, constants.CHANGE, data);
+            this.trigger(path, constants.CHANGE, triggerOptions);
 
             // also triggering add/remove event when necessary
             if (typeof before === 'undefined') {
-                this.trigger(path, constants.ADD, data);
+                this.trigger(path, constants.ADD, triggerOptions);
             } else if (typeof after === 'undefined') {
-                this.trigger(path, constants.REMOVE, data);
+                this.trigger(path, constants.REMOVE, triggerOptions);
             }
         },
 
@@ -219,24 +219,25 @@ flock.evented = (function ($single, $path, $utils) {
          * @param path {string|string[]} Datastore path.
          * @param eventName {string} Name of event to subscribe to.
          * @param [options] {object} Options.
+         * @param [options.event] {object} Custom event information to be added to the event object.
          * @param [options.data] {object} Custom data to be passed to event handlers.
          * @param [options.target] {string} Custom target path to be passed along event.
          */
         trigger: function (path, eventName, options) {
             var
-                // string representation of path
+            /* string representation of path */
                 spath = path instanceof Array ?
                     path.join('.') :
                     path,
 
-                // array representation of path
+            // array representation of path
                 apath = typeof path === 'string' ?
                     path.split('.') :
                     path instanceof Array ?
                         path.concat([]) :
                         path,
 
-                // handler lookups
+            // handler lookups
                 events = this.lookup[spath],
                 handlers,
 
@@ -252,10 +253,13 @@ flock.evented = (function ($single, $path, $utils) {
                 // calling handlers for event
                 handlers = events[eventName];
                 for (i = 0; i < handlers.length; i++) {
-                    event = {
-                        name: eventName,
-                        target: options.target
-                    };
+                    event = $utils.mixin(
+                        {
+                            name: eventName,
+                            target: options.target
+                        },
+                        options.event || {}
+                    );
                     if (handlers[i](event, options.data) === false) {
                         // if handler returns false (not falsey), bubbling stops
                         return;
@@ -291,19 +295,17 @@ flock.evented = (function ($single, $path, $utils) {
                 root = flock.single.isPrototypeOf(result) ?
                     result.root :
                     result,
-                data;
+                triggerOptions;
 
             if (options.trigger !== false &&
                 typeof root === 'undefined'
                 ) {
-                data = {
-                    data: {
-                        data: options.data
-                    }
+                triggerOptions = {
+                    data: options.data
                 };
 
                 // triggering access event
-                this.trigger(path, constants.ACCESS, data);
+                this.trigger(path, constants.ACCESS, triggerOptions);
             }
 
             return result;
