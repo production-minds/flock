@@ -3,15 +3,15 @@
     module("Utils");
 
     var data = {
-            hi: 'There!',
-            hello: {
-                world: {
-                    center: "!!"
-                },
-                all: "hey",
-                third: 3
-            }
-        };
+        hi: 'There!',
+        hello: {
+            world: {
+                center: "!!"
+            },
+            all: "hey",
+            third: 3
+        }
+    };
 
     test("Mixin", function () {
         var tmp;
@@ -69,11 +69,23 @@
             "All source properties copied"
         );
 
-        base = {test: "test"};
-        extended = $utils.extend(base, data, true);
+        /**
+         * Multiple extension, adding more than one level in
+         * the prototype chain.
+         */
+        extended = $utils.extend(
+            Object.prototype,
+            {
+                foo: "bar"
+            },
+            {
+                hello: function () {
+                    return "world";
+                }
+            });
 
-        equal(base, extended, "Immediate extension adds / changes properties on base object");
-        equal(extended.test, "test", "Extended has original property");
-        equal(extended.hi, data.hi, "Extended has new property");
+        ok(extended.hasOwnProperty('foo'), "First extension is added and top-level");
+        ok(!extended.hasOwnProperty('hello'), "Second extension is not top-level");
+        equal(typeof extended.hello, 'function', "Second extension added");
     });
 }(flock.utils));
