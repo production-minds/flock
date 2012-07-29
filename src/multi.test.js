@@ -72,6 +72,38 @@
             "Getting results as lookup");
     });
 
+    test('Path inclusive queries', function () {
+        deepEqual(
+            multi.traverse('first,second.*', $.PATHS),
+            [
+                'first.a',
+                'first.b',
+                'first.c',
+                'first.d',
+                'first.e',
+                'second.1',
+                'second.2',
+                'second.3'
+            ],
+            "Paths only"
+        );
+
+        deepEqual(
+            multi.traverse('first,second.*', $.FULL),
+            {
+                'first.a': {},
+                'first.b': {},
+                'first.c': {},
+                'first.d': {},
+                'first.e': {},
+                'second.1': {},
+                'second.2': {},
+                'second.3': {}
+            },
+            "Path and value pairs"
+        );
+    });
+
     test("OR relation", function () {
         deepEqual(
             multi.traverse(['fourth', [1, 3]]),

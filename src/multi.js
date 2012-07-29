@@ -17,6 +17,8 @@ flock.multi = (function ($query, $utils) {
             KEYS: 'traversalModes.keys', // collect leaf keys
             VALUES: 'traversalModes.values', // collect leaf values
             BOTH: 'traversalModes.keysAndValues', // collect key:value pairs of leaf nodes
+            PATHS: 'traversalModes.paths', // collect full paths
+            FULL: 'traversalModes.all', // collect full path:value pairs
             DEL: 'traversalModes.delete', // delete leaf nodes
             COUNT: 'traversalModes.count' // count leaf nodes
         },
@@ -64,9 +66,11 @@ flock.multi = (function ($query, $utils) {
         switch (mode) {
         case constants.KEYS:
         case constants.VALUES:
+        case constants.PATHS:
             return [];
         default:
         case constants.BOTH:
+        case constants.FULL:
             return {};
         case constants.COUNT:
             return 0;
@@ -164,6 +168,14 @@ flock.multi = (function ($query, $utils) {
                                     // collecting key AND value from node
                                     // WARNING: new values with same key overwrite old
                                     result[key] = value;
+                                    break;
+                                case constants.PATHS:
+                                    // collecting full path as string
+                                    result.push(path.concat(key).join('.'));
+                                    break;
+                                case constants.FULL:
+                                    // collecting full path AND value from node
+                                    result[path.concat(key).join('.')] = value;
                                     break;
                                 case constants.DEL:
                                     // deleting node
