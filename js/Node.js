@@ -12,9 +12,9 @@ troop.promise(flock, 'Node', function () {
              * @constructor
              * @param root {object} Datastore node.
              */
-            create: function (root) {
-                return Object.create(self, {
-                    root: {value: root, writable: false}
+            init: function (root) {
+                this.addConstant({
+                    root: root
                 });
             },
 
@@ -23,14 +23,21 @@ troop.promise(flock, 'Node', function () {
              * @returns {boolean}
              */
             isEmpty: function () {
-                var result = true,
+                var root = this.root,
+                    result = true,
                     key;
-                for (key in this.root) {
-                    if (this.root.hasOwnProperty(key)) {
-                        result = false;
-                        break;
+
+                if (Object.prototype.isPrototypeOf(root)) {
+                    for (key in root) {
+                        if (root.hasOwnProperty(key)) {
+                            result = false;
+                            break;
+                        }
                     }
+                } else if (typeof root === 'string') {
+                    return root.length === 0;
                 }
+
                 return result;
             },
 
