@@ -73,6 +73,6 @@ flock.evented2 = (function ($single, $path, $utils) {
     return self;
 }(
     flock.single,
-    flock.path,
+    flock.Path,
     flock.utils
 ));

@@ -438,6 +438,6 @@
 }(
     flock,
     flock.multi,
-    flock.path,
+    flock.Path,
     flock.single
 ));

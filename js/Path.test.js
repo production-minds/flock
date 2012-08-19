@@ -46,4 +46,4 @@
         equal($path.match(['hello'], ['hello', 'world']), false, "Path doesn't match pattern");
         equal($path.match('hello.world', 'hello.world'), true, "Path (string notation) matches pattern");
     });
-}(flock.path));
+}(flock.Path));

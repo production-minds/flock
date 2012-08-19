@@ -27,7 +27,7 @@ done
 cat \
 js/license.js \
 js/utils.js \
-js/path.js \
+js/Path.js \
 js/node.js \
 js/single.js \
 js/evented.js \
