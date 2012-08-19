@@ -25,16 +25,16 @@ do
 done
 
 cat \
-src/license.js \
-src/utils.js \
-src/path.js \
-src/node.js \
-src/single.js \
-src/evented.js \
-src/evented2.js \
-src/query.js \
-src/multi.js \
-src/flock.js \
+js/license.js \
+js/utils.js \
+js/path.js \
+js/node.js \
+js/single.js \
+js/evented.js \
+js/evented2.js \
+js/query.js \
+js/multi.js \
+js/flock.js \
 > "build/$NAME.js"
 
 if type yui-compressor >/dev/null 2>&1
@@ -51,7 +51,7 @@ fi
 
 if [ -f build/tmp.js ]
 then
-    cat src/license.js build/tmp.js > "build/$NAMEMIN.js"
+    cat js/license.js build/tmp.js > "build/$NAMEMIN.js"
     rm build/tmp.js
 
     echo Gzipping.
