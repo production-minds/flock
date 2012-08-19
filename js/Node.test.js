@@ -44,5 +44,5 @@
         deepEqual(node({foo: "bar", hello: "world"}).values(), ['bar', 'world'], "Value extraction");
     });
 }(
-    flock.node
+    flock.Node
 ));

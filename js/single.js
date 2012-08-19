@@ -228,7 +228,7 @@ flock.single = (function ($node, $path, $utils) {
 
     return self;
 }(
-    flock.node,
+    flock.Node,
     flock.Path,
     flock.utils
 ));
