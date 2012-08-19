@@ -318,6 +318,6 @@ flock.multi = (function ($query, $utils) {
 
     return self;
 }(
-    flock.query,
+    flock.Query,
     flock.utils
 ));

@@ -42,7 +42,7 @@
             u_query.normalize('first.*.bcde......55');
         }, "Path with erroneous wildcards");
         raises(function () {
-            u_query.query(data, 'fourth...');
+            u_query.Query(data, 'fourth...');
         }, "Path can't end in dot");
         deepEqual(u_query.normalize('first.1,2,3.*'), ['first', ['1', '2', '3'], '*'], "Array keys");
     });
@@ -59,4 +59,4 @@
         equal(u_query.match('first.a.bcde.1.55', 'first.a...2.55'), false, "Skipper mismatch");
         equal(u_query.match('first.a.bcde.1.55', 'first.b,c,d.bcde.1.55'), false, "Multiple key mismatch");
     });
-}(flock.query));
+}(flock.Query));

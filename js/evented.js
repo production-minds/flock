@@ -158,7 +158,7 @@ flock.evented = (function ($single, $path, $utils) {
          * @param handler {function} Event handler.
          */
         delegate: function (path, eventName, pPath, handler) {
-            var match = flock.query ? flock.query.match : flock.Path.match;
+            var match = flock.Query ? flock.Query.match : flock.Path.match;
 
             function fullHandler(event, data) {
                 if (match(event.target, pPath)) {

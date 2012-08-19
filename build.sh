@@ -32,7 +32,7 @@ js/node.js \
 js/single.js \
 js/evented.js \
 js/evented2.js \
-js/query.js \
+js/Query.js \
 js/multi.js \
 js/flock.js \
 > "build/$NAME.js"
