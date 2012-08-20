@@ -3,7 +3,7 @@
  */
 var flock = flock || {};
 
-flock.evented = (function ($single, $path, $utils) {
+flock.evented = (function (Single, Path, $utils) {
     var
         // regular event types
         constants = {
@@ -53,7 +53,7 @@ flock.evented = (function ($single, $path, $utils) {
             if (arguments.length > 1) {
                 // root and options were passed instead of base
                 // falling back to flock.single
-                base = $single.create.apply(this, arguments);
+                base = Single.create.apply(this, arguments);
             }
 
             var that = Object.create(base, {
@@ -288,8 +288,8 @@ flock.evented = (function ($single, $path, $utils) {
         get: function (path, options) {
             options = preprocessOptions(options);
 
-            var result = $single.get.call(this, path, options.nochaining),
-                root = flock.single.isPrototypeOf(result) ?
+            var result = Single.get.call(this, path, options.nochaining),
+                root = flock.Single.isPrototypeOf(result) ?
                     result.root :
                     result,
                 data,
@@ -327,17 +327,17 @@ flock.evented = (function ($single, $path, $utils) {
          */
         set: function (path, value, options) {
             options = preprocessOptions(options);
-            path = $path.normalize(path);
+            path = Path.normalize(path);
 
             // storing 'before' node
-            var before = $single.get.call(this, path, true),
+            var before = Single.get.call(this, path, true),
                 after;
 
             // setting value
-            $single.set.call(this, path, value);
+            Single.set.call(this, path, value);
 
             // acquiring 'after' node
-            after = $single.get.call(this, path, true);
+            after = Single.get.call(this, path, true);
 
             // triggering event
             if (options.trigger !== false) {
@@ -358,10 +358,10 @@ flock.evented = (function ($single, $path, $utils) {
             options = preprocessOptions(options);
 
             // storing 'before' node
-            var before = $single.get.call(this, path, true);
+            var before = Single.get.call(this, path, true);
 
             if (typeof before !== 'undefined') {
-                $single.unset.call(this, path);
+                Single.unset.call(this, path);
 
                 // triggering event
                 if (options.trigger !== false) {
@@ -384,10 +384,10 @@ flock.evented = (function ($single, $path, $utils) {
             options = preprocessOptions(options);
 
             // storing 'before' node
-            var before = $single.get.call(this, path, true);
+            var before = Single.get.call(this, path, true);
 
             if (typeof before !== 'undefined') {
-                $single.cleanup.call(this, path);
+                Single.cleanup.call(this, path);
 
                 // triggering event
                 if (options.trigger !== false) {
@@ -407,7 +407,7 @@ flock.evented = (function ($single, $path, $utils) {
 
     return self;
 }(
-    flock.single,
+    flock.Single,
     flock.Path,
     flock.utils
 ));

@@ -29,7 +29,7 @@ js/license.js \
 js/utils.js \
 js/Path.js \
 js/Node.js \
-js/single.js \
+js/Single.js \
 js/evented.js \
 js/evented2.js \
 js/Query.js \

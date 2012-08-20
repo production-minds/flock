@@ -1,5 +1,5 @@
 /*global flock, module, test, expect, ok, equal, deepEqual, raises */
-(function ($evented2, $evented, $single) {
+(function ($evented2, $evented, Single) {
     module("Event 2");
 
     var
@@ -17,10 +17,10 @@
         },
 
         // evented datastore
-        original = $evented.create($single.create(root)),
+        original = $evented.create(Single.create(root)),
 
         // derived evented datastore
-        derived = $evented2.create($single.create(root.hello.world, {
+        derived = $evented2.create(Single.create(root.hello.world, {
             origin: original,
             offset: ['hello', 'world']
         }));
@@ -135,5 +135,5 @@
 }(
     flock.evented2,
     flock.evented,
-    flock.single
+    flock.Single
 ));

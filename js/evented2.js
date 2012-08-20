@@ -5,7 +5,7 @@
  */
 var flock = flock || {};
 
-flock.evented2 = (function ($single, $path, $utils) {
+flock.evented2 = (function (Single, Path, $utils) {
     var self;
 
     /**
@@ -21,7 +21,7 @@ flock.evented2 = (function ($single, $path, $utils) {
                 result;
 
             // prending path with offset
-            path = $path.normalize(path);
+            path = Path.normalize(path);
             path = this.offset.concat(path);
             args.unshift(path);
 
@@ -50,7 +50,7 @@ flock.evented2 = (function ($single, $path, $utils) {
             if (arguments.length > 1) {
                 // root and options were passed instead of base
                 // falling back to flock.single
-                base = $single.create.apply(this, arguments);
+                base = Single.create.apply(this, arguments);
             }
 
             return $utils.extend(base, self);
@@ -72,7 +72,7 @@ flock.evented2 = (function ($single, $path, $utils) {
 
     return self;
 }(
-    flock.single,
+    flock.Single,
     flock.Path,
     flock.utils
 ));

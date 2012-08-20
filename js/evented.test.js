@@ -1,5 +1,5 @@
 /*global window, flock, module, test, expect, stop, start, ok, equal, deepEqual, raises */
-(function ($evented, $single) {
+(function ($evented, Single) {
     module("Event");
 
     var
@@ -17,7 +17,7 @@
         },
 
         // creating evented datastore object explicitly from flock.single
-        ds = $evented.create($single.create(root));
+        ds = $evented.create(Single.create(root));
 
     test("Subscription", function () {
         function testHandler() {
@@ -294,5 +294,5 @@
     });
 }(
     flock.evented,
-    flock.single
+    flock.Single
 ));

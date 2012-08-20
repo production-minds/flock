@@ -1,5 +1,5 @@
 /*global flock, module, test, ok, equal, notEqual, deepEqual, raises */
-(function ($single) {
+(function (Single) {
     module("Single");
 
     var
@@ -14,7 +14,7 @@
             foo: 5
         },
 
-        single = $single.create(data, {nochaining: true});
+        single = Single.create(data, {nochaining: true});
 
     test("Getting", function () {
         equal(single.get(['hi']), "There!", "Getting ordinal value");
@@ -39,7 +39,7 @@
                 foo: 5
             },
 
-            single = $single.create(data);
+            single = Single.create(data);
 
         equal(
             single
@@ -100,7 +100,7 @@
         single.add('bar', 2);
         equal(data.bar, 2, "Adding to non-existing node");
 
-        var chained = $single.create(data);
+        var chained = Single.create(data);
         chained.add('foo');
         equal(data.foo, 10, "Custom increment with chaining");
     });
@@ -118,7 +118,7 @@
                 }
             },
 
-            single = $single.create(data);
+            single = Single.create(data);
 
         single.unset(['hello', 'world', 'center']);
         deepEqual(data, {
@@ -163,7 +163,7 @@
                 }
             },
 
-            single = $single.create(data);
+            single = Single.create(data);
 
         single.cleanup(['blaaaaah']);
         deepEqual(data, {
@@ -214,7 +214,7 @@
                 }
             },
 
-            single = $single.create(data, {nochaining: true});
+            single = Single.create(data, {nochaining: true});
 
         deepEqual(single.map(['foo'], ['bar']), {
             hello: {
@@ -258,4 +258,4 @@
             }
         }, "Empty path as last node attaches child nodes to the lookup as leaf nodes");
     });
-}(flock.single));
+}(flock.Single));

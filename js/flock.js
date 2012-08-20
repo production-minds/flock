@@ -3,7 +3,7 @@
  */
 var flock = flock || {};
 
-(function ($utils, $single, $multi, $evented, $evented2) {
+(function ($utils, Single, $multi, $evented, $evented2) {
     var
         // library-level constants
         constants = {
@@ -38,7 +38,7 @@ var flock = flock || {};
 
         var
             // instantiating base class with identical arguments
-            base = $single.create.apply(this, arguments),
+            base = Single.create.apply(Single, arguments),
             self;
 
         if (!options.nomulti) {
@@ -77,7 +77,7 @@ var flock = flock || {};
     $utils.mixin(flock, backup);
 }(
     flock.utils,
-    flock.single,
+    flock.Single,
     flock.multi,
     flock.evented,
     flock.evented2
