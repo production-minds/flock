@@ -12,6 +12,3 @@ js/Query.js
 js/multi.js
 js/flock.js
 "
-
-PATH=(
-)
