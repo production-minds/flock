@@ -1,3 +1,8 @@
+#
+# Project configuration for Common Build
+# https://github.com/danstocker/builder
+#
+
 LIB="flock"
 
 FILES="\
