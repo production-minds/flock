@@ -1,9 +1,9 @@
 /*global flock, module, test, ok, equal, deepEqual, raises */
-(function ($node) {
+(function (Node) {
     module("Node");
 
     function node(root) {
-        return $node.create(root);
+        return Node.create(root);
     }
 
     test("Testing", function () {
@@ -43,6 +43,4 @@
         deepEqual(node({foo: "bar", hello: "world"}).keys(), ['foo', 'hello'], "Key extraction");
         deepEqual(node({foo: "bar", hello: "world"}).values(), ['bar', 'world'], "Value extraction");
     });
-}(
-    flock.node
-));
+}(flock.Node));
