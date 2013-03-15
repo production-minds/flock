@@ -49,6 +49,7 @@ troop.promise(flock, 'Path', function () {
              * @param {string|string[]} actual Actual path.
              * @param {string|string[]} expected Expected path. May be pattern.
              * @returns {boolean} Whether actual path matches expected path.
+             * @static
              */
             match: function (actual, expected) {
                 actual = this.normalize(actual);
