@@ -44,7 +44,7 @@ flock.evented2 = (function ($single, $path, $utils) {
     self = {
         /**
          * @constructor
-         * @param base {object} Base class instance.
+         * @param {object} base Base class instance.
          */
         create: function (base) {
             if (arguments.length > 1) {

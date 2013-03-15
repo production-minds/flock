@@ -20,7 +20,7 @@ flock.evented = (function ($single, $path, $utils) {
 
     /**
      * Preprocesses options object for use in event methods.
-     * @param options {object} Arbitrary.
+     * @param {object} options Arbitrary.
      * @return {object} Properly formatted options object.
      */
     function preprocessOptions(options) {
@@ -47,7 +47,7 @@ flock.evented = (function ($single, $path, $utils) {
     self = {
         /**
          * @constructor
-         * @param base {object} Base class instance.
+         * @param {object} base Base class instance.
          */
         create: function (base) {
             if (arguments.length > 1) {
@@ -69,7 +69,7 @@ flock.evented = (function ($single, $path, $utils) {
         /**
          * Triggers standard datastore event
          * depending on the before and after values.
-         * @param path {string|string[]} Datastore path.
+         * @param {string|string[]} path Datastore path.
          * @param before Value before the change.
          * @param after Value after the change.
          * @param customData Data submitted by the user.
@@ -104,9 +104,9 @@ flock.evented = (function ($single, $path, $utils) {
 
         /**
          * Subscribes to datastore event.
-         * @param path {string|string[]} Datastore path.
-         * @param eventName {string} Name of event to subscribe to.
-         * @param handler {function} Event handler.
+         * @param {string|string[]} path Datastore path.
+         * @param {string} eventName Name of event to subscribe to.
+         * @param {function} handler Event handler.
          */
         on: function (path, eventName, handler) {
             // serializing path when necessary
@@ -127,9 +127,9 @@ flock.evented = (function ($single, $path, $utils) {
         /**
          * Subscribes to datastore event, unsubscribes after first time
          * being triggered.
-         * @param path {string|string[]} Datastore path.
-         * @param eventName {string} Name of event to subscribe to.
-         * @param handler {function} Event handler.
+         * @param {string|string[]} path Datastore path.
+         * @param {string} eventName Name of event to subscribe to.
+         * @param {function} handler Event handler.
          */
         one: function (path, eventName, handler) {
             var that = this;
@@ -152,10 +152,10 @@ flock.evented = (function ($single, $path, $utils) {
          * Delegates event to a specified path. Event is captured on the node,
          * but handler is not called unless argument 'path' matches the path
          * of the event target.
-         * @param path {string|string[]} Datastore path capturing event.
-         * @param eventName {string} Name of event to subscribe to.
-         * @param pPath {string[]} Datastore path processing event.
-         * @param handler {function} Event handler.
+         * @param {string|string[]} path Datastore path capturing event.
+         * @param {string} eventName Name of event to subscribe to.
+         * @param {string[]} pPath Datastore path processing event.
+         * @param {function} handler Event handler.
          */
         delegate: function (path, eventName, pPath, handler) {
             var match = flock.query ? flock.query.match : flock.path.match;
@@ -176,9 +176,9 @@ flock.evented = (function ($single, $path, $utils) {
 
         /**
          * Unsubscribes from datastore event.
-         * @param path {string|string[]} Datastore path.
-         * @param [eventName] {string} Name of event to subscribe to.
-         * @param [handler] {function} Event handler.
+         * @param {string|string[]} path Datastore path.
+         * @param {string} [eventName] Name of event to subscribe to.
+         * @param {function} [handler] Event handler.
          */
         off: function (path, eventName, handler) {
             // serializing path when necessary
@@ -216,11 +216,11 @@ flock.evented = (function ($single, $path, $utils) {
 
         /**
          * Triggers event on specified datastore path.
-         * @param path {string|string[]} Datastore path.
-         * @param eventName {string} Name of event to subscribe to.
-         * @param [options] {object} Options.
-         * @param [options.data] {object} Custom data to be passed to event handlers.
-         * @param [options.target] {string} Custom target path to be passed along event.
+         * @param {string|string[]} path Datastore path.
+         * @param {string} eventName Name of event to subscribe to.
+         * @param {object} [options] Options.
+         * @param {object} [options.data] Custom data to be passed to event handlers.
+         * @param {string} [options.target] Custom target path to be passed along event.
          */
         trigger: function (path, eventName, options) {
             var
@@ -279,11 +279,11 @@ flock.evented = (function ($single, $path, $utils) {
 
         /**
          * Retrieves a single value from the given datastore path and triggers an event.
-         * @param path {string|Array} Datastore path.
-         * @param [options] {object} Options.
-         * @param [options.data] {object} Custom data to be passed to event handler.
-         * @param [options.trigger] {boolean} Whether to trigger. Default: true.
-         * @param [options.nochaining] {boolean} Whether method should return bare node.
+         * @param {string|Array} path Datastore path.
+         * @param {object} [options] Options.
+         * @param {object} [options.data] Custom data to be passed to event handler.
+         * @param {boolean} [options.trigger] Whether to trigger. Default: true.
+         * @param {boolean} [options.nochaining] Whether method should return bare node.
          */
         get: function (path, options) {
             options = preprocessOptions(options);
@@ -319,11 +319,11 @@ flock.evented = (function ($single, $path, $utils) {
 
         /**
          * Sets a singe value on the given datastore path and triggers an event.
-         * @param path {string|Array} Datastore path.
-         * @param value {object} Value to set on path
-         * @param [options] {object} Options.
-         * @param [options.data] {object} Custom data to be passed to event handler.
-         * @param [options.trigger] {boolean} Whether to trigger. Default: true.
+         * @param {string|Array} path Datastore path.
+         * @param {object} value Value to set on path
+         * @param {object} [options] Options.
+         * @param {object} [options.data] Custom data to be passed to event handler.
+         * @param {boolean} [options.trigger] Whether to trigger. Default: true.
          */
         set: function (path, value, options) {
             options = preprocessOptions(options);
@@ -349,10 +349,10 @@ flock.evented = (function ($single, $path, $utils) {
 
         /**
          * Removes a single node from the datastore and triggers an event.
-         * @param path {string|Array} Datastore path.
-         * @param [options] {object} Options.
-         * @param [options.data] {object} Custom data to be passed to event handler.
-         * @param [options.trigger] {boolean} Whether to trigger. Default: true.
+         * @param {string|Array} path Datastore path.
+         * @param {object} [options] Options.
+         * @param {object} [options.data] Custom data to be passed to event handler.
+         * @param {boolean} [options.trigger] Whether to trigger. Default: true.
          */
         unset: function (path, options) {
             options = preprocessOptions(options);
@@ -375,10 +375,10 @@ flock.evented = (function ($single, $path, $utils) {
         /**
          * Removes a node from the datastore. Cleans up empty parent nodes
          * until the first non-empty ancestor node. Then triggers an event.
-         * @param path {string|Array} Datastore path.
-         * @param [options] {object} Options.
-         * @param [options.data] {object} Custom data to be passed to event handler.
-         * @param [options.trigger] {boolean} Whether to trigger. Default: true.
+         * @param {string|Array} path Datastore path.
+         * @param {object} [options] Options.
+         * @param {object} [options.data] Custom data to be passed to event handler.
+         * @param {boolean} [options.trigger] Whether to trigger. Default: true.
          */
         cleanup: function (path, options) {
             options = preprocessOptions(options);

@@ -18,7 +18,7 @@ flock.path = (function ($utils) {
 
         /**
          * Validates simple datastore path.
-         * @param path {string|Array} Datastore path to be validated.
+         * @param {string|Array} path Datastore path to be validated.
          * @returns {object|boolean} Path in array notation when valid, or false.
          * @throws {string} On invalid path.
          */
@@ -48,8 +48,8 @@ flock.path = (function ($utils) {
 
         /**
          * Compares two paths.
-         * @param actual {Array} Actial path.
-         * @param expected {Array} Expected path. May be pattern.
+         * @param {Array} actual Actial path.
+         * @param {Array} expected Expected path. May be pattern.
          * @returns {boolean} Whether actual path matches expected path.
          */
         match: function (actual, expected) {

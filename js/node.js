@@ -7,7 +7,7 @@ flock.node = (function ($utils) {
     var self = $utils.extend(Object.prototype, {
         /**
          * @constructor
-         * @param root {object} Datastore node.
+         * @param {object} root Datastore node.
          */
         create: function (root) {
             return Object.create(self, {

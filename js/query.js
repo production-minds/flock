@@ -20,7 +20,7 @@ flock.query = (function ($utils) {
 
         /**
          * Validates and normalizes datastore path.
-         * @param path {string|Array} Datastore path.
+         * @param {string|Array} path Datastore path.
          * @example
          * 'contacts.smith.*.ancestors...name'
          * will get the names of all ancestor names for contacts w/ last name 'smith'
@@ -68,8 +68,8 @@ flock.query = (function ($utils) {
 
         /**
          * Matches path to pattern.
-         * @param actual {string|Array} Actual path.
-         * @param expected {string|Array} Expected path. May be query pattern.
+         * @param {string|Array} actual Actual path.
+         * @param {string|Array} expected Expected path. May be query pattern.
          * @returns {boolean} Whether the actual path matches the expected one.
          */
         match: function (actual, expected) {

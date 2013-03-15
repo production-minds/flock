@@ -16,11 +16,11 @@ var flock = flock || {};
     /**
      * Flock constructor
      * @constructor
-     * @param [root] {object} Root object for datastore. When omitted, empty object is assumed.
-     * @param [options] {object} Options
-     * @param [options.noevent] {boolean} No events.
-     * @param [options.nomulti] {boolean} No complex queries, only single nodes may be accessed.
-     * @param [options.nochaining] {boolean} No wrapping of querying methods in flock object.
+     * @param {object} [root] Root object for datastore. When omitted, empty object is assumed.
+     * @param {object} [options] Options
+     * @param {boolean} [options.noevent] No events.
+     * @param {boolean} [options.nomulti] No complex queries, only single nodes may be accessed.
+     * @param {boolean} [options.nochaining] No wrapping of querying methods in flock object.
      */
     flock = function (root, options) {
         // filtering options argument
@@ -60,7 +60,7 @@ var flock = flock || {};
 
             /**
              * Wraps node in flock object
-             * @param node {object} Datastore node.
+             * @param {object} node Datastore node.
              */
             wrap: function (node) {
                 return this.nochaining ?

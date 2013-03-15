@@ -30,7 +30,7 @@ flock.multi = (function ($query, $utils) {
 
     /**
      * Preprocesses options object for use in query-related methods.
-     * @param options {object} Arbitrary.
+     * @param {object} options Arbitrary.
      * @return {object} Properly formatted options object.
      */
     function preprocessOptions(options) {
@@ -60,7 +60,7 @@ flock.multi = (function ($query, $utils) {
 
     /**
      * Initializes traversal result according to traversal mode
-     * @param mode {string} Traversal mode.
+     * @param {string} mode Traversal mode.
      */
     function initResult(mode) {
         switch (mode) {
@@ -80,7 +80,7 @@ flock.multi = (function ($query, $utils) {
     self = {
         /**
          * @constructor
-         * @param base {object} Base class instance.
+         * @param {object} base Base class instance.
          */
         create: function (base) {
             return $utils.extend(base, self);
@@ -91,15 +91,15 @@ flock.multi = (function ($query, $utils) {
 
         /**
          * Collects or modifies end nodes.
-         * @param query {string|string[]} Datastore query expression.
-         * @param [options] {object} Options.
+         * @param {string|string[]} query Datastore query expression.
+         * @param {object} [options] Options.
          * @param [options.limit] max number of entries to retrieve, default: unlimited
          * @param [options.mode] type of return value is Object or Array (flock.key/flock.values/flock.both/flock.del), default: flock.array
          * @param [options.loopback] whether to traverse loopbacks, default: false
          * @param [options.undef] whether to collect undefined entries, default: false
          * @param [options.value] value to set, or callback function to execute on nodes
          * when undefined, function returns collected values
-         * @param [nochaining] {boolean} Whether method should return bare node.
+         * @param {boolean} [nochaining] Whether method should return bare node.
          * @return {object} Collected nodes.
          */
         traverse: function (query, options, nochaining) {
@@ -128,9 +128,9 @@ flock.multi = (function ($query, $utils) {
             /**
              * Collects end nodes matching the path passed in the
              * traversal state object.
-             * @param obj {object} Node to walk.
-             * @param i {number} Current position in path,
-             * @param depth {number} Current depth in tree.
+             * @param {object} obj Node to walk.
+             * @param {number} i Current position in path,
+             * @param {number} depth Current depth in tree.
              */
             (function walk(obj, i, path) {
                 var key, j;
@@ -138,7 +138,7 @@ flock.multi = (function ($query, $utils) {
                 /**
                  * Processes a single node in accordance with the current
                  * state of traversal.
-                 * @param key {string} Key in object to proceed to.
+                 * @param {string} key Key in object to proceed to.
                  * @return {boolean} Whether to terminate traversal.
                  */
                 function node(key) {
@@ -275,8 +275,8 @@ flock.multi = (function ($query, $utils) {
 
         /**
          * Retrieves multiple nodes from datastore.
-         * @param path {string|string[]} Datastore path.
-         * @param [options] {object}
+         * @param {string|string[]} path Datastore path.
+         * @param {object} [options]
          * @see flock.multi.query for options
          */
         mget: function (path, options) {
@@ -286,9 +286,9 @@ flock.multi = (function ($query, $utils) {
         /**
          * Modifies multiple nodes in datastore. Sets the same value on each node defined by
          * the path argument, or calls a handler function for each.
-         * @param path {string|string[]} Datastore path.
-         * @param value {object|function} Value to set or function to call on each affected node.
-         * @param [options] {object}
+         * @param {string|string[]} path Datastore path.
+         * @param {object|function} value Value to set or function to call on each affected node.
+         * @param {object} [options]
          * @see flock.multi.query for options
          */
         mset: function (path, value, options) {
@@ -300,8 +300,8 @@ flock.multi = (function ($query, $utils) {
 
         /**
          * Removes multiple nodes from datastore.
-         * @param path {string|string[]} Datastore path.
-         * @param [options] {object}
+         * @param {string|string[]} path Datastore path.
+         * @param {object} [options]
          * @see flock.multi.query for options
          */
         munset: function (path, options) {

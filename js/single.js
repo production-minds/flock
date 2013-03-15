@@ -10,11 +10,11 @@ flock.single = (function ($node, $path, $utils) {
     var self = $utils.extend($node, {
         /**
          * @constructor
-         * @param root {object} Source node.
-         * @param [options] {object}
-         * @param [options.nochaining] {boolean} Whether query methods are chainable.
-         * @param [options.origin] {flock.single} Origin datastore.
-         * @param [options.offset] {string[]} Path of root relative to root of origin datastore.
+         * @param {object} root Source node.
+         * @param {object} [options]
+         * @param {boolean} [options.nochaining] Whether query methods are chainable.
+         * @param {flock.single} [options.origin] Origin datastore.
+         * @param {string[]} [options.offset] Path of root relative to root of origin datastore.
          */
         create: function (root, options) {
             options = options || {};
@@ -43,7 +43,7 @@ flock.single = (function ($node, $path, $utils) {
 
         /**
          * Wraps node in datastore object.
-         * @param node {object} Datastore node.
+         * @param {object} node Datastore node.
          */
         wrap: function (node) {
             return this.create.apply(this, arguments);
@@ -54,8 +54,8 @@ flock.single = (function ($node, $path, $utils) {
 
         /**
          * Gets a single value from the given datastore path.
-         * @param path {string|string[]} Datastore path.
-         * @param [nochaining] {boolean} Whether method should return bare node.
+         * @param {string|string[]} path Datastore path.
+         * @param {boolean} [nochaining] Whether method should return bare node.
          * @returns {object} Node on specified path.
          */
         get: function (path, nochaining) {
@@ -89,8 +89,8 @@ flock.single = (function ($node, $path, $utils) {
 
         /**
          * Sets a singe value on the given datastore path.
-         * @param path {string|string[]} Datastore path.
-         * @param [value] {object} Value to set on path
+         * @param {string|string[]} path Datastore path.
+         * @param {object} [value] Value to set on path
          */
         set: function (path, value) {
             var parent = this.root,
@@ -121,8 +121,8 @@ flock.single = (function ($node, $path, $utils) {
 
         /**
          * Increments value on the object's key.
-         * @param path {string|string[]} Datastore path.
-         * @param [inc] {number} Optional increment.
+         * @param {string|string[]} path Datastore path.
+         * @param {number} [inc] Optional increment.
          */
         add: function (path, inc) {
             var tpath = $path.normalize(path),
@@ -137,7 +137,7 @@ flock.single = (function ($node, $path, $utils) {
 
         /**
          * Removes a single node from the datastore.
-         * @param path {string|string[]} Datastore path.
+         * @param {string|string[]} path Datastore path.
          */
         unset: function (path) {
             var tpath = $path.normalize(path),
@@ -155,7 +155,7 @@ flock.single = (function ($node, $path, $utils) {
         /**
          * Removes a node from the datastore. Cleans up empty parent nodes
          * until the first non-empty ancestor node.
-         * @param path {string|string[]} Datastore path.
+         * @param {string|string[]} path Datastore path.
          */
         cleanup: function (path) {
             var tpath = $path.normalize(path),

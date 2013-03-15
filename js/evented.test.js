@@ -197,8 +197,8 @@
 
         /**
          * Pretends to load data associated with a cache path.
-         * @param path {string} Cache path.
-         * @param handler {function} Loader handler.
+         * @param {string} path Cache path.
+         * @param {function} handler Loader handler.
          */
         function mockLoader(path, handler) {
             handler(path, 'blah');

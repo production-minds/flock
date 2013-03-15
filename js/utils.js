@@ -7,7 +7,7 @@ flock.utils = (function () {
     var self = {
         /**
          * Mixes objects to an existing one, changing the original.
-         * @param dest {object} Destination object.
+         * @param {object} dest Destination object.
          * Rest of parameters are objects to be mixed in.
          */
         mixin: function (dest) {
@@ -42,7 +42,7 @@ flock.utils = (function () {
         /**
          * Extends an object by creating a new instance of the old one and
          * mixing the extension object to it.
-         * @param base {object} Object to extend.
+         * @param {object} base Object to extend.
          */
         extend: function (base) {
             var args = Array.prototype.slice.call(arguments),
