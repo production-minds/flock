@@ -1,28 +1,28 @@
-/*global flock, module, test, ok, equal, notEqual, deepEqual, raises */
-(function ($path) {
+/*global flock, module, test, ok, equal, notEqual, notStrictEqual, deepEqual, raises */
+(function (Path) {
     module("Path");
 
     test("Normalization", function () {
         raises(function () {
-            $path.normalize('...fds.fd');
+            Path.normalize('...fds.fd');
         }, "Validation fails on leading dots");
 
         raises(function () {
-            $path.normalize('fds.fd..');
+            Path.normalize('fds.fd..');
         }, "Validation fails on trailing dots");
 
         raises(function () {
-            $path.normalize(1000);
+            Path.normalize(1000);
         }, "Validation fails on invalid argument type");
 
         deepEqual(
-            $path.normalize(''),
+            Path.normalize(''),
             [],
             "Trivial path"
         );
 
         deepEqual(
-            $path.normalize('first.second.thi rd'),
+            Path.normalize('first.second.thi rd'),
             [
                 'first',
                 'second',
@@ -36,14 +36,14 @@
             'second',
             'thi rd'
         ];
-        notEqual($path.normalize(arrNotation), arrNotation, "Array input returns copy");
-        deepEqual($path.normalize(arrNotation), arrNotation, "Array copy is identical to original");
+        notStrictEqual(Path.normalize(arrNotation), arrNotation, "Array input returns copy");
+        deepEqual(Path.normalize(arrNotation), arrNotation, "Array copy is identical to original");
     });
         
     test("Pattern matching", function () {
         // matching
-        equal($path.match(['hello', 'world'], ['hello', 'world']), true, "Path matches pattern");
-        equal($path.match(['hello'], ['hello', 'world']), false, "Path doesn't match pattern");
-        equal($path.match('hello.world', 'hello.world'), true, "Path (string notation) matches pattern");
+        equal(Path.match(['hello', 'world'], ['hello', 'world']), true, "Path matches pattern");
+        equal(Path.match(['hello'], ['hello', 'world']), false, "Path doesn't match pattern");
+        equal(Path.match('hello.world', 'hello.world'), true, "Path (string notation) matches pattern");
     });
-}(flock.path));
+}(flock.Path));

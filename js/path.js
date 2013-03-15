@@ -1,66 +1,59 @@
 /**
  * Basic Path Processing Functionality
  */
-var flock = flock || {};
+/* global dessert, troop, flock */
+troop.promise(flock, 'Path', function () {
+    /**
+     * @class flock.Path
+     * @extends troop.Base
+     */
+    flock.Path = troop.Base.extend()
+        .addConstant(/** @lends flock.Path */{
+            RE_PATH_VALIDATOR : /^([^\.]+\.)*[^\.]+$/,
+            RE_PATH_SEPARATOR : /\./,
+            ERROR_INVALID_PATH: "Invalid path."
+        })
+        .addMethod(/** @lends flock.Path */{
+            /**
+             * Validates simple datastore path.
+             * @param {string|string[]} path Datastore path to be validated.
+             * @returns {string[]|boolean} Path in array notation when valid, or false.
+             * @static
+             */
+            normalize: function (path) {
+                var result;
 
-flock.path = (function ($utils) {
-    var RE_PATHVALIDATOR = /^([^\.]+\.)*[^\.]+$/,
-        RE_PATHSEPARATOR = /\./,
-        errors, self;
-
-    errors = {
-        ERROR_INVALIDPATH: "Invalid path."
-    };
-
-    self = {
-        //////////////////////////////
-        // Control
-
-        /**
-         * Validates simple datastore path.
-         * @param {string|Array} path Datastore path to be validated.
-         * @returns {object|boolean} Path in array notation when valid, or false.
-         * @throws {string} On invalid path.
-         */
-        normalize: function (path) {
-            var result;
-
-            if (typeof path === 'string') {
-                // validating string path
-                if (path.length === 0) {
-                    // trivial path
-                    result = [];
-                } else if (path.match(RE_PATHVALIDATOR)) {
-                    // generating array notation by splitting string
-                    result = path.split(RE_PATHSEPARATOR);
+                if (typeof path === 'string') {
+                    // validating string path
+                    if (path.length === 0) {
+                        // trivial path
+                        result = [];
+                    } else if (path.match(this.RE_PATH_VALIDATOR)) {
+                        // generating array notation by splitting string
+                        result = path.split(this.RE_PATH_SEPARATOR);
+                    } else {
+                        dessert.assert(false, this.ERROR_INVALID_PATH);
+                    }
+                } else if (path instanceof Array) {
+                    // creating shallow copy of path array
+                    result = path.concat([]);
                 } else {
-                    throw "flock.path.normalize: " + errors.ERROR_INVALIDPATH;
+                    dessert.assert(false, this.ERROR_INVALID_PATH);
                 }
-            } else if (path instanceof Array) {
-                // creating shallow copy of path array
-                result = path.concat([]);
-            } else {
-                throw "flock.path.normalize: " + errors.ERROR_INVALIDPATH;
+
+                return result;
+            },
+
+            /**
+             * Compares two paths.
+             * @param {string|string[]} actual Actual path.
+             * @param {string|string[]} expected Expected path. May be pattern.
+             * @returns {boolean} Whether actual path matches expected path.
+             */
+            match: function (actual, expected) {
+                actual = this.normalize(actual);
+                expected = this.normalize(expected);
+                return actual.join('.') === expected.join('.');
             }
-
-            return result;
-        },
-
-        /**
-         * Compares two paths.
-         * @param {Array} actual Actial path.
-         * @param {Array} expected Expected path. May be pattern.
-         * @returns {boolean} Whether actual path matches expected path.
-         */
-        match: function (actual, expected) {
-            actual = self.normalize(actual);
-            expected = self.normalize(expected);
-            return actual.join('.') === expected.join('.');
-        }
-    };
-
-    // delegating errors
-    $utils.mixin(self, errors);
-
-    return self;
-}(flock.utils));
+        });
+});
