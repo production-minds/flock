@@ -14,7 +14,7 @@ troop.promise(flock, 'Single', function () {
      * @extends flock.Node
      */
     self = flock.Single = base.extend()
-        .addMethod({
+        .addMethod(/** @lends flock.Single */{
             /**
              * @constructor
              * @param {object} root Source node.
@@ -36,7 +36,7 @@ troop.promise(flock, 'Single', function () {
                     root = {};
                 }
 
-                this.addConstant({
+                this.addConstant(/** @lends flock.Single */{
                     root      : root,
                     options   : options, // for internal use
                     nochaining: options.nochaining,
