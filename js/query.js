@@ -56,7 +56,7 @@ troop.promise(flock, 'Query', function () {
                 } else if (path instanceof Array) {
                     return path.concat([]);
                 } else {
-                    throw dessert.assert(false, this.ERROR_INVALID_PATH);
+                    dessert.assert(false, this.ERROR_INVALID_PATH);
                 }
             },
 
