@@ -14,7 +14,7 @@
             foo: 5
         },
 
-        single = Single.create(data, {nochaining: true});
+        single = Single.create(data);
 
     test("Getting", function () {
         equal(single.get(['hi']), "There!", "Getting ordinal value");
@@ -24,56 +24,6 @@
         ok(typeof single.get([
             'hello', 'yall'
         ]) === 'undefined', "Attempting to get from invalid path returns undefined");
-    });
-
-    test("Origin", function () {
-        var
-            data = {
-                hi: 'There!',
-                hello: {
-                    world: {
-                        center: "!!"
-                    },
-                    all: "hey"
-                },
-                foo: 5
-            },
-
-            single = Single.create(data);
-
-        equal(
-            single
-                .get(['hello', 'world'])
-                .origin,
-            single,
-            "Origin datastore OK"
-        );
-
-        deepEqual(
-            single
-                .get(['hello', 'world'])
-                .offset,
-            ['hello', 'world'],
-            "Origin path OK"
-        );
-
-        equal(
-            single
-                .get('hello')
-                    .get('world')
-                .origin,
-            single,
-            "Origin datastore OK (multi-depth)"
-        );
-
-        deepEqual(
-            single
-                .get('hello')
-                    .get('world')
-                .offset,
-            ['hello', 'world'],
-            "Origin path OK (multi-depth)"
-        );
     });
 
     test("Setting", function () {
@@ -214,7 +164,7 @@
                 }
             },
 
-            single = Single.create(data, {nochaining: true});
+            single = Single.create(data);
 
         deepEqual(single.map(['foo'], ['bar']), {
             hello: {

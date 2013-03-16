@@ -16,56 +16,20 @@ troop.promise(flock, 'Single', function () {
     self = flock.Single = base.extend()
         .addMethod(/** @lends flock.Single */{
             /**
-             * @constructor
              * @param {object} root Source node.
-             * @param {object} [options]
-             * @param {boolean} [options.nochaining] Whether query methods are chainable.
-             * @param {flock.Single} [options.origin] Origin datastore.
-             * @param {string[]} [options.offset] Path of root relative to root of origin datastore.
              */
-            init: function (root, options) {
-                options = options || {};
-
-                /**
-                 * Defaulting root to empty object when nor root
-                 * neither origin is specified.
-                 */
-                if (typeof options.origin === 'undefined' &&
-                    typeof root === 'undefined'
-                    ) {
-                    root = {};
-                }
-
+            init: function (root) {
                 this.addConstant(/** @lends flock.Single */{
-                    root      : root,
-                    options   : options, // for internal use
-                    nochaining: options.nochaining,
-                    origin    : options.origin,
-                    offset    : options.offset ? options.offset : []
+                    root: root || {}
                 });
             },
-
-            //////////////////////////////
-            // Utilities
-
-            /**
-             * Wraps node in datastore object.
-             * @param {object} node Datastore node.
-             */
-            wrap: function (node) {
-                return this.create.apply(this, arguments);
-            },
-
-            //////////////////////////////
-            // Control
 
             /**
              * Gets a single value from the given datastore path.
              * @param {string|string[]} path Datastore path.
-             * @param {boolean} [nochaining] Whether method should return bare node.
              * @returns {object} Node on specified path.
              */
-            get: function (path, nochaining) {
+            get: function (path) {
                 path = flock.Path.normalize(path);
 
                 var result = this.root,
@@ -86,12 +50,7 @@ troop.promise(flock, 'Single', function () {
                     }
                 }
 
-                return nochaining || this.nochaining ?
-                    result :
-                    this.wrap(result, troop.Base.addPublic.call(this.options, {
-                        origin: this.origin || this,
-                        offset: this.offset.concat(path)
-                    }));
+                return result;
             },
 
             /**
@@ -195,15 +154,10 @@ troop.promise(flock, 'Single', function () {
              * @returns {object} Transformed node.
              */
             map: function () {
-                var
-                // source and destination buffers
-                    source = flock.Single.create(this.root),
-                    dest = this.wrap({}),
-
-                // path buffer
-                    paths = [],
-
-                // loop variables
+                var currentClass = this.getBase(),
+                    sourceDs = currentClass.create(this.root), // source datastore
+                    destinationDs = currentClass.create(), // destination datastore
+                    paths = [], // path buffer
                     item, path, last,
                     i;
 
@@ -218,18 +172,16 @@ troop.promise(flock, 'Single', function () {
                         // constructing output path from data on input paths
                         path = [];
                         for (i = 0; i < paths.length - 1; i++) {
-                            path.push(source.get([item].concat(paths[i]), true));
+                            path.push(sourceDs.get([item].concat(paths[i]), true));
                         }
                         last = paths[paths.length - 1];
 
                         // storing node on last input path on constructed output path
-                        dest.set(path, source.get([item].concat(last), true));
+                        destinationDs.set(path, sourceDs.get([item].concat(last), true));
                     }
                 }
 
-                return this.nochaining ?
-                    dest.root :
-                    dest;
+                return destinationDs.root;
             }
         });
 });
