@@ -1,29 +1,29 @@
 /*global flock, module, test, expect, ok, equal, deepEqual, raises */
-(function ($evented2, $evented, $single) {
+(function (Evented2, Evented) {
     module("Event 2");
 
     var
         root = {
-            hi: 'There!',
+            hi   : 'There!',
             hello: {
                 world: {
                     center: "!!"
                 },
-                all: "hey"
+                all  : "hey"
             },
             bybye: {
                 world: {}
             }
         },
 
-        // evented datastore
-        original = $evented.create($single.create(root)),
+    // evented datastore
+        original = Evented.create(root),
 
-        // derived evented datastore
-        derived = $evented2.create($single.create(root.hello.world, {
+    // derived evented datastore
+        derived = Evented2.create(root.hello.world, {
             origin: original,
             offset: ['hello', 'world']
-        }));
+        });
 
     test("Creation", function () {
         deepEqual(derived.offset, ['hello', 'world'], "Derived offset");
@@ -132,8 +132,4 @@
 
         original.off('');
     });
-}(
-    flock.evented2,
-    flock.evented,
-    flock.single
-));
+}(flock.Evented2, flock.Evented));

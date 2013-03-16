@@ -3,76 +3,57 @@
  *
  * Delegates events to orgin datastore.
  */
-var flock = flock || {};
-
-flock.evented2 = (function ($single, $path, $utils) {
-    var self;
+/* global dessert, troop, flock */
+troop.promise(flock, 'Evented2', function () {
+    var base = flock.Multi,
+        self;
 
     /**
-     * Generates a method with datastore path as first parameter.
-     * Generated method calls same method of origin datastore
-     * with path prepended with offset.
-     * @returns {function}
+     * @class flock.Evented2
+     * @extends flock.Multi
      */
-    function genMethod(methodName) {
-        return function () {
-            var args = Array.prototype.slice.call(arguments),
-                path = args.shift(),
-                result;
+    self = flock.Evented2 = base.extend()
+        .addPrivateMethod(/** @lends flock.Evented2 */{
+            /**
+             * Generates a method with datastore path as first parameter.
+             * Generated method calls same method of origin datastore
+             * with path prepended with offset.
+             * @returns {function}
+             */
+            _genMethod: function (methodName) {
+                return function () {
+                    var args = Array.prototype.slice.call(arguments),
+                        path = args.shift(),
+                        result;
 
-            // prending path with offset
-            path = $path.normalize(path);
-            path = this.offset.concat(path);
-            args.unshift(path);
+                    // prending path with offset
+                    path = flock.Path.normalize(path);
+                    path = this.offset.concat(path);
+                    args.unshift(path);
 
-            // running method on origin datastore
-            result = this.origin[methodName].apply(this.origin, args);
+                    // running method on origin datastore
+                    result = this.origin[methodName].apply(this.origin, args);
 
-            if (result === this.origin) {
-                // returning current datastore object when method returned itself
-                return this;
-            } else {
-                // returning result otheriwse
-                return result;
+                    if (result === this.origin) {
+                        // returning current datastore object when method returned itself
+                        return this;
+                    } else {
+                        // returning result otheriwse
+                        return result;
+                    }
+                };
             }
-        };
-    }
+        });
 
-    //////////////////////////////
-    // Class
-
-    self = {
-        /**
-         * @constructor
-         * @param {object} base Base class instance.
-         */
-        create: function (base) {
-            if (arguments.length > 1) {
-                // root and options were passed instead of base
-                // falling back to flock.single
-                base = $single.create.apply(this, arguments);
-            }
-
-            return $utils.extend(base, self);
-        },
-
-        //////////////////////////////
-        // Event functionality
-
-        on: genMethod('on'),
-        one: genMethod('one'),
-        delegate: genMethod('delegate'),
-        off: genMethod('off'),
-        trigger: genMethod('trigger'),
-        get: genMethod('get'),
-        set: genMethod('set'),
-        unset: genMethod('unset'),
-        cleanup: genMethod('cleanup')
-    };
-
-    return self;
-}(
-    flock.single,
-    flock.path,
-    flock.utils
-));
+    self.addMethod(/** @lends flock.Evented2 */{
+        on      : self._genMethod('on'),
+        one     : self._genMethod('one'),
+        delegate: self._genMethod('delegate'),
+        off     : self._genMethod('off'),
+        trigger : self._genMethod('trigger'),
+        get     : self._genMethod('get'),
+        set     : self._genMethod('set'),
+        unset   : self._genMethod('unset'),
+        cleanup : self._genMethod('cleanup')
+    });
+});
