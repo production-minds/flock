@@ -2,21 +2,27 @@
 (function (Single) {
     module("Single");
 
-    var
-        data = {
-            hi: 'There!',
+    function getData() {
+        return {
+            hi   : 'There!',
             hello: {
                 world: {
                     center: "!!"
                 },
-                all: "hey"
+                all  : "hey"
             },
-            foo: 5
-        },
+            foo  : 5
+        };
+    }
 
-        single = Single.create(data);
+    function getSingle(data) {
+        return Single.create(data || getData());
+    }
 
     test("Getting", function () {
+        var data = getData(),
+            single = getSingle(data);
+
         equal(single.get(['hi']), "There!", "Getting ordinal value");
 
         equal(single.get(['hello', 'world']), data.hello.world, "Getting datastore node");
@@ -27,6 +33,9 @@
     });
 
     test("Setting", function () {
+        var data = getData(),
+            single = getSingle(data);
+
         single.set(['hello', 'world', 'test'], "testt");
         equal(data.hello.world.test, "testt", "Value set on existing node");
 
@@ -41,6 +50,9 @@
     });
 
     test("Math", function () {
+        var data = getData(),
+            single = getSingle(data);
+
         single.add('foo');
         equal(data.foo, 6, "Default increment is 1");
 
@@ -56,44 +68,43 @@
     });
 
     test("Unsetting", function () {
-        var
-            data = {
-                hi: 'There!',
+        var data = {
+                hi   : 'There!',
                 hello: {
                     world: {
                         center: "!!",
-                        other: "??"
+                        other : "??"
                     },
-                    all: "hey"
+                    all  : "hey"
                 }
             },
 
-            single = Single.create(data);
+            single = getSingle(data);
 
         single.unset(['hello', 'world', 'center']);
         deepEqual(data, {
-            hi: 'There!',
+            hi   : 'There!',
             hello: {
                 world: {
                     other: "??"
                 },
-                all: "hey"
+                all  : "hey"
             }
         }, "- same with non-static");
 
         single.unset(['hello', 'world', 'other']);
         deepEqual(data, {
-            hi: 'There!',
+            hi   : 'There!',
             hello: {
                 world: {
                 },
-                all: "hey"
+                all  : "hey"
             }
         }, "Single ordinal node removed");
 
         single.unset(['hello', 'all']);
         deepEqual(data, {
-            hi: 'There!',
+            hi   : 'There!',
             hello: {
                 world: {
                 }
@@ -102,27 +113,26 @@
     });
 
     test("Cleanup", function () {
-        var
-            data = {
-                hi: 'There!',
+        var data = {
+                hi   : 'There!',
                 hello: {
                     world: {
                         center: "!!"
                     },
-                    all: "hey"
+                    all  : "hey"
                 }
             },
 
-            single = Single.create(data);
+            single = getSingle(data);
 
         single.cleanup(['blaaaaah']);
         deepEqual(data, {
-            hi: 'There!',
+            hi   : 'There!',
             hello: {
                 world: {
                     center: "!!"
                 },
-                all: "hey"
+                all  : "hey"
             }
         }, "Attempting to remove invalid node doesn't change data");
 
@@ -132,7 +142,7 @@
                 world: {
                     center: "!!"
                 },
-                all: "hey"
+                all  : "hey"
             }
         }, "Single node removed");
 
@@ -164,7 +174,7 @@
                 }
             },
 
-            single = Single.create(data);
+            single = getSingle(data);
 
         deepEqual(single.map(['foo'], ['bar']), {
             hello: {
