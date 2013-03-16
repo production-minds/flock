@@ -1,23 +1,23 @@
 /*global window, flock, module, test, expect, stop, start, ok, equal, deepEqual, raises */
-(function ($evented, $single) {
+(function (Evented) {
     module("Event");
 
     var
         root = {
-            hi: 'There!',
+            hi   : 'There!',
             hello: {
                 world: {
                     center: "!!"
                 },
-                all: "hey"
+                all  : "hey"
             },
             bybye: {
                 world: {}
             }
         },
 
-        // creating evented datastore object explicitly from flock.single
-        ds = $evented.create($single.create(root));
+    // creating evented datastore object explicitly from flock.single
+        ds = Evented.create(root);
 
     test("Subscription", function () {
         function testHandler() {
@@ -138,7 +138,7 @@
     });
 
     test("Access", function accessTest() {
-        expect(11);
+        expect(7);
 
         // general access handling
 
@@ -155,38 +155,6 @@
         ds.get('hello.world.blahblah', {data: 'test'});
 
         ds.off('', flock.ACCESS);
-
-        // access handling with repeat
-
-        ds.on('not.existing.path', flock.ACCESS, function (event, data) {
-            // fixing failure
-            ds.set('not.existing.path', 'hello', {trigger: false});
-
-            // stopping test b/c of settimout
-            stop();
-
-            // repeating original call that invoked the access event
-            window.setTimeout(data.rerun, 10);
-        });
-
-        var i = 0;
-
-        (function (arg) {
-            equal(arg, 'test', "Caller arguments are ok.");
-            var value = ds.get('not.existing.path').root;
-            switch (i) {
-            case 0:
-                equal(typeof value, 'undefined', "Value initially doesn't exist");
-                break;
-            case 1:
-                equal(value, 'hello', "Value exists after event handler ran");
-                break;
-            }
-            i++;
-            start();
-        }('test'));
-
-        ds.off('not.existing.path');
     });
 
     /**
@@ -292,7 +260,4 @@
         ds.unset(['hello', 'world', 'center']);
         equal(i, 1, "Unsetting non-existing path doesn't trigger event");
     });
-}(
-    flock.evented,
-    flock.single
-));
+}(flock.Evented));
