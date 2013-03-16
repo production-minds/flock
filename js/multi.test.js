@@ -1,8 +1,8 @@
 /*global flock, module, test, ok, equal, notEqual, deepEqual, raises, console */
-(function ($, $multi, $path, $single) {
+(function (Multi) {
     var
         data = {
-            first: {
+            first : {
                 a: {},
                 b: {},
                 c: {},
@@ -14,7 +14,7 @@
                 2: {},
                 3: {}
             },
-            third: {},
+            third : {},
             fourth: {
                 1: {
                     a: "One",
@@ -30,7 +30,7 @@
                 }
             }
         },
-        multi = $multi.create($single.create(data, {nochaining: true}));
+        multi = Multi.create(data, {nochaining: true});
 
     module("Multi");
 
@@ -67,14 +67,14 @@
             "Collecting nodes from path '*.1'");
 
         deepEqual(
-            multi.traverse('first,second.*', $.BOTH),
+            multi.traverse('first,second.*', flock.BOTH),
             {a: {}, b: {}, c: {}, d: {}, e: {}, 1: {}, 2: {}, 3: {}},
             "Getting results as lookup");
     });
 
     test('Path inclusive queries', function () {
         deepEqual(
-            multi.traverse('first,second.*', $.PATHS),
+            multi.traverse('first,second.*', flock.PATHS),
             [
                 'first.a',
                 'first.b',
@@ -89,13 +89,13 @@
         );
 
         deepEqual(
-            multi.traverse('first,second.*', $.FULL),
+            multi.traverse('first,second.*', flock.FULL),
             {
-                'first.a': {},
-                'first.b': {},
-                'first.c': {},
-                'first.d': {},
-                'first.e': {},
+                'first.a' : {},
+                'first.b' : {},
+                'first.c' : {},
+                'first.d' : {},
+                'first.e' : {},
                 'second.1': {},
                 'second.2': {},
                 'second.3': {}
@@ -151,7 +151,7 @@
         deepEqual(
             multi.traverse([
                 ['thousandth', 'third']
-            ], {mode: $.BOTH}),
+            ], {mode: flock.BOTH}),
             {third: {}},
             "Collecting non-existent keys (as lookup)");
         deepEqual(
@@ -163,16 +163,16 @@
     });
 
     test("Counting", function () {
-        equal(multi.traverse('first.*', {mode: $.COUNT}), 5, "5 elements on path 'first.*'");
-        equal(multi.traverse('fourth.*.a', {mode: $.COUNT}), 3, "3 elements on path 'fourth.*.a'");
-        equal(multi.traverse('...a', {mode: $.COUNT}), 4, "4 elements on path '...a'");
+        equal(multi.traverse('first.*', {mode: flock.COUNT}), 5, "5 elements on path 'first.*'");
+        equal(multi.traverse('fourth.*.a', {mode: flock.COUNT}), 3, "3 elements on path 'fourth.*.a'");
+        equal(multi.traverse('...a', {mode: flock.COUNT}), 4, "4 elements on path '...a'");
     });
 
     test("Skipping", function () {
         // testing multi-level wildcards
         var
             data = {
-                1: {},
+                1   : {},
                 test: {
                     1: "hello",
                     a: "world"
@@ -183,12 +183,12 @@
                     "three",
                     {
                         awe: "some",
-                        1: "test"
+                        1  : "test"
                     }
                 ]
             },
 
-            multi = $multi.create($single.create(data, {nochaining: true}));
+            multi = Multi.create(data, {nochaining: true});
 
         deepEqual(
             multi.traverse('...1'),
@@ -224,10 +224,10 @@
     test("Edge cases", function () {
         var
             data = {
-                1: {},
+                1   : {},
                 test: {
-                    1: "hello",
-                    a: "world",
+                    1  : "hello",
+                    a  : "world",
                     '.': "dot"
                 },
                 what: [
@@ -236,25 +236,25 @@
                     "three",
                     {
                         awe: "some",
-                        1: "test"
+                        1  : "test"
                     }
                 ]
             },
 
-            multi = $multi.create($single.create(data, {nochaining: true}));
+            multi = Multi.create(data, {nochaining: true});
 
         equal(multi.traverse(''), data, ".traverse('') and datastore root point to the same object");
         deepEqual(multi.traverse(['test', '.']), ['dot'], "Dot as key acts as regular string");
 
         deepEqual(
-            $multi.create($single.create(undefined, {nochaining: true}))
+            Multi.create(undefined, {nochaining: true})
                 .mget(['made', 'up', 'path']),
             [],
             "Traversal works on datastore with undefined root node"
         );
 
         deepEqual(
-            $multi.create($single.create('ordinal', {nochaining: true}))
+            Multi.create('ordinal', {nochaining: true})
                 .mget(['made', 'up', 'path']),
             [],
             "Traversal works on datastore with ordinal root node"
@@ -280,7 +280,7 @@
                 }
             },
 
-            multi = $multi.create($single.create(data, {nochaining: true}));
+            multi = Multi.create(data, {nochaining: true});
 
         multi.mset('fourth.*.a', {});
         deepEqual(data.fourth, {
@@ -354,7 +354,7 @@
 
     test("Deleting multiple nodes", function () {
         var data = {},
-            multi = $multi.create($single.create(data, {nochaining: true}));
+            multi = Multi.create(data, {nochaining: true});
 
         multi.mget('fourth', {value: {
             1: {
@@ -386,12 +386,11 @@
 
     test("String index", function () {
         var data = {},
-            single = $single.create(data, {nochaining: true}),
-            multi = $multi.create($single.create(data, {nochaining: true}));
+            multi = Multi.create(data, {nochaining: true});
 
         // sets string for full text search
         function addWord(name) {
-            single.set(name.split(''), {name: name});
+            multi.set(name.split(''), {name: name});
         }
 
         // setting up cache
@@ -435,9 +434,4 @@
             "wedding"
         ], "*e...");
     });
-}(
-    flock,
-    flock.multi,
-    flock.path,
-    flock.single
-));
+}(flock.Multi));
