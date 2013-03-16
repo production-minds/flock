@@ -2,8 +2,7 @@
 (function (Evented) {
     module("Event");
 
-    var
-        root = {
+    var root = {
             hi   : 'There!',
             hello: {
                 world: {
@@ -131,10 +130,7 @@
     });
 
     test("Getting", function () {
-        equal(ds.get('hi').root, "There!", "Normal chained get");
-        equal(ds.get('hi', {nochaining: true}), "There!", "No chaining with full options object");
-        equal(ds.get('hi', {nochaining: true}), "There!", "No chaining with full options object");
-        equal(ds.get('hi', true), "There!", "No chaining with legacy argument");
+        equal(ds.get('hi'), "There!", "No chaining with legacy argument");
     });
 
     test("Access", function accessTest() {

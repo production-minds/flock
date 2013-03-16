@@ -31,12 +31,6 @@ troop.promise(flock, 'Evented', function (ns, className, Single, Path) {
                 case 'undefined':
                     // empty object when no options object is specified
                     return {};
-                case 'boolean':
-                    // boolean option defaults to single.get's nochaining argument
-                    // for compatibility
-                    return {
-                        nochaining: true
-                    };
                 case 'object':
                     // options argument when it is of object type
                     return options;
@@ -279,20 +273,16 @@ troop.promise(flock, 'Evented', function (ns, className, Single, Path) {
              * @param {object} [options] Options.
              * @param {object} [options.data] Custom data to be passed to event handler.
              * @param {boolean} [options.trigger] Whether to trigger. Default: true.
-             * @param {boolean} [options.nochaining] Whether method should return bare node.
              */
             get: function (path, options) {
                 options = self._preprocessOptions(options);
 
-                var result = Single.get.call(this, path, options.nochaining),
-                    root = Single.isPrototypeOf(result) ?
-                        result.root :
-                        result,
+                var result = base.get.call(this, path),
                     data,
                     caller, args;
 
                 if (options.trigger !== false &&
-                    typeof root === 'undefined'
+                    typeof result === 'undefined'
                     ) {
                     /* jshint noarg:false */
                     caller = arguments.callee.caller;
