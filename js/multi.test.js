@@ -1,7 +1,6 @@
 /*global flock, module, test, ok, equal, notEqual, deepEqual, raises, console */
 (function (Multi) {
-    var
-        data = {
+    var data = {
             first : {
                 a: {},
                 b: {},
@@ -30,7 +29,7 @@
                 }
             }
         },
-        multi = Multi.create(data, {nochaining: true});
+        multi = Multi.create(data);
 
     module("Multi");
 
@@ -188,7 +187,7 @@
                 ]
             },
 
-            multi = Multi.create(data, {nochaining: true});
+            multi = Multi.create(data);
 
         deepEqual(
             multi.traverse('...1'),
@@ -241,20 +240,20 @@
                 ]
             },
 
-            multi = Multi.create(data, {nochaining: true});
+            multi = Multi.create(data);
 
         equal(multi.traverse(''), data, ".traverse('') and datastore root point to the same object");
         deepEqual(multi.traverse(['test', '.']), ['dot'], "Dot as key acts as regular string");
 
         deepEqual(
-            Multi.create(undefined, {nochaining: true})
+            Multi.create(undefined)
                 .mget(['made', 'up', 'path']),
             [],
             "Traversal works on datastore with undefined root node"
         );
 
         deepEqual(
-            Multi.create('ordinal', {nochaining: true})
+            Multi.create('ordinal')
                 .mget(['made', 'up', 'path']),
             [],
             "Traversal works on datastore with ordinal root node"
@@ -280,7 +279,7 @@
                 }
             },
 
-            multi = Multi.create(data, {nochaining: true});
+            multi = Multi.create(data);
 
         multi.mset('fourth.*.a', {});
         deepEqual(data.fourth, {
@@ -354,7 +353,7 @@
 
     test("Deleting multiple nodes", function () {
         var data = {},
-            multi = Multi.create(data, {nochaining: true});
+            multi = Multi.create(data);
 
         multi.mget('fourth', {value: {
             1: {
@@ -386,7 +385,7 @@
 
     test("String index", function () {
         var data = {},
-            multi = Multi.create(data, {nochaining: true});
+            multi = Multi.create(data);
 
         // sets string for full text search
         function addWord(name) {

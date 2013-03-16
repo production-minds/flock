@@ -89,10 +89,9 @@ troop.promise(flock, 'Multi', function (ns, className, $query) {
              * @param [options.undef] whether to collect undefined entries, default: false
              * @param [options.value] value to set, or callback function to execute on nodes
              * when undefined, function returns collected values
-             * @param {boolean} [nochaining] Whether method should return bare node.
              * @return {object} Collected nodes.
              */
-            traverse: function (query, options, nochaining) {
+            traverse: function (query, options) {
                 options = self._preprocessOptions(options);
                 query = $query.normalize(query);
 
@@ -253,10 +252,7 @@ troop.promise(flock, 'Multi', function (ns, className, $query) {
                     }
                 }(this.root || {}, 0, []));
 
-                // optionally wrapping result into datastore object
-                return nochaining || this.nochaining ?
-                    result :
-                    this.wrap(result, this.options);
+                return result;
             },
 
             //////////////////////////////
