@@ -2,7 +2,8 @@
 (function (Evented) {
     module("Event");
 
-    var root = {
+    function getRoot() {
+        return {
             hi   : 'There!',
             hello: {
                 world: {
@@ -13,12 +14,16 @@
             bybye: {
                 world: {}
             }
-        },
+        };
+    }
 
-    // creating evented datastore object explicitly from flock.single
-        ds = Evented.create(root);
+    function getDs(root) {
+        return Evented.create(root || getRoot());
+    }
 
     test("Subscription", function () {
+        var ds = getDs();
+
         function testHandler() {
         }
 
@@ -38,7 +43,8 @@
     });
 
     test("Triggering", function () {
-        var i = 0, j = 0, k = 0,
+        var ds = getDs(),
+            i = 0, j = 0, k = 0,
             eventData = "eventData";
 
         function testHandler() {
@@ -105,7 +111,8 @@
     });
 
     test("Delegation", function () {
-        var i;
+        var ds = getDs(),
+            i;
 
         function testHandler() {
             i++;
@@ -130,11 +137,14 @@
     });
 
     test("Getting", function () {
+        var ds = getDs();
         equal(ds.get('hi'), "There!", "No chaining with legacy argument");
     });
 
     test("Access", function accessTest() {
         expect(7);
+
+        var ds = getDs();
 
         // general access handling
 
@@ -158,6 +168,8 @@
      */
     test("On demand loading", function () {
         expect(1);
+
+        var ds = getDs();
 
         /**
          * Pretends to load data associated with a cache path.
@@ -190,6 +202,8 @@
     });
 
     test("Setting", function () {
+        var ds = getDs();
+
         // checking handler arguments
         ds.on('', flock.CHANGE, function (event, data) {
             equal(event.name, flock.CHANGE, "Event name ok.");
@@ -236,7 +250,9 @@
     });
 
     test("Unsetting", function () {
-        var i;
+        var root = getRoot(),
+            ds = getDs(root),
+            i;
 
         function onRemove() {
             i++;
