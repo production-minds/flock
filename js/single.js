@@ -20,7 +20,7 @@ troop.promise(flock, 'Single', function () {
              */
             init: function (root) {
                 this.addConstant(/** @lends flock.Single */{
-                    root: root || {}
+                    root: typeof root === 'undefined' ? {} : root
                 });
             },
 
