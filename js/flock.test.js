@@ -1,8 +1,8 @@
 /*global flock, module, test, ok, equal, notEqual, deepEqual, raises */
-(function ($) {
-    var
-        ds = $({
-            first: {
+(function () {
+    function getDs() {
+        return flock.compat({
+            first : {
                 a: {},
                 b: {},
                 c: {},
@@ -14,7 +14,7 @@
                 2: {},
                 3: {}
             },
-            third: {},
+            third : {},
             fourth: {
                 1: {
                     a: "One",
@@ -30,96 +30,69 @@
                 }
             }
         });
+    }
 
     module("Flock");
 
     test("Utils", function () {
+        var ds = getDs();
         deepEqual(ds.keys(), ['first', 'second', 'third', 'fourth'], "Key extraction");
     });
 
     test("Creation", function () {
-        equal($(5).root, 5, "Flock based on ordinal (number)");
-        equal($("hello").root, "hello", "Flock based on ordinal (string)");
-        equal($(true).root, true, "Flock based on ordinal (boolean)");
-        equal($(null).root, null, "Flock based on null");
+        equal(flock.compat(5).root, 5, "Flock based on ordinal (number)");
+        equal(flock.compat("hello").root, "hello", "Flock based on ordinal (string)");
+        equal(flock.compat(true).root, true, "Flock based on ordinal (boolean)");
+        equal(flock.compat(null).root, null, "Flock based on null");
 
-        deepEqual($().root, {}, "Flock based on undefined defaults to empty object");
-        equal(typeof $().get('test').root, 'undefined', "Derived flock based on undefined");
+        deepEqual(flock.compat().root, {}, "Flock based on undefined defaults to empty object");
+        equal(typeof flock.compat().get('test'), 'undefined', "Derived flock based on undefined");
     });
 
     test("Single", function () {
-        deepEqual(ds.get(['fourth', '1', 'a']).root, "One", "Simple get");
+        var ds = getDs();
 
-        deepEqual(
-            ds
-                .get(['fourth', '1'])
-                .get(['a'])
-                .root,
-            "One",
-            "Chained get"
-        );
+        deepEqual(ds.get(['fourth', '1', 'a']), "One", "Simple get");
 
-        deepEqual(
-            ds
-                .get(['fourth', '1'])
-                .set(['c'], "Hello!")
-                .get(['c'])
-                .root,
-            "Hello!",
-            "Chained set & get"
-        );
+        ok(typeof ds.get(['nonexisting', '1', 'a']) === 'undefined', "Empty result set returns undefined");
 
-        ok(typeof ds.get(['nonexisting', '1', 'a']).root === 'undefined', "Empty result set returns undefined");
-
-        var nonChainable = $({hello: {world: {}}}, {nochaining: true});
-        deepEqual(nonChainable.get('hello'), {world: {}}, "Querying returns bare node on non-chaninng datastore");
+        ds = flock.compat({hello: {world: {}}});
+        deepEqual(ds.get('hello'), {world: {}}, "Simple get with object result");
     });
 
     test("Options", function () {
+        var ds = getDs();
+
         ok(
-            !ds.nochaining && !ds.nomulti && !ds.noevent,
+            !ds.nomulti && !ds.noevent,
             "All flags are false by default"
         );
 
         var tmp;
 
-        tmp = $({hello: {world: {}}}, {
+        tmp = flock.compat({hello: {world: {}}}, {
             noevent: true
         });
 
         equal(
             tmp.noevent,
             true,
-            "Non-default options set (nochaining: true)"
-        );
-
-        equal(
-            tmp.get('hello.world').noevent,
-            true,
-            "Derived (.get) flock object preserves options"
-        );
-
-        equal(
-            tmp.mget('first.*').noevent,
-            true,
-            "Derived (.mget) flock object preserves options"
+            "Non-default options set (noevent: true)"
         );
 
         tmp.nomulti = true;
         ok(typeof tmp.nomulti === 'undefined', "Options cannot be modified through property");
 
-        // non-live tets
-        ok(tmp.get(['hello', 'world']).isEmpty(), "utils.empty delegated to flock");
-
-        tmp = $({}, $.COMPAT);
+        tmp = flock.compat({}, flock.COMPAT);
         ok(
-            tmp.noevent && tmp.nochaining,
+            tmp.noevent,
             "Compatibility options"
         );
     });
 
     test("Events", function () {
-        var i;
+        var ds = getDs(),
+            i;
 
         function testHandler() {
             i++;
@@ -132,11 +105,6 @@
         ds.trigger(['fourth', '1'], 'testEvent', "moreInfo");
         equal(i, 1, "Event triggered and captured");
 
-        ds
-            .get(['fourth', '1'])
-            .trigger([], 'testEvent', "moreInfo");
-        equal(i, 2, "Chaining get & trigger");
-
         ds.off(['fourth'], 'testEvent');
 
         // capturing event on root node
@@ -147,60 +115,78 @@
         ds.off([], 'testEvent');
     });
 
-    test("Querying", function () {
-        deepEqual(
-            ds
-                .mget('fourth.*', {mode: $.BOTH})
-                .get('1')
-                .root,
-            ds
-                .get('fourth.1')
-                .root,
-            "Stacked querying and getting"
-        );
-    });
-
     test("Mapping", function () {
-        var
-            ds = flock({
-                employees: {
-                    emp1: {fname: "John", lname: "Smith", department: "IT"},
-                    emp2: {fname: "John", lname: "Green", department: "HR"},
-                    emp3: {fname: "Matt", lname: "Smith", department: "IT"}
-                }
+        var ds = flock.compat({
+                emp1: {fname: "John", lname: "Smith", department: "IT"},
+                emp2: {fname: "John", lname: "Green", department: "HR"},
+                emp3: {fname: "Matt", lname: "Smith", department: "IT"}
             }),
             tmp;
 
-        tmp = ds
-            .get('employees')
-            .map(['department'], ['lname'], ['fname'], []);
-
-        ok(tmp.get('HR.Green.John'), "Query result mapped to lookup");
-
-        tmp = ds
-            .get('employees')
-            .map('department', 'fname', 'lname', '');
-
-        ok(tmp.get('HR.John.Green'), "Passing pats in string notation");
-    });
-
-    test("Origin", function () {
-        equal(
-            ds
-                .get('fourth.1')
-                .get('a')
-                .origin,
-            ds,
-            "Origin datastore OK"
-        );
+        tmp = ds.map(['department'], ['lname'], ['fname'], []);
 
         deepEqual(
-            ds
-                .get('fourth.1')
-                .get('a')
-                .offset,
-            ['fourth', '1', 'a'],
-            "Origin path OK"
+            tmp,
+            {
+                "IT": {
+                    "Smith": {
+                        "John": {
+                            "fname"     : "John",
+                            "lname"     : "Smith",
+                            "department": "IT"
+                        },
+                        "Matt": {
+                            "fname"     : "Matt",
+                            "lname"     : "Smith",
+                            "department": "IT"
+                        }
+                    }
+                },
+                "HR": {
+                    "Green": {
+                        "John": {
+                            "fname"     : "John",
+                            "lname"     : "Green",
+                            "department": "HR"
+                        }
+                    }
+                }
+            },
+            "Query result mapped to lookup"
+        );
+
+        tmp = ds.map('department', 'fname', 'lname', '');
+
+        deepEqual(
+            tmp,
+            {
+                "IT": {
+                    "John": {
+                        "Smith": {
+                            "fname"     : "John",
+                            "lname"     : "Smith",
+                            "department": "IT"
+                        }
+                    },
+                    "Matt": {
+                        "Smith": {
+                            "fname"     : "Matt",
+                            "lname"     : "Smith",
+                            "department": "IT"
+                        }
+                    }
+                },
+                "HR": {
+                    "John": {
+                        "Green": {
+                            "fname"     : "John",
+                            "lname"     : "Green",
+                            "department": "HR"
+                        }
+                    }
+                }
+            },
+            "Passing pats in string notation"
         );
     });
-}(flock));
+}());
