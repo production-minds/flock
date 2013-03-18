@@ -1,7 +1,7 @@
 /**
  * Basic Path Processing Functionality
  */
-/* global dessert, troop, flock */
+/*global dessert, troop, flock */
 troop.promise(flock, 'Path', function () {
     /**
      * @class flock.Path

@@ -1,7 +1,7 @@
 /**
  * Flock Wrapper Object
  */
-/* global dessert, troop, flock */
+/*global dessert, troop, flock */
 (function (Single, Multi, Evented) {
     troop.Base.addConstant.call(flock, /** @lends flock */{
         COMPAT: 'mainOptions.compat'

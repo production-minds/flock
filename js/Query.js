@@ -1,7 +1,7 @@
 /**
  * Query Pattern Management
  */
-/* global dessert, troop, flock */
+/*global dessert, troop, flock */
 troop.promise(flock, 'Query', function () {
     /**
      * @class flock.Query

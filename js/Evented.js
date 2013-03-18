@@ -1,7 +1,7 @@
 /**
  * Evented Trait
  */
-/* global dessert, troop, flock */
+/*global dessert, troop, flock */
 troop.promise(flock, 'Evented', function (ns, className, Single, Path) {
     // adding constants to namespace
     troop.Base.addConstant.call(flock, /** @lends flock */{
@@ -284,10 +284,10 @@ troop.promise(flock, 'Evented', function (ns, className, Single, Path) {
                 if (options.trigger !== false &&
                     typeof result === 'undefined'
                     ) {
-                    /* jshint noarg:false */
+                    /*jshint noarg:false */
                     caller = arguments.callee.caller;
                     args = arguments.callee.caller['arguments'];
-                    /* jshint noarg:true */
+                    /*jshint noarg:true */
                     data = {
                         data: {
                             caller: caller,

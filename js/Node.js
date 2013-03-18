@@ -1,7 +1,7 @@
 /**
  * Basic Datastore Node
  */
-/* global dessert, troop, flock */
+/*global dessert, troop, flock */
 troop.promise(flock, 'Node', function () {
     /**
      * @class flock.Node

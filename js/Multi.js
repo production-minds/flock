@@ -4,7 +4,7 @@
  * Implements querying, modification, and removal of multiple datastore
  * nodes at a time.
  */
-/* global dessert, troop, flock */
+/*global dessert, troop, flock */
 troop.promise(flock, 'Multi', function (ns, className, $query) {
     // adding constants to namespace
     troop.Base.addConstant.call(flock, /** @lends flock */{

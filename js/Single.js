@@ -4,7 +4,7 @@
  * Implements setting, retrieval, and removal of specific datastore
  * nodes one at a time.
  */
-/* global dessert, troop, flock */
+/*global dessert, troop, flock */
 troop.promise(flock, 'Single', function () {
     var base = flock.Node,
         self;
