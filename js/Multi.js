@@ -18,13 +18,13 @@ troop.promise(flock, 'Multi', function (ns, className, $query) {
     });
 
     var base = flock.Single,
-        self;
+        self = base.extend();
 
     /**
      * @class flock.Multi
      * @extends flock.Single
      */
-    self = flock.Multi = base.extend()
+    flock.Multi = self
         .addConstant(/** @lends flock.Multi */{
             ERROR_INVALID_PATH: "Invalid path."
         })

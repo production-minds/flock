@@ -7,13 +7,13 @@
 /*global dessert, troop, flock */
 troop.promise(flock, 'Single', function () {
     var base = flock.Node,
-        self;
+        self = base.extend();
 
     /**
      * @class flock.Single
      * @extends flock.Node
      */
-    self = flock.Single = base.extend()
+    flock.Single = self
         .addMethod(/** @lends flock.Single */{
             /**
              * @param {object} root Source node.

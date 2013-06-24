@@ -13,13 +13,13 @@ troop.promise(flock, 'Evented', function (ns, className, Single, Path) {
     });
 
     var base = flock.Multi,
-        self;
+        self = base.extend();
 
     /**
      * @class flock.Evented
      * @extends troop.Base
      */
-    self = flock.Evented = base.extend()
+    flock.Evented = self
         .addPrivate(/** @lends flock.Evented */{
             /**
              * Preprocesses options object for use in event methods.
